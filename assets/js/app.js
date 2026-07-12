@@ -2,6 +2,7 @@
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
+const clickSound = new Audio('assets/life.mp3'); // Som do clique
 
 async function loadGames() {
     try {
@@ -15,27 +16,22 @@ async function loadGames() {
             return;
         }
 
-        // Preencher informações do Jogo
-        document.getElementById("cover").src = CURRENT_GAME.cover; // CORRIGIDO: Agora usa 'cover'
+        document.getElementById("cover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
         document.getElementById("year").innerText = CURRENT_GAME.year;
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
-        document.getElementById("description").innerText = CURRENT_GAME.description;
+        // DESCRIÇÃO REMOVIDA
 
-        // Configurar o botão
         const startBtn = document.getElementById("startButton");
         startBtn.addEventListener("click", () => {
+            // Toca o som no momento do clique
+            clickSound.play();
+            
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            
-            // Verifica se a função existe antes de chamar
-            if (typeof startBoot === 'function') {
-                startBoot();
-            } else {
-                console.error("Função startBoot não encontrada em boot.js");
-            }
+            startBoot(); 
         });
 
     } catch (error) {

@@ -353,41 +353,33 @@ body{
 
 .progress{
 
-    width:calc(100% - 60px);
+    width:min(90vw, 560px);
 
-    max-width:560px;
+    height:14px;
 
-    margin:25px auto 0 auto;
+    margin:24px auto;
 
-    height:12px;
+    border-radius:20px;
 
     overflow:hidden;
 
-    border-radius:30px;
+    background:#1a1f2d;
 
-    background:#161E2C;
+    box-sizing:border-box;
 
 }
 
-#progressFill{
+.progressFill{
 
-    width:0;
+    width:0%;
 
     height:100%;
 
-    border-radius:30px;
+    background:#52ff72;
 
-    background:
+    transition:width .2s linear;
 
-    linear-gradient(
-
-        90deg,
-
-        var(--purple),
-
-        var(--blue)
-
-    );
+}
 
     transition:.45s;
 

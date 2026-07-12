@@ -115,6 +115,12 @@ async function startBoot(){
 
         createLine(text);
 
+        try{
+
+    beep(650,40);
+
+}catch(e){}
+
         if(progress<BOOT_BLOCKS.length-1){
 
             progress++;
@@ -125,6 +131,12 @@ async function startBoot(){
 
         if(text==="CARTUCHO DETECTADO"){
 
+    try{
+
+    beep(350,140);
+
+}catch(e){}
+            
     if(navigator.vibrate){
 
         navigator.vibrate([80,60,120]);

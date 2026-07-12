@@ -1016,3 +1016,36 @@ transition:.35s;
 
 }
 
+   .progressText{
+
+    margin-top:18px;
+
+    font-family:Consolas,monospace;
+
+    font-size:34px;
+
+    letter-spacing:4px;
+
+    color:#68FF82;
+
+    text-align:center;
+
+    text-shadow:
+        0 0 6px #4AFF77,
+        0 0 18px #4AFF77;
+
+    user-select:none;
+
+}
+
+@media(max-width:768px){
+
+.progressText{
+
+    font-size:26px;
+
+    letter-spacing:2px;
+
+}
+
+}

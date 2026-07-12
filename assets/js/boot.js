@@ -2,16 +2,18 @@
 // RETRO NFC - BOOT V2
 // ======================================================
 
-// Inicializa o áudio
-const bootSound = new Audio('assets/life.mp3');
-
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
     "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
     "■■■■■■■■□□", "■■■■■■■■■□", "■■■■■■■■■■"
 ];
 
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+// Carrega o áudio
+const bootSound = new Audio('assets/life.mp3');
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function createLine(text) {
     const terminal = document.getElementById("bootTerminal");
@@ -43,16 +45,13 @@ function updateProgress(step) {
     }
 }
 
+// Esta função deve ser chamada quando o usuário clica no botão "JOGAR"
 async function startBoot() {
     const terminal = document.getElementById("bootTerminal");
     terminal.innerHTML = "";
     
-    // Tenta desbloquear o áudio no primeiro toque do usuário
-    const unlockAudio = () => {
-        bootSound.play().then(() => { bootSound.pause(); bootSound.currentTime = 0; });
-        document.removeEventListener('click', unlockAudio);
-    };
-    document.addEventListener('click', unlockAudio);
+    // Toca o som (o clique no botão já libera o áudio no navegador)
+    bootSound.play().catch(e => console.log("Áudio bloqueado"));
 
     const lines = CURRENT_GAME.bootText;
     let progress = 0;
@@ -60,9 +59,9 @@ async function startBoot() {
     for (const text of lines) {
         createLine(text);
 
-        // Toca o som em cada linha
+        // Toca o efeito a cada linha
         bootSound.currentTime = 0;
-        bootSound.play().catch(e => console.log("Áudio bloqueado pelo navegador"));
+        bootSound.play();
 
         if (progress < BOOT_BLOCKS.length - 1) {
             progress++;
@@ -78,8 +77,47 @@ async function startBoot() {
     }
 
     await sleep(500);
+    await startTransition();
     
     // REDIRECIONAMENTO AUTOMÁTICO
-    // Após terminar o boot, ele abre direto o link do jogo
     window.location.href = CURRENT_GAME.gameUrl;
 }
+
+// =====================================================
+// TRANSIÇÃO FINAL
+// =====================================================
+async function startTransition() {
+    const boot = document.getElementById("bootScreen");
+    const game = document.getElementById("gameScreen");
+    
+    // Flash branco
+    const flash = document.createElement("div");
+    flash.style.position = "fixed";
+    flash.style.left = "0";
+    flash.style.top = "0";
+    flash.style.width = "100vw";
+    flash.style.height = "100vh";
+    flash.style.background = "#FFFFFF";
+    flash.style.opacity = "0";
+    flash.style.pointerEvents = "none";
+    flash.style.zIndex = "9999";
+    flash.style.transition = "opacity .12s";
+
+    document.body.appendChild(flash);
+    await sleep(50);
+    flash.style.opacity = "1";
+    await sleep(120);
+    flash.style.opacity = "0";
+    await sleep(180);
+    flash.remove();
+
+    boot.style.display = "none";
+}
+
+// Vincula o botão "JOGAR" ao startBoot
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("startButton");
+    if(btn) {
+        btn.addEventListener("click", startBoot);
+    }
+});

@@ -1,0 +1,991 @@
+/* ==========================================================
+   RETRO NFC
+   Version 1.0
+   Theme: SNES
+   ========================================================== */
+
+/* RESET */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+
+    width:100%;
+    height:100%;
+
+}
+
+body{
+
+    overflow:hidden;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:#05070B;
+
+    color:#FFFFFF;
+
+}
+
+/* ========================================================== */
+/* VARIÁVEIS */
+
+:root{
+
+    --bg:#05070B;
+
+    --panel:#101522;
+
+    --panel2:#171D2D;
+
+    --purple:#6E3FD8;
+
+    --purple2:#9E7BFF;
+
+    --blue:#39B8FF;
+
+    --green:#4ADE80;
+
+    --yellow:#FACC15;
+
+    --white:#FFFFFF;
+
+    --text:#D7DCE8;
+
+    --shadow:
+
+        0 20px 60px
+
+        rgba(0,0,0,.45);
+
+}
+
+/* ========================================================== */
+/* FUNDO */
+
+.background{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(circle at top,
+
+    rgba(110,63,216,.25),
+
+    transparent 45%),
+
+    radial-gradient(circle at bottom,
+
+    rgba(57,184,255,.15),
+
+    transparent 45%),
+
+    linear-gradient(
+
+    180deg,
+
+    #05070B,
+
+    #080B12);
+
+    z-index:-10;
+
+}
+
+/* ========================================================== */
+
+.topGlow{
+
+    position:fixed;
+
+    width:900px;
+
+    height:300px;
+
+    left:50%;
+
+    top:-180px;
+
+    transform:translateX(-50%);
+
+    background:
+
+    radial-gradient(
+
+    circle,
+
+    rgba(110,63,216,.35),
+
+    transparent 70%);
+
+    filter:blur(60px);
+
+    z-index:-9;
+
+}
+
+/* ========================================================== */
+
+.bottomGlow{
+
+    position:fixed;
+
+    width:900px;
+
+    height:300px;
+
+    left:50%;
+
+    bottom:-180px;
+
+    transform:translateX(-50%);
+
+    background:
+
+    radial-gradient(
+
+    circle,
+
+    rgba(57,184,255,.18),
+
+    transparent 70%);
+
+    filter:blur(60px);
+
+    z-index:-9;
+
+}
+
+/* ========================================================== */
+/* CRT */
+
+.crt{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:100;
+
+}
+
+.crt::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+    linear-gradient(
+
+    rgba(255,255,255,.02) 50%,
+
+    rgba(0,0,0,.05) 50%);
+
+    background-size:
+
+    100%
+
+    4px;
+
+    opacity:.18;
+
+}
+
+/* ========================================================== */
+
+.vignette{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(
+
+    ellipse at center,
+
+    transparent 55%,
+
+    rgba(0,0,0,.45) 100%);
+
+    pointer-events:none;
+
+    z-index:90;
+
+}
+
+/* ========================================================== */
+/* BOOT */
+
+#bootScreen{
+
+    width:100%;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+}
+
+/* ========================================================== */
+
+.bootLogo{
+
+    font-size:62px;
+
+    font-weight:900;
+
+    letter-spacing:8px;
+
+    color:white;
+
+    text-shadow:
+
+    0 0 15px rgba(110,63,216,.6),
+
+    0 0 40px rgba(57,184,255,.25);
+
+}
+
+/* ========================================================== */
+
+.bootConsole{
+
+    margin-top:15px;
+
+    color:var(--purple2);
+
+    font-weight:700;
+
+    letter-spacing:5px;
+
+    font-size:18px;
+
+}
+
+/* ========================================================== */
+
+.bootTerminal{
+
+    margin-top:55px;
+
+    width:100%;
+
+    max-width:650px;
+
+    background:rgba(255,255,255,.03);
+
+    border:1px solid rgba(255,255,255,.05);
+
+    border-radius:18px;
+
+    padding:28px;
+
+    backdrop-filter:blur(12px);
+
+    box-shadow:var(--shadow);
+
+}
+
+/* ========================================================== */
+/* TERMINAL */
+
+.bootLine{
+
+    min-height:24px;
+
+    margin:8px 0;
+
+    font-family:Consolas,monospace;
+
+    font-size:16px;
+
+    color:#6BFF92;
+
+    letter-spacing:1px;
+
+    opacity:0;
+
+    animation:fadeLine .45s forwards;
+
+}
+
+/* ========================================================== */
+
+#progressText{
+
+    margin-top:20px;
+
+    color:#B9C3D8;
+
+    letter-spacing:3px;
+
+    font-size:14px;
+
+    text-transform:uppercase;
+
+}
+
+/* ========================================================== */
+
+.progress{
+
+    width:100%;
+
+    max-width:650px;
+
+    height:14px;
+
+    margin-top:35px;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+    background:#182031;
+
+    border:1px solid rgba(255,255,255,.05);
+
+}
+
+#progressFill{
+
+    width:0;
+
+    height:100%;
+
+    border-radius:30px;
+
+    background:
+
+    linear-gradient(
+
+        90deg,
+
+        var(--purple),
+
+        var(--blue)
+
+    );
+
+    transition:.45s;
+
+}
+
+/* ========================================================== */
+/* GAME SCREEN */
+
+#gameScreen{
+
+    display:none;
+
+    width:100%;
+
+    height:100%;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+}
+
+/* ========================================================== */
+
+.gameContainer{
+
+    width:100%;
+
+    max-width:1200px;
+
+    display:grid;
+
+    grid-template-columns:360px 1fr;
+
+    gap:60px;
+
+    align-items:center;
+
+}
+
+/* ========================================================== */
+
+.coverArea{
+
+    width:340px;
+
+    height:470px;
+
+    border-radius:22px;
+
+    overflow:hidden;
+
+    background:#151B28;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:var(--shadow);
+
+    transition:.35s;
+
+}
+
+.coverArea:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.coverArea img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+}
+
+/* ========================================================== */
+
+.infoArea{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+/* ========================================================== */
+
+#title{
+
+    font-size:46px;
+
+    font-weight:900;
+
+    color:white;
+
+    line-height:1.1;
+
+}
+
+#subtitle{
+
+    margin-top:10px;
+
+    font-size:24px;
+
+    color:var(--purple2);
+
+    font-weight:600;
+
+}
+
+/* ========================================================== */
+
+.specs{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:18px;
+
+    margin-top:30px;
+
+}
+
+.spec{
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    min-width:150px;
+
+}
+
+.spec span{
+
+    display:block;
+
+    font-size:12px;
+
+    text-transform:uppercase;
+
+    color:#9FA8BB;
+
+    margin-bottom:6px;
+
+    letter-spacing:1px;
+
+}
+
+.spec strong{
+
+    color:white;
+
+    font-size:17px;
+
+}
+
+/* ========================================================== */
+
+#description{
+
+    margin-top:35px;
+
+    max-width:650px;
+
+    color:#C9D2E2;
+
+    line-height:1.8;
+
+    font-size:17px;
+
+}
+
+/* ========================================================== */
+
+.consoleTag{
+
+    position:fixed;
+
+    top:30px;
+
+    right:30px;
+
+    padding:10px 22px;
+
+    border-radius:40px;
+
+    background:rgba(110,63,216,.18);
+
+    border:1px solid rgba(110,63,216,.45);
+
+    color:white;
+
+    letter-spacing:2px;
+
+    font-weight:700;
+
+    backdrop-filter:blur(10px);
+
+}
+
+/* ========================================================== */
+/* BOTÃO START */
+
+#startButton{
+
+    margin-top:45px;
+
+    width:280px;
+
+    height:64px;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--purple),
+        var(--blue)
+    );
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    transition:.35s;
+
+    box-shadow:
+    0 18px 45px rgba(110,63,216,.35);
+
+}
+
+#startButton:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+    0 30px 60px rgba(110,63,216,.45);
+
+}
+
+#startButton:active{
+
+    transform:scale(.97);
+
+}
+
+/* ========================================================== */
+/* INVALID SCREEN */
+
+#invalidScreen{
+
+    display:none;
+
+    width:100%;
+
+    height:100%;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+}
+
+.invalidCard{
+
+    width:100%;
+
+    max-width:650px;
+
+    padding:60px;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:var(--shadow);
+
+}
+
+.invalidCard h1{
+
+    font-size:54px;
+
+    letter-spacing:8px;
+
+    margin-bottom:20px;
+
+}
+
+.invalidCard h2{
+
+    font-size:30px;
+
+    color:var(--yellow);
+
+    margin-bottom:20px;
+
+}
+
+.invalidCard p{
+
+    color:#BFC7D8;
+
+    font-size:18px;
+
+    line-height:1.8;
+
+}
+
+/* ========================================================== */
+/* ANIMAÇÕES */
+
+@keyframes fadeLine{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(8px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+@keyframes pulse{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.03);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
+
+@keyframes glow{
+
+    0%{
+
+        text-shadow:
+
+        0 0 10px rgba(110,63,216,.35);
+
+    }
+
+    50%{
+
+        text-shadow:
+
+        0 0 35px rgba(110,63,216,.85),
+
+        0 0 70px rgba(57,184,255,.35);
+
+    }
+
+    100%{
+
+        text-shadow:
+
+        0 0 10px rgba(110,63,216,.35);
+
+    }
+
+}
+
+.bootLogo{
+
+    animation:glow 3s infinite;
+
+}
+
+.coverArea{
+
+    animation:pulse 6s infinite;
+
+}
+
+/* ========================================================== */
+/* RESPONSIVO */
+
+@media(max-width:1024px){
+
+.gameContainer{
+
+grid-template-columns:1fr;
+
+justify-items:center;
+
+gap:40px;
+
+}
+
+.infoArea{
+
+text-align:center;
+
+align-items:center;
+
+}
+
+.specs{
+
+justify-content:center;
+
+}
+
+.coverArea{
+
+width:300px;
+
+height:415px;
+
+}
+
+}
+
+@media(max-width:640px){
+
+.bootLogo{
+
+font-size:42px;
+
+letter-spacing:4px;
+
+}
+
+.bootConsole{
+
+font-size:14px;
+
+}
+
+.bootTerminal{
+
+padding:20px;
+
+}
+
+.bootLine{
+
+font-size:14px;
+
+}
+
+.coverArea{
+
+width:250px;
+
+height:345px;
+
+}
+
+#title{
+
+font-size:32px;
+
+}
+
+#subtitle{
+
+font-size:18px;
+
+}
+
+#description{
+
+font-size:15px;
+
+}
+
+.spec{
+
+min-width:130px;
+
+}
+
+#startButton{
+
+width:100%;
+
+max-width:320px;
+
+}
+
+.consoleTag{
+
+top:15px;
+
+right:15px;
+
+}
+
+.invalidCard{
+
+padding:35px;
+
+}
+
+.invalidCard h1{
+
+font-size:36px;
+
+letter-spacing:4px;
+
+}
+
+.invalidCard h2{
+
+font-size:24px;
+
+}
+
+}
+
+/* ========================================================== */
+/* UTILITÁRIOS */
+
+.hidden{
+
+display:none !important;
+
+}
+
+.visible{
+
+display:flex !important;
+
+}
+
+.center{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+}
+
+.fade{
+
+transition:.35s;
+
+}
+

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Retrô NFC</title>
+
+<meta name="theme-color"
+content="#05070B">
+
+<meta
+name="description"
+content="Retrô NFC">
+
+<link
+rel="stylesheet"
+href="assets/css/style.css">
+
+</head>
+
+<body>
+
+<!-- Fundo -->
+
+<div class="background"></div>
+<div class="crt"></div>
+<div class="noise"></div>
+<div class="vignette"></div>
+<div class="topGlow"></div>
+<div class="bottomGlow"></div>
+
+<!-- ===================================================== -->
+<!-- BOOT -->
+<!-- ===================================================== -->
+
+<section id="bootScreen">
+
+    <div class="bootLogo">
+
+        RETRÔ NFC
+
+    </div>
+
+    <div class="bootConsole">
+
+        SUPER NINTENDO
+
+    </div>
+
+    <div class="bootTerminal">
+
+        <div id="boot1" class="bootLine"></div>
+
+        <div id="boot2" class="bootLine"></div>
+
+        <div id="boot3" class="bootLine"></div>
+
+        <div id="boot4" class="bootLine"></div>
+
+        <div id="boot5" class="bootLine"></div>
+
+        <div id="boot6" class="bootLine"></div>
+
+    </div>
+
+    <div class="progress">
+
+        <div id="progressFill"></div>
+
+    </div>
+
+    <div id="progressText">
+
+        Inicializando...
+
+    </div>
+
+</section>
+
+<!-- ===================================================== -->
+<!-- GAME -->
+<!-- ===================================================== -->
+
+<section id="gameScreen">
+
+<header>
+
+<div class="consoleTag">
+
+SNES
+
+</div>
+
+</header>
+
+<div class="gameContainer">
+
+<div class="coverArea">
+
+<img
+
+id="cover"
+
+src=""
+
+alt="Capa">
+
+</div>
+
+<div class="infoArea">
+
+<h1 id="title"></h1>
+
+<h2 id="subtitle"></h2>
+
+<div class="specs">
+
+<div class="spec">
+
+<span>Ano</span>
+
+<strong id="year"></strong>
+
+</div>
+
+<div class="spec">
+
+<span>Jogadores</span>
+
+<strong id="players"></strong>
+
+</div>
+
+<div class="spec">
+
+<span>Desenvolvedora</span>
+
+<strong id="developer"></strong>
+
+</div>
+
+</div>
+
+<p id="description"></p>
+
+<button id="startButton">
+
+START GAME
+
+</button>
+
+  </div>
+
+</div>
+
+</section>
+
+<!-- ===================================================== -->
+<!-- CARTUCHO INVÁLIDO -->
+<!-- ===================================================== -->
+
+<section id="invalidScreen">
+
+<div class="invalidCard">
+
+<h1>
+
+RETRO NFC
+
+</h1>
+
+<h2>
+
+Cartucho inválido
+
+</h2>
+
+<p>
+
+Esta tag NFC não possui um jogo válido cadastrado.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ===================================================== -->
+
+<script src="assets/js/app.js"></script>
+
+<script src="assets/js/boot.js"></script>
+
+<script src="assets/js/game.js"></script>
+
+</body>
+
+</html>

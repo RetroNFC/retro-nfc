@@ -357,13 +357,13 @@ body{
 
 .progress{
 
-    width:100%;
+    width:calc(100% - 40px);
 
-    max-width:650px;
+    max-width:620px;
 
     height:14px;
 
-    margin-top:35px;
+    margin:35px auto 0 auto;
 
     border-radius:30px;
 

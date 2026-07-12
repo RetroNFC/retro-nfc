@@ -129,3 +129,110 @@ async function startBoot(){
 
 }
 
+// =====================================================
+// TRANSIÇÃO FINAL
+// =====================================================
+
+async function startTransition(){
+
+    const boot=document.getElementById("bootScreen");
+
+    const game=document.getElementById("gameScreen");
+
+    // Flash branco
+    const flash=document.createElement("div");
+
+    flash.style.position="fixed";
+    flash.style.left="0";
+    flash.style.top="0";
+    flash.style.width="100vw";
+    flash.style.height="100vh";
+    flash.style.background="#FFFFFF";
+    flash.style.opacity="0";
+    flash.style.pointerEvents="none";
+    flash.style.zIndex="9999";
+    flash.style.transition="opacity .12s";
+
+    document.body.appendChild(flash);
+
+    await sleep(50);
+
+    flash.style.opacity="1";
+
+    await sleep(120);
+
+    flash.style.opacity="0";
+
+    await sleep(180);
+
+    flash.remove();
+
+    // Esconde boot
+    boot.style.transition="opacity .35s";
+
+    boot.style.opacity="0";
+
+    await sleep(350);
+
+    boot.style.display="none";
+
+    // Mostra tela do jogo
+    game.style.display="flex";
+
+    game.style.opacity="0";
+
+    fillGame();
+
+    await sleep(30);
+
+    // Anima capa
+    const cover=document.querySelector(".coverArea");
+
+    if(cover){
+
+        cover.style.opacity="0";
+
+        cover.style.transform="translateY(40px)";
+
+        cover.style.transition="all .45s ease";
+
+    }
+
+    // Anima botão
+    const button=document.getElementById("startButton");
+
+    if(button){
+
+        button.style.opacity="0";
+
+        button.style.transform="translateY(20px)";
+
+        button.style.transition="all .45s ease";
+
+    }
+
+    game.style.transition="opacity .45s";
+
+    game.style.opacity="1";
+
+    await sleep(120);
+
+    if(cover){
+
+        cover.style.opacity="1";
+
+        cover.style.transform="translateY(0)";
+
+    }
+
+    await sleep(220);
+
+    if(button){
+
+        button.style.opacity="1";
+
+        button.style.transform="translateY(0)";
+
+    }
+
+}

@@ -3,7 +3,7 @@
 // BOOT SYSTEM
 // =====================================================
 
-const BOOT_DELAY = 700;
+const BOOT_DELAY = 180;
 
 const bootSequence = [
     "████████████████████████████",
@@ -83,7 +83,7 @@ async function typeWriter(element,text){
 
         element.innerHTML+=text.charAt(i);
 
-        await sleep(22);
+        await sleep(8);
 
     }
 

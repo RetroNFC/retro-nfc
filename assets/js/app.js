@@ -16,7 +16,7 @@ async function loadGames() {
         }
 
         // Preencher informações do Jogo
-        document.getElementById("cover").src = CURRENT_GAME.image;
+        document.getElementById("cover").src = CURRENT_GAME.cover; // CORRIGIDO: Agora usa 'cover'
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
         document.getElementById("year").innerText = CURRENT_GAME.year;
@@ -24,12 +24,18 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
         document.getElementById("description").innerText = CURRENT_GAME.description;
 
-        // Configurar Botão - O BOOT SÓ COMEÇA AQUI
+        // Configurar o botão
         const startBtn = document.getElementById("startButton");
         startBtn.addEventListener("click", () => {
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); // Função que está no boot.js
+            
+            // Verifica se a função existe antes de chamar
+            if (typeof startBoot === 'function') {
+                startBoot();
+            } else {
+                console.error("Função startBoot não encontrada em boot.js");
+            }
         });
 
     } catch (error) {

@@ -51,13 +51,21 @@ function launchGame() {
 
     button.disabled = true;
 
-    button.textContent = "CARREGANDO...";
+    button.textContent = "INICIANDO JOGO...";
 
-    setTimeout(() => {
+    setTimeout(()=>{
 
-        window.location.href = CURRENT_GAME.gameUrl;
+    document.body.style.transition="all .4s";
 
-    }, 500);
+    document.body.style.opacity="0";
+
+},150);
+
+setTimeout(()=>{
+
+    window.location.href=CURRENT_GAME.gameUrl;
+
+},650);
 
 }
 

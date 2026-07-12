@@ -6,7 +6,20 @@
 body { background: #05070B; color: #FFFFFF; width: 100%; min-height: 100vh; overflow-x: hidden; }
 
 /* Esconde o boot inicialmente */
-#bootScreen { display: none; width: 100%; min-height: 100vh; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+#bootScreen { 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px; 
+}
+
+/* Legibilidade do terminal */
+.bootTerminal {
+    margin-top: 20px;
+    color: #5CFF8A; /* Verde terminal */
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+}
 
 /* Legibilidade forçada para todos os campos */
 #title, #subtitle, #year, #players, #developer, #description, .spec span, .spec strong {

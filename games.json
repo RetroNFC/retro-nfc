@@ -1,0 +1,27 @@
+[
+  {
+    "id": "dkc2",
+    "console": "SNES",
+    "cartridgeId": "SNES-DKC2-0001",
+
+    "title": "Donkey Kong Country 2",
+
+    "subtitle": "Diddy's Kong Quest",
+
+    "year": "1995",
+
+    "developer": "Rare",
+
+    "players": "1-2",
+
+    "cover": "covers/dkc2.webp",
+
+    "bootColor": "#46266D",
+
+    "themeColor": "#6E3FD8",
+
+    "launchMessage": "Launching Emulator...",
+
+    "playUrl": "https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest"
+  }
+]

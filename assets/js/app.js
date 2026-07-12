@@ -1,7 +1,7 @@
-// =====================================================
+// ======================================================
 // RETRO NFC
 // APP
-// =====================================================
+// ======================================================
 
 const PARAMS = new URLSearchParams(window.location.search);
 
@@ -9,26 +9,60 @@ const GAME_KEY = PARAMS.get("k");
 
 let CURRENT_GAME = null;
 
-async function loadGames(){
+async function loadGames() {
 
-    const response = await fetch("games.json");
+    try {
 
-    const games = await response.json();
+        const response = await fetch("games.json?ts=" + Date.now());
 
-    CURRENT_GAME = games.find(game=>game.key===GAME_KEY);
+        if (!response.ok) {
 
-    if(!CURRENT_GAME){
+            throw new Error("Erro ao carregar games.json");
 
-        document.getElementById("bootScreen").style.display="none";
+        }
 
-        document.getElementById("gameScreen").style.display="none";
+        const games = await response.json();
 
-        document.getElementById("invalidScreen").style.display="flex";
+        CURRENT_GAME = games.find(game => game.key === GAME_KEY);
 
-        return;
+        if (!CURRENT_GAME) {
+
+            showInvalid();
+
+            return;
+
+        }
+
+        startBoot();
 
     }
 
-    startBoot();
+    catch (error) {
+
+        console.error(error);
+
+        showInvalid();
+
+    }
 
 }
+
+function showInvalid() {
+
+    const boot = document.getElementById("bootScreen");
+    const game = document.getElementById("gameScreen");
+    const invalid = document.getElementById("invalidScreen");
+
+    if (boot) boot.style.display = "none";
+
+    if (game) game.style.display = "none";
+
+    if (invalid) invalid.style.display = "flex";
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadGames();
+
+});

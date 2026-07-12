@@ -22,18 +22,23 @@
 
     "bootColor": "#05070B",
 
-    "bootText": [
-    "LIGANDO SISTEMA...",
-    "VERIFICANDO PROCESSADOR......OK",
-    "VERIFICANDO MEMÓRIA..........OK",
-    "VERIFICANDO VÍDEO............OK",
-    "VERIFICANDO ÁUDIO............OK",
-    "LENDO TAG NFC...",
-    "CARTUCHO DETECTADO",
-    "DONKEY KONG COUNTRY 2",
-    "DIDDY'S KONG QUEST",
-    "PRONTO PARA JOGAR"
-  ],
+    "bootText":[
+"████████████████████████████",
+"RETRO NFC",
+"SUPER NINTENDO",
+"████████████████████████████",
+"",
+"LIGANDO SISTEMA...",
+"VERIFICANDO PROCESSADOR...OK",
+"VERIFICANDO MEMÓRIA......OK",
+"VERIFICANDO VÍDEO........OK",
+"VERIFICANDO ÁUDIO........OK",
+"LENDO TAG NFC...",
+"CARTUCHO DETECTADO",
+"DONKEY KONG COUNTRY 2",
+"DIDDY'S KONG QUEST",
+"PRONTO PARA JOGAR"
+]
 
     "gameUrl": "https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest"
   }

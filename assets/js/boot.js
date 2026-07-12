@@ -1,49 +1,131 @@
-async function startBoot() {
+// =====================================================
+// RETRO NFC
+// BOOT V2
+// =====================================================
 
-    const terminal = document.getElementById("bootTerminal");
-    const fill = document.getElementById("progressFill");
-    const text = document.getElementById("progressText");
+const BOOT_SPEED = 120;
 
-    terminal.innerHTML = "";
+const BOOT_BLOCKS = [
+    "□□□□□□□□□□",
+    "■□□□□□□□□□",
+    "■■□□□□□□□□",
+    "■■■□□□□□□□",
+    "■■■■□□□□□□",
+    "■■■■■□□□□□",
+    "■■■■■■□□□□",
+    "■■■■■■■□□□",
+    "■■■■■■■■□□",
+    "■■■■■■■■■□",
+    "■■■■■■■■■■"
+];
 
-    const lines = CURRENT_GAME.bootText;
+function sleep(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
+}
 
-    for (let i = 0; i < lines.length; i++) {
+function createLine(text){
 
-        const div = document.createElement("div");
+    const terminal=document.getElementById("bootTerminal");
 
-        div.className = "bootLine";
+    const line=document.createElement("div");
 
-        terminal.appendChild(div);
+    line.className="bootLine";
 
-        div.textContent = lines[i];
+    line.textContent=text;
 
-        fill.style.width = ((i + 1) / lines.length * 100) + "%";
+    line.style.opacity="0";
 
-        text.textContent = lines[i];
+    line.style.transform="translateY(8px)";
 
-        await sleep(120);
+    terminal.appendChild(line);
+
+    requestAnimationFrame(()=>{
+
+        line.style.transition="all .25s";
+
+        line.style.opacity="1";
+
+        line.style.transform="translateY(0)";
+
+    });
+
+}
+
+function updateProgress(step){
+
+    const fill=document.querySelector(".progressFill");
+
+    const text=document.getElementById("progressText");
+
+    const percent=(step/(BOOT_BLOCKS.length-1))*100;
+
+    if(fill){
+
+        fill.style.width=percent+"%";
 
     }
 
-    if (navigator.vibrate) {
+    if(text){
+
+        text.textContent=BOOT_BLOCKS[step];
+
+    }
+
+}
+
+function vibrate(){
+
+    if(navigator.vibrate){
 
         navigator.vibrate(120);
 
     }
 
-    await sleep(350);
+}
 
-    document.getElementById("bootScreen").style.display = "none";
+// =====================================================
+// SEQUÊNCIA DO BOOT
+// =====================================================
 
-    document.getElementById("gameScreen").style.display = "flex";
+async function startBoot(){
 
-    fillGame();
+    const terminal=document.getElementById("bootTerminal");
+
+    terminal.innerHTML="";
+
+    updateProgress(0);
+
+    const lines=CURRENT_GAME.bootText;
+
+    let progress=0;
+
+    for(const text of lines){
+
+        createLine(text);
+
+        if(progress<BOOT_BLOCKS.length-1){
+
+            progress++;
+
+            updateProgress(progress);
+
+        }
+
+        if(text==="CARTUCHO DETECTADO"){
+
+            vibrate();
+
+            await sleep(180);
+
+        }
+
+        await sleep(BOOT_SPEED);
+
+    }
+
+    await sleep(500);
+
+    startTransition();
 
 }
 
-function sleep(ms) {
-
-    return new Promise(resolve => setTimeout(resolve, ms));
-
-}

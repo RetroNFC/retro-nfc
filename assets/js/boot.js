@@ -22,7 +22,7 @@ async function startBoot() {
 
         text.textContent = lines[i];
 
-        await sleep(250);
+        await sleep(120);
 
     }
 
@@ -32,7 +32,7 @@ async function startBoot() {
 
     }
 
-    await sleep(700);
+    await sleep(350);
 
     document.getElementById("bootScreen").style.display = "none";
 

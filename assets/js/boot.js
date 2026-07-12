@@ -33,6 +33,16 @@ function createLine(text){
 
     line.textContent=text;
 
+    if(text==="CARTUCHO DETECTADO"){
+
+    line.style.color="#FFD93D";
+
+    line.style.fontWeight="700";
+
+    line.style.textShadow="0 0 18px #FFD93D";
+
+}
+
     line.style.opacity="0";
 
     line.style.transform="translateY(8px)";
@@ -67,7 +77,9 @@ function updateProgress(step){
 
     if(text){
 
-        text.textContent=BOOT_BLOCKS[step];
+        text.textContent=BOOT_BLOCKS[
+            Math.min(step,BOOT_BLOCKS.length-1)
+        ];
 
     }
 
@@ -119,7 +131,15 @@ async function startBoot(){
 
         }
 
-        await sleep(BOOT_SPEED);
+        if(text==="CARTUCHO DETECTADO"){
+
+    await sleep(600);
+
+}else{
+
+    await sleep(140);
+
+}
 
     }
 

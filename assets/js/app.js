@@ -1,3 +1,4 @@
+// app.js
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
@@ -15,7 +16,7 @@ async function loadGames() {
         }
 
         // Preencher informações do Jogo
-        document.getElementById("cover").src = CURRENT_GAME.image; // Assumindo que seu JSON tem o campo 'image'
+        document.getElementById("cover").src = CURRENT_GAME.image;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
         document.getElementById("year").innerText = CURRENT_GAME.year;
@@ -23,16 +24,16 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
         document.getElementById("description").innerText = CURRENT_GAME.description;
 
-        // Configurar o botão
+        // Configurar Botão - O BOOT SÓ COMEÇA AQUI
         const startBtn = document.getElementById("startButton");
         startBtn.addEventListener("click", () => {
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); // Função vinda do boot.js
+            startBoot(); // Função que está no boot.js
         });
 
     } catch (error) {
-        console.error("Erro ao carregar jogo:", error);
+        console.error("Erro ao carregar dados:", error);
     }
 }
 

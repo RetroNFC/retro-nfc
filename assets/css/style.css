@@ -323,6 +323,14 @@ overflow-y:auto;
 
     text-shadow:0 0 10px #49ff7a;
 
+    opacity:0;
+
+    transform:translateY(8px);
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+
 }
 
 /* ========================================================== */

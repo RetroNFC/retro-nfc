@@ -319,21 +319,17 @@ body{
 
 .bootLine{
 
-    min-height:24px;
-
-    margin:8px 0;
+    color:#73ff9a;
 
     font-family:Consolas,monospace;
 
-    font-size:16px;
+    font-size:22px;
 
-    color:#6BFF92;
+    letter-spacing:2px;
 
-    letter-spacing:1px;
+    margin:18px 0;
 
-    opacity:0;
-
-    animation:fadeLine .45s forwards;
+    text-shadow:0 0 10px #49ff7a;
 
 }
 

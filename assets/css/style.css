@@ -987,3 +987,14 @@ transition:.35s;
 
 }
 
+.bootLine{
+
+    color:#4ADE80;
+
+    font-family:Consolas,monospace;
+
+    font-size:15px;
+
+    margin:8px 0;
+
+}

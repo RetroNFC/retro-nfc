@@ -1,0 +1,37 @@
+[
+  {
+    "key": "7af34e18bc95d02f61aa89cd1e4b3279",
+
+    "console": "SNES",
+
+    "title": "Donkey Kong Country 2",
+
+    "subtitle": "Diddy's Kong Quest",
+
+    "description": "Ajude Diddy e Dixie Kong a enfrentar Kaptain K. Rool em uma das maiores aventuras do Super Nintendo.",
+
+    "year": "1995",
+
+    "players": "1-2",
+
+    "developer": "Rare",
+
+    "cover": "covers/dkc2.webp",
+
+    "theme": "#6E3FD8",
+
+    "bootColor": "#46266D",
+
+    "bootText": [
+      "POWER ON",
+      "CHECKING CPU ........ OK",
+      "CHECKING MEMORY ..... OK",
+      "CHECKING VIDEO ...... OK",
+      "CARTRIDGE DETECTED",
+      "LOADING DONKEY KONG COUNTRY 2"
+    ],
+
+    "launchUrl": "https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest"
+  }
+]
+

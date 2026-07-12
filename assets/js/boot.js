@@ -125,11 +125,15 @@ async function startBoot(){
 
         if(text==="CARTUCHO DETECTADO"){
 
-            vibrate();
+    if(navigator.vibrate){
 
-            await sleep(180);
+        navigator.vibrate([80,60,120]);
 
-        }
+    }
+
+    await sleep(350);
+
+}
 
         if(text==="CARTUCHO DETECTADO"){
 

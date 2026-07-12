@@ -1,45 +1,33 @@
 [
   {
     "key":"7af34e18bc95d02f61aa89cd1e4b3279",
-
     "console":"SNES",
-
     "title":"Donkey Kong Country 2",
-
     "subtitle":"Diddy's Kong Quest",
-
     "description":"Ajude Diddy e Dixie Kong a enfrentar Kaptain K. Rool em uma das maiores aventuras do Super Nintendo.",
-
     "year":"1995",
-
     "players":"1-2",
-
     "developer":"Rare",
-
     "cover":"https://cdn.emulatorgamer.com/covers/snes/donkey-kong-country-2-diddys-kong-quest.webp",
-
     "theme":"#6E3FD8",
-
     "bootColor":"#05070B",
-
-    "bootText": [
-    "████████████████████████████",
-    "RETRO NFC",
-    "SUPER NINTENDO",
-    "████████████████████████████",
-    "",
-    "LIGANDO SISTEMA...",
-    "VERIFICANDO PROCESSADOR...OK",
-    "VERIFICANDO MEMÓRIA......OK",
-    "VERIFICANDO VÍDEO........OK",
-    "VERIFICANDO ÁUDIO........OK",
-    "LENDO TAG NFC...",
-    "CARTUCHO DETECTADO",
-    "DONKEY KONG COUNTRY 2",
-    "DIDDY'S KONG QUEST",
-    "PRONTO PARA JOGAR"
-],
-
-    "gameUrl":"https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest/play",
+    "bootText":[
+      "████████████████████████████",
+      "RETRO NFC",
+      "SUPER NINTENDO",
+      "████████████████████████████",
+      "",
+      "LIGANDO SISTEMA...",
+      "VERIFICANDO PROCESSADOR...OK",
+      "VERIFICANDO MEMÓRIA......OK",
+      "VERIFICANDO VÍDEO........OK",
+      "VERIFICANDO ÁUDIO........OK",
+      "LENDO TAG NFC...",
+      "CARTUCHO DETECTADO",
+      "DONKEY KONG COUNTRY 2",
+      "DIDDY'S KONG QUEST",
+      "PRONTO PARA JOGAR"
+    ],
+    "gameUrl":"https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest/play"
   }
 ]

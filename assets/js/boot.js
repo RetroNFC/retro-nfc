@@ -9,24 +9,17 @@ const bootSound = new Audio('assets/life.mp3');
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-function updateProgress(step) {
-    const text = document.getElementById("progressText");
-    if (text) {
-        text.textContent = BOOT_BLOCKS[Math.min(step, BOOT_BLOCKS.length - 1)];
-    }
-}
-
 async function startBoot() {
     const terminal = document.getElementById("bootTerminal");
+    const progressEl = document.getElementById("progressText");
     terminal.innerHTML = "";
     
-    // Tenta tocar som
-    bootSound.play().catch(e => console.log("Áudio aguardando interação"));
+    const totalLines = CURRENT_GAME.bootText.length;
 
-    let progress = 0;
-    
-    // CURRENT_GAME vem do app.js
-    for (const text of CURRENT_GAME.bootText) {
+    for (let i = 0; i < totalLines; i++) {
+        const text = CURRENT_GAME.bootText[i];
+        
+        // Cria e adiciona a linha
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = text;
@@ -38,20 +31,18 @@ async function startBoot() {
         
         terminal.appendChild(line);
         
-        // Efeito Sonoro
+        // Toca o som a cada linha
         bootSound.currentTime = 0;
         bootSound.play();
         
-        // Atualiza Barra de Progresso
-        if (progress < BOOT_BLOCKS.length - 1) {
-            progress++;
-            updateProgress(progress);
-        }
+        // Atualiza a barra de progresso dinamicamente
+        const progressPercentage = Math.floor((i / (totalLines - 1)) * 10);
+        progressEl.textContent = BOOT_BLOCKS[progressPercentage];
         
-        await sleep(text === "CARTUCHO DETECTADO" ? 600 : 140);
+        // Delay (Mais lento no cartucho detectado)
+        await sleep(text === "CARTUCHO DETECTADO" ? 1000 : 250);
     }
 
     await sleep(800);
-    // Redireciona para o link do jogo definido no seu JSON
     window.location.href = CURRENT_GAME.gameUrl;
 }

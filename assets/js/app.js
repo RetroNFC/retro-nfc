@@ -2,7 +2,7 @@
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
-const clickSound = new Audio('assets/life.mp3'); // Som do clique
+const startSound = new Audio('assets/life.mp3'); // Instancia o som
 
 async function loadGames() {
     try {
@@ -22,16 +22,15 @@ async function loadGames() {
         document.getElementById("year").innerText = CURRENT_GAME.year;
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
-        // DESCRIÇÃO REMOVIDA
 
         const startBtn = document.getElementById("startButton");
         startBtn.addEventListener("click", () => {
-            // Toca o som no momento do clique
-            clickSound.play();
+            // Toca o som APENAS aqui
+            startSound.play().catch(e => console.log("Áudio bloqueado"));
             
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); 
+            startBoot(); // Inicia o boot
         });
 
     } catch (error) {

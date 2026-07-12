@@ -1,4 +1,3 @@
-// app.js
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
@@ -10,31 +9,26 @@ async function loadGames() {
         CURRENT_GAME = games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
-            showInvalid();
+            document.getElementById("invalidScreen").style.display = "flex";
             return;
         }
-        
-        // APENAS RENDERIZA A TELA, NÃO INICIA O BOOT
-        renderGameScreen(CURRENT_GAME);
-        
-    } catch (error) {
-        showInvalid();
-    }
-}
 
-function renderGameScreen(game) {
-    // Aqui você preenche o HTML com os dados do jogo (título, capa, etc)
-    document.getElementById("gameTitle").innerText = game.title;
-    document.getElementById("gameSubtitle").innerText = game.subtitle;
-    // Vincula o evento ao botão APÓS renderizar
-    const startBtn = document.getElementById("startButton");
-    if (startBtn) {
-        startBtn.onclick = () => {
-            // Esconde a tela de apresentação e começa o boot
+        // Preencher dados na tela
+        document.getElementById("title").innerText = CURRENT_GAME.title;
+        document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
+        document.getElementById("description").innerText = CURRENT_GAME.description;
+        document.getElementById("gameImage").src = CURRENT_GAME.image;
+
+        // Configurar Botão
+        const btn = document.getElementById("startButton");
+        btn.addEventListener("click", () => {
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); 
-        };
+            startBoot(); // Chama a função do boot.js
+        });
+
+    } catch (error) {
+        console.error(error);
     }
 }
 

@@ -20,11 +20,12 @@ async function startBoot() {
     const terminal = document.getElementById("bootTerminal");
     terminal.innerHTML = "";
     
-    // Tenta tocar o som
+    // Tenta tocar som
     bootSound.play().catch(e => console.log("Áudio aguardando interação"));
 
     let progress = 0;
-
+    
+    // CURRENT_GAME vem do app.js
     for (const text of CURRENT_GAME.bootText) {
         const line = document.createElement("div");
         line.className = "bootLine";
@@ -41,7 +42,7 @@ async function startBoot() {
         bootSound.currentTime = 0;
         bootSound.play();
         
-        // Atualiza Barra
+        // Atualiza Barra de Progresso
         if (progress < BOOT_BLOCKS.length - 1) {
             progress++;
             updateProgress(progress);
@@ -51,5 +52,6 @@ async function startBoot() {
     }
 
     await sleep(800);
-    window.location.href = CURRENT_GAME.gameUrl; // Redireciona
+    // Redireciona para o link do jogo definido no seu JSON
+    window.location.href = CURRENT_GAME.gameUrl;
 }

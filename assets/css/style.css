@@ -22,17 +22,9 @@ body{
 
 body{
 
-    overflow:hidden;
+overflow-x:hidden;
 
-    font-family:
-        Inter,
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background:#05070B;
-
-    color:#FFFFFF;
+overflow-y:auto;
 
 }
 
@@ -381,10 +373,6 @@ body{
 
 }
 
-    transition:.45s;
-
-}
-
 /* ========================================================== */
 /* GAME SCREEN */
 
@@ -432,21 +420,11 @@ body{
 
 .coverArea{
 
-    width:340px;
+width:320px;
 
-    height:470px;
+aspect-ratio:3/4;
 
-    border-radius:22px;
-
-    overflow:hidden;
-
-    background:#151B28;
-
-    border:1px solid rgba(255,255,255,.08);
-
-    box-shadow:var(--shadow);
-
-    transition:.35s;
+height:auto;
 
 }
 
@@ -617,9 +595,9 @@ body{
 
     margin-top:45px;
 
-    width:280px;
+    width:min(320px,90vw);
 
-    height:64px;
+    min-height:64px;
 
     border:none;
 
@@ -906,9 +884,11 @@ font-size:14px;
 
 .coverArea{
 
-width:250px;
+width:min(260px,75vw);
 
-height:345px;
+height:auto;
+
+aspect-ratio:3/4;
 
 }
 
@@ -1009,14 +989,4 @@ transition:.35s;
 
 }
 
-.bootLine{
 
-    color:#4ADE80;
-
-    font-family:Consolas,monospace;
-
-    font-size:15px;
-
-    margin:8px 0;
-
-}

@@ -79,7 +79,7 @@ function launchGame() {
 
 setTimeout(()=>{
 
-    window.location.href=CURRENT_GAME.gameUrl;
+    window.location.replace(CURRENT_GAME.gameUrl);
 
 },650);
 

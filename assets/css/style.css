@@ -1,25 +1,32 @@
+/* style.css */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Press Start 2P', monospace; }
 
-body { background: #05070B; color: #FFFFFF; width: 100%; height: 100%; overflow-x: hidden; }
+body { background: #05070B; color: #FFFFFF; width: 100%; min-height: 100vh; overflow-x: hidden; }
 
 /* Esconde o boot inicialmente */
-#bootScreen { display: none; width: 100%; height: 100vh; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+#bootScreen { display: none; width: 100%; min-height: 100vh; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
 
-/* Estilo do Texto */
-.bootLine { color: #5CFF8A; font-size: 16px; margin: 10px 0; }
-#title { color: #FFFFFF; font-size: 32px; margin-bottom: 10px; }
-#description { color: #CCCCCC; font-size: 14px; line-height: 1.6; }
+/* Legibilidade forçada para todos os campos */
+#title, #subtitle, #year, #players, #developer, #description, .spec span, .spec strong {
+    color: #FFFFFF !important;
+}
 
-/* Ajuste do Botão */
+#description { margin-top: 20px; font-size: 14px; line-height: 1.6; color: #DDDDDD !important; }
+
+/* Terminal e Progresso */
+.bootLine { color: #5CFF8A; font-size: 16px; margin: 10px 0; text-shadow: 0 0 5px #5CFF8A; }
+.progressText { font-size: 24px; margin-top: 20px; color: #FFFFFF; letter-spacing: 5px; }
+
+/* Botão Start */
 #startButton {
     width: 280px;
     height: 60px;
-    margin-top: 20px;
+    margin-top: 30px;
     border: none;
     border-radius: 12px;
-    background: #E84118; /* Vermelho Nintendo */
+    background: #E84118;
     color: white;
     font-size: 18px;
     cursor: pointer;
@@ -28,7 +35,7 @@ body { background: #05070B; color: #FFFFFF; width: 100%; height: 100%; overflow-
 
 #startButton:active { transform: scale(0.95); }
 
-/* Ajuste da Imagem/Capa */
-#gameImage { width: 280px; height: auto; border-radius: 8px; margin-bottom: 20px; }
+/* Ajuste da Capa */
+#cover { width: 280px; height: auto; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
 .gameScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }

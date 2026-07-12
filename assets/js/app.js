@@ -9,26 +9,30 @@ async function loadGames() {
         CURRENT_GAME = games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
+            document.getElementById("gameScreen").style.display = "none";
             document.getElementById("invalidScreen").style.display = "flex";
             return;
         }
 
-        // Preencher dados na tela
+        // Preencher informações do Jogo
+        document.getElementById("cover").src = CURRENT_GAME.image; // Assumindo que seu JSON tem o campo 'image'
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
+        document.getElementById("year").innerText = CURRENT_GAME.year;
+        document.getElementById("players").innerText = CURRENT_GAME.players;
+        document.getElementById("developer").innerText = CURRENT_GAME.developer;
         document.getElementById("description").innerText = CURRENT_GAME.description;
-        document.getElementById("gameImage").src = CURRENT_GAME.image;
 
-        // Configurar Botão
-        const btn = document.getElementById("startButton");
-        btn.addEventListener("click", () => {
+        // Configurar o botão
+        const startBtn = document.getElementById("startButton");
+        startBtn.addEventListener("click", () => {
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); // Chama a função do boot.js
+            startBoot(); // Função vinda do boot.js
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Erro ao carregar jogo:", error);
     }
 }
 

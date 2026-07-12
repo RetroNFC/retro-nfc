@@ -17,7 +17,19 @@ function fillGame() {
     const players = document.getElementById("players");
     const developer = document.getElementById("developer");
 
-    cover.src = CURRENT_GAME.cover;
+    cover.onload = () => {
+
+    cover.style.opacity = "1";
+
+};
+
+cover.onerror = () => {
+
+    console.log("Erro ao carregar capa:", CURRENT_GAME.cover);
+
+};
+
+cover.src = CURRENT_GAME.cover;
     cover.alt = CURRENT_GAME.title;
 
     title.textContent = CURRENT_GAME.title;

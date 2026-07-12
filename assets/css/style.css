@@ -487,6 +487,9 @@ height:auto;
 
     line-height:1.1;
 
+   text-shadow:
+   0 0 18px rgba(124,77,255,.45);
+
 }
 
 #subtitle{
@@ -646,10 +649,13 @@ height:auto;
 
 #startButton:hover{
 
-    transform:translateY(-4px);
+    transform:translateY(-3px);
 
     box-shadow:
-    0 30px 60px rgba(110,63,216,.45);
+
+    0 22px 45px rgba(124,77,255,.55);
+
+}
 
 }
 
@@ -899,6 +905,9 @@ font-size:32px;
 #subtitle{
 
 font-size:18px;
+
+text-shadow:
+0 0 18px rgba(124,77,255,.45);
 
 }
 

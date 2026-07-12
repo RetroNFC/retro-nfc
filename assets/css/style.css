@@ -993,4 +993,26 @@ transition:.35s;
 
 }
 
+   .coverArea{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+#startButton{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+#bootScreen,
+#gameScreen{
+
+    transition:opacity .35s ease;
+
+}
 

@@ -55,7 +55,7 @@ function launchGame() {
 
     setTimeout(() => {
 
-        window.location.href = CURRENT_GAME.launchUrl;
+        window.location.href = CURRENT_GAME.gameUrl;
 
     }, 500);
 

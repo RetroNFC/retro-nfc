@@ -65,6 +65,10 @@ function launchGame() {
 
     button.textContent = "INICIANDO JOGO...";
 
+    document.body.style.transition = "opacity .4s";
+    
+    document.body.style.opacity = "0";
+    
     setTimeout(()=>{
 
     document.body.style.transition="all .4s";

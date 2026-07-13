@@ -7,58 +7,53 @@ const BOOT_BLOCKS = [
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-// Função para tentar forçar tela cheia e horizontal
-function enterImmersiveMode() {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) elem.requestFullscreen().catch(() => {});
-    
-    // Tenta travar em landscape
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape').catch(() => {
-            console.log("Rotação automática bloqueada pelo navegador.");
-        });
-    }
-}
-
 async function startBoot() {
-    // 1. Tenta entrar em modo imersivo logo no começo
-    enterImmersiveMode();
-
     const terminal = document.getElementById("bootTerminal");
     const progressEl = document.getElementById("progressText");
+    const btnIniciar = document.getElementById("btnIniciarJogo");
+    
     terminal.innerHTML = "";
     
-    const lines = CURRENT_GAME.bootText;
-    const totalLines = lines.length;
+    // Lista de etapas que você pediu (Você pode mudar a ordem aqui)
+    const etapas = [
+        "VERIFICANDO SISTEMA...",
+        "VERIFICANDO MEMÓRIA...",
+        "VERIFICANDO VÍDEO...",
+        "CARTUCHO VERIFICADO",
+        "CARREGANDO JOGO...",
+        CURRENT_GAME.title // Mostra o nome do jogo
+    ];
 
-    for (let i = 0; i < totalLines; i++) {
-        const text = lines[i];
-        
-        // --- TEMPOS MAIS LENTOS (Sentimento de Boot real) ---
-        let delay = 800; // Tempo base mais lento
-        if (text.includes("VERIFICANDO")) delay = 1200; 
-        if (text === "CARTUCHO DETECTADO") delay = 3000; // Suspense total
-        if (text === "") delay = 300; 
+    // Loop estrito: 1 segundo por etapa
+    for (let i = 0; i < etapas.length; i++) {
+        // 1. Atualiza a barra de progresso
+        // O progresso avança um quadradinho por etapa (total de 10 passos)
+        const progressoIndex = Math.min(i + 1, BOOT_BLOCKS.length - 1);
+        progressEl.textContent = BOOT_BLOCKS[progressoIndex];
 
+        // 2. Adiciona a mensagem
         const line = document.createElement("div");
         line.className = "bootLine";
-        line.textContent = text;
+        line.textContent = etapas[i];
         
-        if (text === "CARTUCHO DETECTADO") {
+        // Destaque para o nome do jogo
+        if (i === etapas.length - 1) {
             line.style.color = "#FFD93D";
-            line.style.fontWeight = "700";
+            line.style.fontSize = "20px";
+            line.style.marginTop = "20px";
         }
         
         terminal.appendChild(line);
-        
-        // Barra de progresso atualizada pelo progresso real do loop
-        const step = Math.floor((i / (totalLines - 1)) * 10);
-        progressEl.textContent = BOOT_BLOCKS[step];
-        
-        await sleep(delay);
+
+        // 3. O SEGREDO: O tempo de espera de 1 segundo exato
+        await sleep(1000); 
     }
 
-    // Delay final para apreciar o "PRONTO PARA JOGAR"
-    await sleep(2000);
-    window.location.href = CURRENT_GAME.gameUrl;
+    // Após terminar, mostra o botão
+    btnIniciar.style.display = "block";
+    
+    // Configura o clique do botão para abrir o jogo
+    btnIniciar.onclick = () => {
+        window.location.href = CURRENT_GAME.gameUrl;
+    };
 }

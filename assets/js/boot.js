@@ -1,3 +1,4 @@
+// boot.js
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
     "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
@@ -6,7 +7,23 @@ const BOOT_BLOCKS = [
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
+// Função para tentar forçar tela cheia e horizontal
+function enterImmersiveMode() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen().catch(() => {});
+    
+    // Tenta travar em landscape
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {
+            console.log("Rotação automática bloqueada pelo navegador.");
+        });
+    }
+}
+
 async function startBoot() {
+    // 1. Tenta entrar em modo imersivo logo no começo
+    enterImmersiveMode();
+
     const terminal = document.getElementById("bootTerminal");
     const progressEl = document.getElementById("progressText");
     terminal.innerHTML = "";
@@ -17,11 +34,11 @@ async function startBoot() {
     for (let i = 0; i < totalLines; i++) {
         const text = lines[i];
         
-        // --- LÓGICA DE TEMPO (O "Sentimento" de boot) ---
-        let delay = 300; // padrão
-        if (text.includes("VERIFICANDO")) delay = 600;
-        if (text === "CARTUCHO DETECTADO") delay = 1500;
-        if (text === "") delay = 100; // linhas vazias passam rápido
+        // --- TEMPOS MAIS LENTOS (Sentimento de Boot real) ---
+        let delay = 800; // Tempo base mais lento
+        if (text.includes("VERIFICANDO")) delay = 1200; 
+        if (text === "CARTUCHO DETECTADO") delay = 3000; // Suspense total
+        if (text === "") delay = 300; 
 
         const line = document.createElement("div");
         line.className = "bootLine";
@@ -34,16 +51,14 @@ async function startBoot() {
         
         terminal.appendChild(line);
         
-        // --- BARRA DE PROGRESSO ---
-        // Calcula quanto da barra deve estar preenchido
+        // Barra de progresso atualizada pelo progresso real do loop
         const step = Math.floor((i / (totalLines - 1)) * 10);
         progressEl.textContent = BOOT_BLOCKS[step];
         
-        // Aguarda o tempo calculado
         await sleep(delay);
     }
 
-    // Delay final após o "PRONTO PARA JOGAR" para o usuário ver
-    await sleep(1000);
+    // Delay final para apreciar o "PRONTO PARA JOGAR"
+    await sleep(2000);
     window.location.href = CURRENT_GAME.gameUrl;
 }

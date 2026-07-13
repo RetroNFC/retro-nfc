@@ -1,11 +1,8 @@
-// boot.js
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
     "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
     "■■■■■■■■□□", "■■■■■■■■■□", "■■■■■■■■■■"
 ];
-
-const bootSound = new Audio('assets/life.mp3');
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
@@ -14,12 +11,18 @@ async function startBoot() {
     const progressEl = document.getElementById("progressText");
     terminal.innerHTML = "";
     
-    const totalLines = CURRENT_GAME.bootText.length;
+    const lines = CURRENT_GAME.bootText;
+    const totalLines = lines.length;
 
     for (let i = 0; i < totalLines; i++) {
-        const text = CURRENT_GAME.bootText[i];
+        const text = lines[i];
         
-        // Cria e adiciona a linha
+        // --- LÓGICA DE TEMPO (O "Sentimento" de boot) ---
+        let delay = 300; // padrão
+        if (text.includes("VERIFICANDO")) delay = 600;
+        if (text === "CARTUCHO DETECTADO") delay = 1500;
+        if (text === "") delay = 100; // linhas vazias passam rápido
+
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = text;
@@ -31,18 +34,16 @@ async function startBoot() {
         
         terminal.appendChild(line);
         
-        // Toca o som a cada linha
-        bootSound.currentTime = 0;
-        bootSound.play();
+        // --- BARRA DE PROGRESSO ---
+        // Calcula quanto da barra deve estar preenchido
+        const step = Math.floor((i / (totalLines - 1)) * 10);
+        progressEl.textContent = BOOT_BLOCKS[step];
         
-        // Atualiza a barra de progresso dinamicamente
-        const progressPercentage = Math.floor((i / (totalLines - 1)) * 10);
-        progressEl.textContent = BOOT_BLOCKS[progressPercentage];
-        
-        // Delay (Mais lento no cartucho detectado)
-        await sleep(text === "CARTUCHO DETECTADO" ? 1000 : 250);
+        // Aguarda o tempo calculado
+        await sleep(delay);
     }
 
-    await sleep(800);
+    // Delay final após o "PRONTO PARA JOGAR" para o usuário ver
+    await sleep(1000);
     window.location.href = CURRENT_GAME.gameUrl;
 }

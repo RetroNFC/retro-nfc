@@ -1,8 +1,7 @@
-// app.js
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
-const startSound = new Audio('assets/life.mp3'); // Instancia o som
+const clickSound = new Audio('assets/life.mp3'); 
 
 async function loadGames() {
     try {
@@ -25,12 +24,10 @@ async function loadGames() {
 
         const startBtn = document.getElementById("startButton");
         startBtn.addEventListener("click", () => {
-            // Toca o som APENAS aqui
-            startSound.play().catch(e => console.log("Áudio bloqueado"));
-            
+            clickSound.play(); // Som disparado apenas aqui
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("bootScreen").style.display = "flex";
-            startBoot(); // Inicia o boot
+            startBoot();
         });
 
     } catch (error) {

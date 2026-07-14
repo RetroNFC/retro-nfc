@@ -1,5 +1,4 @@
-// Adicione esta variável no topo do seu arquivo (fora da função)
-let isBooting = false;
+let isBooting = false; // Trava de segurança para evitar duplicidade
 
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
@@ -10,7 +9,7 @@ const BOOT_BLOCKS = [
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 async function startBoot() {
-    // Trava de segurança: se já estiver rodando, não faz nada
+    // Se já estiver rodando, ignora novos cliques
     if (isBooting) return;
     isBooting = true;
 
@@ -25,25 +24,29 @@ async function startBoot() {
     const terminal = document.getElementById("bootTerminal");
     const progressEl = document.getElementById("progressText");
     
-    terminal.innerHTML = "";
+    terminal.innerHTML = ""; // Limpa a tela antes de começar
     progressEl.textContent = BOOT_BLOCKS[0];
     
-    const etapas = [
-        "VERIFICANDO SISTEMA...",
-        "LENDO CARTUCHO...",
-        "CARTUCHO VERIFICADO",
-        "CARREGANDO JOGO..."
-    ];
+    // Lê as frases diretamente do seu JSON
+    const bootLines = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.config && CURRENT_GAME.config.bootText) 
+        ? CURRENT_GAME.config.bootText 
+        : ["CARREGANDO..."];
 
-    for (let i = 0; i < etapas.length; i++) {
+    // Loop que imprime apenas as frases do JSON, uma vez cada
+    for (let i = 0; i < bootLines.length; i++) {
         const line = document.createElement("div");
         line.className = "bootLine";
-        line.textContent = etapas[i];
+        line.textContent = bootLines[i];
         terminal.appendChild(line);
-        progressEl.textContent = BOOT_BLOCKS[i + 1];
+        
+        // Atualiza a barrinha conforme o progresso
+        if (BOOT_BLOCKS[i + 1]) {
+            progressEl.textContent = BOOT_BLOCKS[i + 1];
+        }
         await sleep(600); 
     }
 
+    // Exibe o título do jogo no final
     const gameLine = document.createElement("div");
     gameLine.className = "bootLine";
     gameLine.textContent = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) ? CURRENT_GAME.title : "Iniciando...";

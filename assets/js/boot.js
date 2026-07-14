@@ -1,31 +1,35 @@
-// boot.js
 function startBoot(game) {
-    console.log("Iniciando boot para:", game.title);
+    const container = document.getElementById("bootTextContainer");
+    const btnStart = document.getElementById("btnStartGame");
     
-    // LINHA MÁGICA: Limpa qualquer texto que possa ter ficado lá antes
-    container.innerHTML = ""; 
-    
-    // Adiciona o nome do jogo ao array de texto se ele existir
-    const linhas = [...CONFIG.bootText]; // Copia o array original
-    if (CURRENT_GAME) {
-        linhas.push("JOGO: " + CURRENT_GAME.title.toUpperCase());
-    }
-    linhas.push("PRONTO PARA JOGAR");
+    // Lista de textos (adicione os seus aqui)
+    const lines = [
+        "LIGANDO SISTEMA...",
+        "CARREGANDO KERNEL...",
+        "DETECTANDO CARTUCHO...",
+        "STATUS: OK",
+        "PRONTO PARA JOGAR"
+    ];
 
-    // Loop de escrita
-    linhas.forEach((texto, index) => {
-        setTimeout(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+        if (i < lines.length) {
             const p = document.createElement("p");
-            p.innerText = texto;
+            p.innerText = lines[i];
             container.appendChild(p);
-            
-            // Auto-scroll para o final da tela
-            container.scrollTop = container.scrollHeight;
-        }, index * 400); // Velocidade de 400ms por linha
-    });
+            i++;
+        } else {
+            clearInterval(interval);
+            // Quando terminar o texto, mostra o botão para abrir o jogo
+            btnStart.style.display = "block";
+        }
+    }, 800); // Velocidade do loading
 
-    // Após terminar o boot, carrega o emulador
-    setTimeout(() => {
-        loadEmulator(); // Substitua pelo nome da sua função que inicia o emulador
-    }, linhas.length * 400 + 1000);
+    // Ao clicar no botão que apareceu:
+    btnStart.onclick = () => {
+        // AQUI você chama a função que abre o emulador
+        // Exemplo: window.location.href = "emulador.html?rom=" + game.romUrl;
+        console.log("Abrindo jogo:", game.title);
+        alert("O jogo " + game.title + " deveria abrir aqui!");
+    };
 }

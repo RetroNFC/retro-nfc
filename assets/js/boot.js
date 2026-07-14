@@ -12,10 +12,11 @@ async function startBoot() {
     const progressEl = document.getElementById("progressText");
     const btnIniciar = document.getElementById("btnIniciarJogo");
     
-    // Limpa a tela
+    // Reset inicial
     terminal.innerHTML = "";
+    btnIniciar.style.display = "none";
+    progressEl.style.display = "block"; 
     
-    // Lista de etapas (Fixa para garantir o ritmo)
     const etapas = [
         "VERIFICANDO SISTEMA...",
         "VERIFICANDO MEMÓRIA...",
@@ -24,14 +25,13 @@ async function startBoot() {
         "LENDO CARTUCHO...",
         "CARTUCHO VERIFICADO",
         "CARREGANDO JOGO...",
-        CURRENT_GAME.title // Mostra o nome do jogo
+        CURRENT_GAME.title // Mostra o nome do jogo no final
     ];
 
-    // Loop de carregamento
     for (let i = 0; i < etapas.length; i++) {
-        // Atualiza a barra de progresso (avança conforme o loop)
-        const progressoIndex = Math.min(i + 1, BOOT_BLOCKS.length - 1);
-        progressEl.textContent = BOOT_BLOCKS[progressoIndex];
+        // MATEMÁTICA CORRIGIDA: Agora a barra chega aos 100% junto com a última linha
+        const step = Math.floor((i / (etapas.length - 1)) * 10);
+        progressEl.textContent = BOOT_BLOCKS[step];
 
         // Cria a linha
         const line = document.createElement("div");
@@ -48,16 +48,15 @@ async function startBoot() {
         
         terminal.appendChild(line);
 
-        // Espera 1 segundo real para cada etapa
-        await sleep(1000); 
+        // VELOCIDADE AJUSTADA: 600 milissegundos (mais rápido, mas ainda legível)
+        await sleep(600); 
     }
 
-    // Ao finalizar, esconde a barra e mostra o botão
-    progressEl.style.display = "none";
+    // Mostra o botão após carregar tudo
     btnIniciar.style.display = "block";
     
-    // Configura o clique para abrir o link
+    // Configura o clique
     btnIniciar.onclick = () => {
-        window.open(CURRENT_GAME.gameUrl, '_blank'); // Abre em nova aba
+        window.open(CURRENT_GAME.gameUrl, '_blank');
     };
 }

@@ -1,82 +1,31 @@
-const BOOT_BLOCKS = [
-    "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
-    "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
-    "■■■■■■■■□□", "■■■■■■■■■□", "■■■■■■■■■■"
-];
-
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-async function startBoot() {
-    const som = document.getElementById("bootSound");
-    if (som) {
-        som.play().catch(erro => console.log("Áudio bloqueado pelo navegador:", erro));
+// boot.js
+function startBoot() {
+    const container = document.getElementById("bootTextContainer");
+    
+    // LINHA MÁGICA: Limpa qualquer texto que possa ter ficado lá antes
+    container.innerHTML = ""; 
+    
+    // Adiciona o nome do jogo ao array de texto se ele existir
+    const linhas = [...CONFIG.bootText]; // Copia o array original
+    if (CURRENT_GAME) {
+        linhas.push("JOGO: " + CURRENT_GAME.title.toUpperCase());
     }
+    linhas.push("PRONTO PARA JOGAR");
 
-    document.getElementById("gameScreen").style.display = "none";
-    document.getElementById("bootScreen").style.display = "flex";
+    // Loop de escrita
+    linhas.forEach((texto, index) => {
+        setTimeout(() => {
+            const p = document.createElement("p");
+            p.innerText = texto;
+            container.appendChild(p);
+            
+            // Auto-scroll para o final da tela
+            container.scrollTop = container.scrollHeight;
+        }, index * 400); // Velocidade de 400ms por linha
+    });
 
-    const terminal = document.getElementById("bootTerminal");
-    const progressEl = document.getElementById("progressText");
-    
-    terminal.innerHTML = "";
-    progressEl.textContent = BOOT_BLOCKS[0];
-    
-    const etapas = [
-        "VERIFICANDO SISTEMA...",
-        "LENDO CARTUCHO...",
-        "CARTUCHO VERIFICADO",
-        "CARREGANDO JOGO..."
-    ];
-
-    for (let i = 0; i < etapas.length; i++) {
-        const line = document.createElement("div");
-        line.className = "bootLine";
-        line.textContent = etapas[i];
-        terminal.appendChild(line);
-        progressEl.textContent = BOOT_BLOCKS[i + 1];
-        await sleep(600); 
-    }
-
-    const gameLine = document.createElement("div");
-    gameLine.className = "bootLine";
-    gameLine.textContent = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) ? CURRENT_GAME.title : "Iniciando...";
-    gameLine.style.color = "#FFD93D";
-    gameLine.style.fontSize = "14px";
-    gameLine.style.marginTop = "15px";
-    gameLine.style.fontWeight = "bold";
-    terminal.appendChild(gameLine);
-
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[8];
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[9];
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[10]; 
-
-    await sleep(1000);
-    
-    // --- INTEGRAÇÃO EMULATORJS ---
-    
-    // Esconde a tela de boot e mostra a tela do emulador
-    document.getElementById("bootScreen").style.display = "none";
-    document.getElementById("emulatorScreen").style.display = "block";
-    
-    // Força fundo preto para focar no jogo
-    document.body.style.padding = "0";
-    document.body.style.backgroundColor = "#000000";
-
-    if (typeof CURRENT_GAME !== 'undefined') {
-        // Configura as variáveis globais que o EmulatorJS exige
-        window.EJS_player = '#game';
-        window.EJS_core = CURRENT_GAME.core; // ex: 'snes'
-        window.EJS_gameUrl = CURRENT_GAME.romUrl; // ex: 'roms/donkey_kong.smc'
-        window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/';
-        
-        // Injeta o script do emulador no HTML
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
-        document.body.appendChild(script);
-    } else {
-        console.error("Jogo não encontrado para carregar o emulador.");
-    }
+    // Após terminar o boot, carrega o emulador
+    setTimeout(() => {
+        loadEmulator(); // Substitua pelo nome da sua função que inicia o emulador
+    }, linhas.length * 400 + 1000);
 }

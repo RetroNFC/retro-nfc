@@ -33,14 +33,17 @@ async function startBoot() {
         "CARREGANDO JOGO..."
     ];
 
+    // Loop que atualiza o terminal e a barra de forma proporcional
     for (let i = 0; i < etapas.length; i++) {
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = etapas[i];
         terminal.appendChild(line);
-        progressEl.textContent = BOOT_BLOCKS[i + 1];
         
-        // Aqui foi alterado para 1000ms (1 segundo)
+        // Ajuste: A barra avança de forma proporcional ao progresso das etapas
+        const progressIndex = Math.floor(((i + 1) / etapas.length) * (BOOT_BLOCKS.length - 1));
+        progressEl.textContent = BOOT_BLOCKS[progressIndex];
+        
         await sleep(1000); 
     }
 
@@ -53,15 +56,12 @@ async function startBoot() {
     gameLine.style.fontWeight = "bold";
     terminal.appendChild(gameLine);
 
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[8];
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[9];
-    await sleep(300);
-    progressEl.textContent = BOOT_BLOCKS[10]; 
+    // Finaliza a barra de carregamento no último bloco
+    progressEl.textContent = BOOT_BLOCKS[BOOT_BLOCKS.length - 1];
 
     await sleep(1000);
     
+    // --- INTEGRAÇÃO EMULATORJS (Automático) ---
     document.getElementById("bootScreen").style.display = "none";
     document.getElementById("emulatorScreen").style.display = "block";
     

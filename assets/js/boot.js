@@ -1,4 +1,3 @@
-// boot.js
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
     "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
@@ -8,13 +7,16 @@ const BOOT_BLOCKS = [
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 async function startBoot() {
+    // 1. Esconde a interface do jogo e mostra a tela preta de boot
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("bootScreen").style.display = "flex";
+
     const terminal = document.getElementById("bootTerminal");
     const progressEl = document.getElementById("progressText");
     
-    // Reset inicial
+    // Zera o terminal e coloca a barra vazia
     terminal.innerHTML = "";
-    progressEl.style.display = "block"; 
-    progressEl.textContent = BOOT_BLOCKS[0]; // Começa vazia
+    progressEl.textContent = BOOT_BLOCKS[0];
     
     const etapas = [
         "VERIFICANDO SISTEMA...",
@@ -23,38 +25,53 @@ async function startBoot() {
         "VERIFICANDO ÁUDIO...",
         "LENDO CARTUCHO...",
         "CARTUCHO VERIFICADO",
-        "CARREGANDO JOGO...",
-        CURRENT_GAME.title // Mostra o nome do jogo
+        "CARREGANDO JOGO..."
     ];
 
+    // 2. Loop de carregamento do hardware
     for (let i = 0; i < etapas.length; i++) {
-        // Cria a linha de texto
+        // Renderiza o texto verde
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = etapas[i];
-        
-        // Estilo especial apenas para o nome do jogo
-        if (i === etapas.length - 1) {
-            line.style.color = "#FFD93D";
-            line.style.fontSize = "18px";
-            line.style.marginTop = "15px";
-            line.style.fontWeight = "bold";
-        }
-        
         terminal.appendChild(line);
 
-        // Atualiza a barra de progresso gradativamente
-        // A matemática aqui garante que chegue no 10 (100%) na última etapa
-        const step = Math.floor(((i + 1) / etapas.length) * 10);
-        progressEl.textContent = BOOT_BLOCKS[step];
+        // A barra de progresso acompanha os 7 passos (chegando a 70%)
+        progressEl.textContent = BOOT_BLOCKS[i + 1];
 
-        // Pausa de 600ms entre cada linha
-        await sleep(600); 
+        await sleep(600); // 600ms por linha
     }
 
-    // Aguarda 1 segundo no final para o jogador ver a tela 100% carregada
+    // 3. Destaca o nome do jogo e preenche o final da barra (Suspense)
+    const gameLine = document.createElement("div");
+    gameLine.className = "bootLine";
+    
+    // Tenta pegar o nome dinâmico (se o app.js passar) ou usa o Donkey Kong como padrão
+    gameLine.textContent = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) ? CURRENT_GAME.title : "Donkey Kong Country 2";
+    
+    // Estilo amarelo em destaque
+    gameLine.style.color = "#FFD93D";
+    gameLine.style.fontSize = "14px";
+    gameLine.style.marginTop = "15px";
+    gameLine.style.fontWeight = "bold";
+    terminal.appendChild(gameLine);
+
+    // Enche o resto da barra rapidamente
+    await sleep(300);
+    progressEl.textContent = BOOT_BLOCKS[8];
+    await sleep(300);
+    progressEl.textContent = BOOT_BLOCKS[9];
+    await sleep(300);
+    progressEl.textContent = BOOT_BLOCKS[10]; // 100% Completo!
+
+    // Aguarda um momento para o jogador apreciar o boot concluído
     await sleep(1000);
     
-    // Abre o jogo automaticamente na MESMA aba (como um console real)
-    window.location.href = CURRENT_GAME.gameUrl;
+    // 4. Inicia o jogo diretamente na aba atual
+    if (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.gameUrl) {
+        window.location.href = CURRENT_GAME.gameUrl;
+    } else {
+        // Link de emergência caso o objeto global não exista
+        window.location.href = "https://emulatorgamer.com/pt/games/donkey-kong-country-2-diddys-kong-quest/play";
+    }
 }

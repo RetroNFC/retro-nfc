@@ -61,3 +61,13 @@ body { background: #05070B; color: #FFFFFF; width: 100%; min-height: 100vh; over
 #cover { width: 280px; height: auto; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
 .gameScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+
+/* Esconde a tela de cartucho inválido por padrão */
+#invalidScreen {
+    display: none; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}

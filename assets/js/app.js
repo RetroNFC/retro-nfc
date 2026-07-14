@@ -1,37 +1,44 @@
-// app.js
+const PARAMS = new URLSearchParams(window.location.search);
+const GAME_KEY = PARAMS.get("k");
+let CURRENT_GAME = null;
+const clickSound = new Audio('assets/life.mp3');
 
 async function loadGames() {
     try {
+        console.log("Tentando carregar JSON...");
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json();
         
+        // Ajuste: Acessando a lista de jogos dentro do objeto
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
-        // ... (seu código de validar se o jogo existe continua aqui)
+        if (!CURRENT_GAME) {
+            console.error("Jogo não encontrado com a chave:", GAME_KEY);
+            return;
+        }
 
-        // Preenche os dados
-        document.getElementById("gameCover").src = CURRENT_GAME.cover;
-        document.getElementById("title").innerText = CURRENT_GAME.title;
+        console.log("Jogo encontrado:", CURRENT_GAME.title);
 
-        // NÃO temos mais o botão, então vamos criar um ouvinte na tela toda
-        document.body.addEventListener("click", iniciarSistema, { once: true });
-        
+        // Atualizando os campos - Verifique se estes IDs existem no seu HTML!
+        const coverEl = document.getElementById("gameCover");
+        const titleEl = document.getElementById("title");
+        const subtitleEl = document.getElementById("subtitle");
+        const yearEl = document.getElementById("year");
+        const playersEl = document.getElementById("players");
+        const devEl = document.getElementById("developer");
+
+        if(coverEl) coverEl.src = CURRENT_GAME.cover;
+        if(titleEl) titleEl.innerText = CURRENT_GAME.title;
+        if(subtitleEl) subtitleEl.innerText = CURRENT_GAME.subtitle;
+        if(yearEl) yearEl.innerText = CURRENT_GAME.year;
+        if(playersEl) playersEl.innerText = CURRENT_GAME.players;
+        if(devEl) devEl.innerText = CURRENT_GAME.developer;
+
+        console.log("Dados aplicados com sucesso!");
+
     } catch (error) {
-        console.error("Erro:", error);
+        console.error("ERRO CRÍTICO no carregamento:", error);
     }
 }
 
-async function iniciarSistema() {
-    // 1. Fullscreen e Landscape (Só funcionam porque o usuário clicou na tela)
-    try {
-        if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-        if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
-    } catch (e) { console.log("Bloqueado pelo navegador"); }
-
-    // 2. Som e Boot
-    clickSound.play();
-    document.getElementById("gameScreen").style.display = "none";
-    document.getElementById("bootScreen").style.display = "flex";
-    
-    startBoot();
-}
+document.addEventListener("DOMContentLoaded", loadGames);

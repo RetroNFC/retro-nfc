@@ -12,48 +12,52 @@ async function startBoot() {
     const progressEl = document.getElementById("progressText");
     const btnIniciar = document.getElementById("btnIniciarJogo");
     
+    // Limpa a tela
     terminal.innerHTML = "";
     
-    // Lista de etapas que você pediu (Você pode mudar a ordem aqui)
+    // Lista de etapas (Fixa para garantir o ritmo)
     const etapas = [
         "VERIFICANDO SISTEMA...",
         "VERIFICANDO MEMÓRIA...",
         "VERIFICANDO VÍDEO...",
+        "VERIFICANDO ÁUDIO...",
+        "LENDO CARTUCHO...",
         "CARTUCHO VERIFICADO",
         "CARREGANDO JOGO...",
         CURRENT_GAME.title // Mostra o nome do jogo
     ];
 
-    // Loop estrito: 1 segundo por etapa
+    // Loop de carregamento
     for (let i = 0; i < etapas.length; i++) {
-        // 1. Atualiza a barra de progresso
-        // O progresso avança um quadradinho por etapa (total de 10 passos)
+        // Atualiza a barra de progresso (avança conforme o loop)
         const progressoIndex = Math.min(i + 1, BOOT_BLOCKS.length - 1);
         progressEl.textContent = BOOT_BLOCKS[progressoIndex];
 
-        // 2. Adiciona a mensagem
+        // Cria a linha
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = etapas[i];
         
-        // Destaque para o nome do jogo
+        // Estilo especial para o nome do jogo
         if (i === etapas.length - 1) {
             line.style.color = "#FFD93D";
-            line.style.fontSize = "20px";
+            line.style.fontSize = "18px";
             line.style.marginTop = "20px";
+            line.style.fontWeight = "bold";
         }
         
         terminal.appendChild(line);
 
-        // 3. O SEGREDO: O tempo de espera de 1 segundo exato
+        // Espera 1 segundo real para cada etapa
         await sleep(1000); 
     }
 
-    // Após terminar, mostra o botão
+    // Ao finalizar, esconde a barra e mostra o botão
+    progressEl.style.display = "none";
     btnIniciar.style.display = "block";
     
-    // Configura o clique do botão para abrir o jogo
+    // Configura o clique para abrir o link
     btnIniciar.onclick = () => {
-        window.location.href = CURRENT_GAME.gameUrl;
+        window.open(CURRENT_GAME.gameUrl, '_blank'); // Abre em nova aba
     };
 }

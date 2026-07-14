@@ -27,7 +27,7 @@
       "romUrl": "assets/roms/smw.sfc"
     },
     {
-      "key": "dkc",
+      "key": "934f475a-ec4d-406c-b1cf-704a45ad0ed7",
       "title": "Donkey Kong Country",
       "subtitle": "Tropical Freeze",
       "year": "1994",
@@ -38,7 +38,7 @@
       "romUrl": "assets/roms/dkc.sfc"
     },
     {
-      "key": "dkc2",
+      "key": "31fb5d57-95bf-45a2-869f-2c5a0fa1c303",
       "title": "Donkey Kong Country 2",
       "subtitle": "Diddy's Kong Quest",
       "year": "1995",
@@ -49,7 +49,7 @@
       "romUrl": "assets/roms/dkc2.sfc"
     },
     {
-      "key": "dkc3",
+      "key": "48adc123-08f0-4c62-aa93-354a14623dee",
       "title": "Donkey Kong Country 3",
       "subtitle": "Dixie Kong's Double Trouble!",
       "year": "1996",
@@ -60,7 +60,7 @@
       "romUrl": "assets/roms/dkc3.sfc"
     },
     {
-      "key": "smk",
+      "key": "1a06fbf3-af8f-41c1-9d1a-dc03445fec69",
       "title": "Super Mario Kart",
       "subtitle": "Kart Racing",
       "year": "1992",
@@ -71,7 +71,7 @@
       "romUrl": "assets/roms/smk.sfc"
     },
     {
-      "key": "smallstars",
+      "key": "5f4d5eea-8a99-4457-b8f6-bf127c6b5446",
       "title": "Super Mario All-Stars",
       "subtitle": "4 Classic Games",
       "year": "1993",
@@ -82,7 +82,7 @@
       "romUrl": "assets/roms/smallstars.sfc"
     },
     {
-      "key": "zelda",
+      "key": "5da3a605-7fdd-4e34-aeb3-3285b581fdb2",
       "title": "The Legend of Zelda",
       "subtitle": "A Link to the Past",
       "year": "1991",
@@ -93,7 +93,7 @@
       "romUrl": "assets/roms/zelda.sfc"
     },
     {
-      "key": "metroid",
+      "key": "49e993c5-b419-48d5-af03-6036c6beeba9",
       "title": "Super Metroid",
       "subtitle": "Metroid 3",
       "year": "1994",
@@ -104,7 +104,7 @@
       "romUrl": "assets/roms/metroid.sfc"
     },
     {
-      "key": "ct",
+      "key": "db087344-3845-4dcf-b868-29b659f0c4cb",
       "title": "Chrono Trigger",
       "subtitle": "Time Travel RPG",
       "year": "1995",
@@ -115,7 +115,7 @@
       "romUrl": "assets/roms/ct.sfc"
     },
     {
-      "key": "megamanx",
+      "key": "1e76c873-7e45-416a-a408-4e10d16aacc2",
       "title": "Mega Man X",
       "subtitle": "Action Platformer",
       "year": "1993",
@@ -126,7 +126,7 @@
       "romUrl": "assets/roms/megamanx.sfc"
     },
     {
-      "key": "yi",
+      "key": "8fb6628a-bf4a-4100-8f3e-312722810cd7",
       "title": "Yoshi's Island",
       "subtitle": "Super Mario World 2",
       "year": "1995",
@@ -137,7 +137,7 @@
       "romUrl": "assets/roms/yi.sfc"
     },
     {
-      "key": "sr",
+      "key": "61bc8a14-d3d0-4ef8-ba35-cd66d93737fa",
       "title": "Sunset Riders",
       "subtitle": "Wild West Action",
       "year": "1993",
@@ -148,7 +148,7 @@
       "romUrl": "assets/roms/sr.sfc"
     },
     {
-      "key": "topgear",
+      "key": "4f6b876a-b362-406f-b16a-855dc0314f3a",
       "title": "Top Gear",
       "subtitle": "Racing Series",
       "year": "1992",
@@ -159,7 +159,7 @@
       "romUrl": "assets/roms/topgear.sfc"
     },
     {
-      "key": "fzero",
+      "key": "44feabc1-854f-4556-aa3b-4439330fb228",
       "title": "F-Zero",
       "subtitle": "Futuristic Racing",
       "year": "1990",
@@ -168,6 +168,17 @@
       "cover": "assets/capas/fzero.png",
       "core": "snes",
       "romUrl": "assets/roms/fzero.sfc"
+    },
+      {
+      "key": "44feabc1-854f-4556-aa3b-4439330bf877",
+      "title": "Goof Troop",
+      "subtitle": "Goofy and Max Goof",
+      "year": "1993",
+      "players": "1-2",
+      "developer": "Capcom",
+      "cover": "assets/capas/goof.png",
+      "core": "snes",
+      "romUrl": "assets/roms/goof.sfc"
     }
   ]
 }

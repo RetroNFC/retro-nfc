@@ -10,8 +10,9 @@
     
     <!-- 1. TELA PRINCIPAL (Informações do Jogo) -->
     <section id="gameScreen">
-        <!-- Substitua o src abaixo se o app.js não injetar a imagem automaticamente -->
-        <img id="gameCover" src="sua-imagem-aqui.jpg" alt="Capa do Jogo">
+        <!-- IMAGEM CORRIGIDA AQUI -->
+        <img id="gameCover" src="https://cdn.emulatorgamer.com/covers/snes/donkey-kong-country-2-diddys-kong-quest.webp" alt="Capa do Jogo Donkey Kong Country 2">
+        
         <h1 id="title">Donkey Kong Country 2</h1>
         <h2 id="subtitle">Diddy's Kong Quest</h2>
         
@@ -31,7 +32,6 @@
             <div class="bootConsole">SUPER NINTENDO</div>
         </div>
         <div id="bootTerminal" class="bootTerminal"></div>
-        <!-- A barra de loading vai ficar presa aqui embaixo -->
         <div id="progressText" class="progressText">□□□□□□□□□□</div>
     </section>
 
@@ -42,7 +42,9 @@
         <p class="errorText">Esta tag NFC não possui um jogo válido cadastrado.</p>
     </section>
 
-    <!-- Scripts (Sem o áudio e o game.js para evitar conflitos) -->
+    <!-- TAG DE ÁUDIO (Coloque o caminho correto do seu arquivo de som aqui) -->
+    <audio id="bootSound" src="assets/js/life.mp3"></audio>
+
     <script src="assets/js/app.js"></script>
     <script src="assets/js/boot.js"></script>
 </body>

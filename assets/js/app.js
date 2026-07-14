@@ -6,8 +6,10 @@ const clickSound = new Audio('assets/life.mp3');
 async function loadGames() {
     try {
         const response = await fetch("games.json?ts=" + Date.now());
-        const games = await response.json();
-        CURRENT_GAME = games.find(game => game.key === GAME_KEY);
+        const data = await response.json(); // "data" agora recebe o objeto completo
+        
+        // Acessamos "data.games" para encontrar o jogo dentro da lista
+        CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
             document.getElementById("gameScreen").style.display = "none";
@@ -15,18 +17,18 @@ async function loadGames() {
             return;
         }
 
-        document.getElementById("cover").src = CURRENT_GAME.cover;
+        // Atualizando os elementos da tela com base nos IDs do seu HTML
+        document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
         document.getElementById("year").innerText = CURRENT_GAME.year;
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
-        const startBtn = document.getElementById("startButton");
+        const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
-            clickSound.play(); // Som disparado apenas aqui
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("bootScreen").style.display = "flex";
+            clickSound.play();
+            // A função startBoot() está no seu boot.js
             startBoot();
         });
 

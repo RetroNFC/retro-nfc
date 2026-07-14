@@ -2,15 +2,15 @@ function startBoot(game) {
     const container = document.getElementById("bootTextContainer");
     const btnStart = document.getElementById("btnStartGame");
     
-    container.innerHTML = ""; 
+    container.innerHTML = "";
     btnStart.style.display = "none";
 
-    // Usando os textos do seu JSON se existirem, ou padrão
     const lines = [
         "RETRO NFC SYSTEM v1.0",
         "LIGANDO SISTEMA...",
         "CARREGANDO KERNEL...",
-        "DETECTANDO CARTUCHO: " + game.title.toUpperCase(),
+        "DETECTANDO CARTUCHO...",
+        "CARTUCHO: " + game.title.toUpperCase(),
         "STATUS: OK",
         "PRONTO PARA JOGAR"
     ];
@@ -19,19 +19,25 @@ function startBoot(game) {
     const interval = setInterval(() => {
         if (i < lines.length) {
             const p = document.createElement("p");
-            p.innerText = lines[i];
-            p.style.margin = "5px 0";
+            p.innerText = "> " + lines[i];
             container.appendChild(p);
+            
+            // Adiciona os "quadradinhos" de loading
+            const bar = document.createElement("div");
+            bar.className = "progress-bar";
+            bar.innerText = "[##########]";
+            container.appendChild(bar);
+            
             i++;
         } else {
             clearInterval(interval);
-            btnStart.style.display = "block"; // Aparece após o carregamento
+            btnStart.style.display = "block";
         }
-    }, 600);
+    }, 800);
 
     btnStart.onclick = () => {
-        console.log("Abrindo:", game.romUrl);
-        alert("Iniciando ROM...");
-        // Aqui você coloca a chamada para o emulador
+        // Redirecione aqui para o seu emulador
+        console.log("Abrindo jogo:", game.romUrl);
+        // window.location.href = "sua_rom.html"; 
     };
 }

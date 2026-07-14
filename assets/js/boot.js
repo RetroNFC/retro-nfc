@@ -1,6 +1,6 @@
 // boot.js
-function startBoot() {
-    const container = document.getElementById("bootTextContainer");
+function startBoot(game) {
+    console.log("Iniciando boot para:", game.title);
     
     // LINHA MÁGICA: Limpa qualquer texto que possa ter ficado lá antes
     container.innerHTML = ""; 

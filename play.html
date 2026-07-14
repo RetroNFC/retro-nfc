@@ -3,33 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro NFC</title>
+    <title>Retrô NFC</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
+    
+    <!-- 1. TELA PRINCIPAL (Informações do Jogo) -->
     <section id="gameScreen">
         <img id="gameCover" src="" alt="Capa do Jogo">
         <h1 id="title">Carregando...</h1>
         <h2 id="subtitle"></h2>
+        
         <div class="info">
             <p id="year"></p>
             <p id="players"></p>
             <p id="developer"></p>
         </div>
-        <button id="btnJogar">JOGAR</button>
+        
+        <button id="btnJogar" onclick="startBoot()">JOGAR</button>
     </section>
 
+    <!-- 2. TELA DE BOOT (Terminal) -->
     <section id="bootScreen" style="display: none;">
-        <div id="bootTextContainer"></div>
-        <button id="btnStartGame" style="display:none; margin-top: 20px;">PRESS START</button>
+        <div class="header">
+            <div class="bootLogo">RETRÔ NFC</div>
+            <div class="bootConsole">SUPER NINTENDO</div>
+        </div>
+        <div id="bootTerminal" class="bootTerminal"></div>
+        <div id="progressText" class="progressText">□□□□□□□□□□</div>
     </section>
 
-    <section id="emulatorScreen" style="display: none;"></section>
+    <!-- 3. TELA DO EMULADOR (Onde a mágica acontece) -->
+    <section id="emulatorScreen" style="display: none; width: 100vw; height: 100vh;">
+        <div style="width:100%; height:100%; max-width:100%;">
+            <div id="game"></div>
+        </div>
+    </section>
 
+    <!-- 4. TELA DE ERRO -->
     <section id="invalidScreen" style="display: none;">
-        <h1>Cartucho inválido</h1>
+        <h1 class="errorTitle">RETRO NFC</h1>
+        <h2 class="errorSub">Cartucho inválido</h2>
+        <p class="errorText">Esta tag NFC não possui um jogo válido cadastrado.</p>
     </section>
+
+    <audio id="bootSound" src="assets/life.mp3"></audio>
 
     <script src="assets/js/app.js"></script>
     <script src="assets/js/boot.js"></script>

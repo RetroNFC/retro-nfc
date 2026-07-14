@@ -1,3 +1,6 @@
+// Adicione esta variável no topo do seu arquivo (fora da função)
+let isBooting = false;
+
 const BOOT_BLOCKS = [
     "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
     "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
@@ -7,6 +10,10 @@ const BOOT_BLOCKS = [
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 async function startBoot() {
+    // Trava de segurança: se já estiver rodando, não faz nada
+    if (isBooting) return;
+    isBooting = true;
+
     const som = document.getElementById("bootSound");
     if (som) {
         som.play().catch(erro => console.log("Áudio bloqueado pelo navegador:", erro));
@@ -23,9 +30,6 @@ async function startBoot() {
     
     const etapas = [
         "VERIFICANDO SISTEMA...",
-        "VERIFICANDO MEMÓRIA...",
-        "VERIFICANDO VÍDEO...",
-        "VERIFICANDO ÁUDIO...",
         "LENDO CARTUCHO...",
         "CARTUCHO VERIFICADO",
         "CARREGANDO JOGO..."
@@ -60,22 +64,18 @@ async function startBoot() {
     
     // --- INTEGRAÇÃO EMULATORJS ---
     
-    // Esconde a tela de boot e mostra a tela do emulador
     document.getElementById("bootScreen").style.display = "none";
     document.getElementById("emulatorScreen").style.display = "block";
     
-    // Força fundo preto para focar no jogo
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";
 
     if (typeof CURRENT_GAME !== 'undefined') {
-        // Configura as variáveis globais que o EmulatorJS exige
         window.EJS_player = '#game';
-        window.EJS_core = CURRENT_GAME.core; // ex: 'snes'
-        window.EJS_gameUrl = CURRENT_GAME.romUrl; // ex: 'roms/donkey_kong.smc'
+        window.EJS_core = CURRENT_GAME.core; 
+        window.EJS_gameUrl = CURRENT_GAME.romUrl; 
         window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/';
         
-        // Injeta o script do emulador no HTML
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
         document.body.appendChild(script);

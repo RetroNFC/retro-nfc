@@ -1,47 +1,149 @@
+/* Importa a fonte retrô */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Press Start 2P', monospace;
+}
 
 body {
-    background-color: #000000 !important;
-    color: #33FF33 !important; /* Verde Neon */
-    font-family: 'Press Start 2P', monospace;
+    background-color: #0d1117; /* Fundo escuro imersivo */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-}
-
-/* Estilo do terminal */
-#bootScreen {
-    width: 90%;
-    max-width: 400px;
     padding: 20px;
-    border: 2px solid #33FF33;
 }
 
-#bootTextContainer {
-    font-size: 12px;
-    line-height: 2;
-    text-align: left;
-}
-
-/* O "quadradinho" da barra de progresso */
-.progress-bar {
-    color: #33FF33;
-    letter-spacing: 5px;
-    margin-top: 10px;
-}
-
-#btnStartGame {
-    background: #33FF33;
-    color: #000;
-    padding: 15px;
-    border: none;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 20px;
+/* =========================================
+   TELA PRINCIPAL (GAME INFO)
+   ========================================= */
+#gameScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     width: 100%;
+    max-width: 360px;
+}
+
+#gameCover {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8); /* Dá um efeito 3D na capa */
+}
+
+#title {
+    font-size: 16px; /* Menor e mais elegante */
+    line-height: 1.4;
+    color: #ffffff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+#subtitle {
+    font-size: 12px;
+    color: #c9c9c9;
+    margin-bottom: 15px;
+}
+
+.info p {
+    font-size: 10px; /* Textos de apoio bem ajustados */
+    line-height: 1.8;
+    color: #999999;
+}
+
+#btnJogar {
+    margin-top: 30px;
+    padding: 16px 40px;
+    font-size: 14px;
+    background-color: #e63946; /* Vermelho/Laranja estilo Nintendo */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #900014; /* Efeito de botão físico */
+}
+
+#btnJogar:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #900014;
+}
+
+/* =========================================
+   TELA DE BOOT (TERMINAL)
+   ========================================= */
+#bootScreen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 360px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.bootLogo, .bootConsole {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.bootTerminal {
+    width: 100%;
+    text-align: left;
+    min-height: 220px; /* Mantém espaço para as letras não empurrarem a tela */
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espaço entre as linhas de comando */
+}
+
+.bootLine {
+    font-size: 12px;
+    color: #5CFF8A; /* Verde terminal clássico */
+    line-height: 1.4;
+}
+
+.progressText {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    letter-spacing: 2px; /* Espaço entre os quadrados */
+}
+
+/* =========================================
+   TELA DE ERRO (CARTUCHO INVÁLIDO)
+   ========================================= */
+#invalidScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 320px;
+}
+
+.errorTitle {
+    font-size: 20px;
+    color: #ff3333;
+    margin-bottom: 10px;
+}
+
+.errorSub {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.errorText {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #cccccc;
 }

@@ -17,27 +17,15 @@ async function loadGames() {
     document.getElementById("players").innerText = "Jogadores: " + CURRENT_GAME.players;
     document.getElementById("developer").innerText = "Desenvolvedora: " + CURRENT_GAME.developer;
 
-    document.getElementById("btnJogar").onclick = async () => {
+    document.getElementById("btnJogar").onclick = () => {
         clickSound.play();
         
-        try {
-            if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-            if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
-        } catch (e) { console.log("Fullscreen ok"); }
-
-        // Esconde a tela de capa
+        // Removemos as funções de fullscreen e orientação daqui
         document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("bootScreen").style.display = "flex";
         
-        // Mostra a tela de boot
-        const bootScreen = document.getElementById("bootScreen");
-        bootScreen.style.display = "flex";
-        
-        // O "segredo": damos 100ms para o navegador desenhar a tela antes de rodar o boot
-        setTimeout(() => {
-            if (typeof startBoot === 'function') {
-                startBoot(CURRENT_GAME);
-            }
-        }, 100);
+        // Iniciamos o boot
+        startBoot(CURRENT_GAME);
     };
 }
 

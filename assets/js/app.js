@@ -31,5 +31,31 @@ async function loadGames() {
     }
 }
 
-// Quando o documento estiver pronto, carrega os jogos
-document.addEventListener("DOMContentLoaded", loadGames);
+// ... dentro da função loadGames, após preencher os dados:
+
+// Removemos aquele "document.body.addEventListener" que estava pegando a tela toda
+// E colocamos o listener apenas no botão:
+
+const startBtn = document.getElementById("btnJogar");
+startBtn.addEventListener("click", async () => {
+    
+    // 1. Forçar Fullscreen e Paisagem (só funciona no clique!)
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        }
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+        }
+    } catch (e) {
+        console.log("Navegador bloqueou fullscreen/orientação automática");
+    }
+
+    // 2. Tocar som e iniciar o boot
+    clickSound.play();
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("bootScreen").style.display = "flex";
+    
+    // Chama a função do boot.js
+    startBoot();
+});

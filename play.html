@@ -2,90 +2,48 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrô NFC</title>
-    <meta name="theme-color" content="#05070B">
-    <meta name="description" content="Retrô NFC">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
-    <!-- Fundo -->
-    <div class="background"></div>
-    <div class="crt"></div>
-    <div class="noise"></div>
-    <div class="vignette"></div>
-    <div class="topGlow"></div>
-    <div class="bottomGlow"></div>
-
-    <!-- ===================================================== -->
-    <!-- BOOT -->
-    <!-- ===================================================== -->
-    <section id="bootScreen">
-    <div class="bootLogo">RETRÔ NFC</div>
-    <div class="bootConsole">SUPER NINTENDO</div>
-    <div id="bootTerminal" class="bootTerminal"></div>
-    <div id="progressText" class="progressText">□□□□□□□□□□</div>
     
-    <section id="bootScreen" style="display: none;">
-    <div class="bootLogo">RETRÔ NFC</div>
-    <div class="bootConsole">SUPER NINTENDO</div>
-    <div id="bootTerminal" class="bootTerminal"></div>
-    <div id="progressText" class="progressText">□□□□□□□□□□</div>
-</section>
-    
-      <!-- ===================================================== -->
-    <!-- GAME -->
-    <!-- ===================================================== -->
-    <!-- Adicionada a classe "gameScreen" que contém as regras de layout no CSS -->
-    <section id="gameScreen" class="gameScreen">
-        <div class="gameContainer">
-            <div class="coverArea">
-                <!-- Adicionada a div "cover" para obedecer a regra .cover img do CSS -->
-                <div class="cover">
-                    <img id="cover" src="" alt="Capa">
-                </div>
-            </div>
-
-            <div class="infoArea">
-                <h1 id="title"></h1>
-                <h2 id="subtitle"></h2>
-                
-                <div class="specs">
-                    <div class="spec">
-                        <span>Ano</span>
-                        <strong id="year"></strong>
-                    </div>
-                    <div class="spec">
-                        <span>Jogadores</span>
-                        <strong id="players"></strong>
-                    </div>
-                    <div class="spec">
-                        <span>Desenvolvedora</span>
-                        <strong id="developer"></strong>
-                    </div>
-                </div>
-
-                <p id="description"></p>
-                <button id="startButton">JOGAR</button>
-            </div>
-        </div> <!-- FECHAMENTO DA gameContainer ADICIONADO AQUI -->
-    </section>
-
-    <!-- ===================================================== -->
-    <!-- CARTUCHO INVÁLIDO -->
-    <!-- ===================================================== -->
-    <section id="invalidScreen">
-        <div class="invalidCard">
-            <h1>RETRO NFC</h1>
-            <h2>Cartucho inválido</h2>
-            <p>Esta tag NFC não possui um jogo válido cadastrado.</p>
+    <!-- 1. TELA PRINCIPAL (Informações do Jogo) -->
+    <section id="gameScreen">
+        <!-- Substitua o src abaixo se o app.js não injetar a imagem automaticamente -->
+        <img id="gameCover" src="sua-imagem-aqui.jpg" alt="Capa do Jogo">
+        <h1 id="title">Donkey Kong Country 2</h1>
+        <h2 id="subtitle">Diddy's Kong Quest</h2>
+        
+        <div class="info">
+            <p id="year">Ano: 1995</p>
+            <p id="players">Jogadores: 1-2</p>
+            <p id="developer">Desenvolvedora: Rare</p>
         </div>
+        
+        <button id="btnJogar" onclick="startBoot()">JOGAR</button>
     </section>
 
-    <!-- ===================================================== -->
+    <!-- 2. TELA DE BOOT (Invisível até clicar em JOGAR) -->
+    <section id="bootScreen" style="display: none;">
+        <div class="header">
+            <div class="bootLogo">RETRÔ NFC</div>
+            <div class="bootConsole">SUPER NINTENDO</div>
+        </div>
+        <div id="bootTerminal" class="bootTerminal"></div>
+        <!-- A barra de loading vai ficar presa aqui embaixo -->
+        <div id="progressText" class="progressText">□□□□□□□□□□</div>
+    </section>
+
+    <!-- 3. TELA DE ERRO (Invisível por padrão) -->
+    <section id="invalidScreen" style="display: none;">
+        <h1 class="errorTitle">RETRO NFC</h1>
+        <h2 class="errorSub">Cartucho inválido</h2>
+        <p class="errorText">Esta tag NFC não possui um jogo válido cadastrado.</p>
+    </section>
+
+    <!-- Scripts (Sem o áudio e o game.js para evitar conflitos) -->
     <script src="assets/js/app.js"></script>
     <script src="assets/js/boot.js"></script>
-    
 </body>
 </html>

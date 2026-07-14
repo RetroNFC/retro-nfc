@@ -2,11 +2,15 @@ function startBoot(game) {
     const container = document.getElementById("bootTextContainer");
     const btnStart = document.getElementById("btnStartGame");
     
-    // Lista de textos (adicione os seus aqui)
+    // Limpa qualquer texto anterior caso a função seja chamada mais de uma vez
+    container.innerHTML = "";
+    btnStart.style.display = "none";
+
     const lines = [
+        "RETRO NFC SYSTEM v1.0",
         "LIGANDO SISTEMA...",
-        "CARREGANDO KERNEL...",
-        "DETECTANDO CARTUCHO...",
+        "VERIFICANDO KERNEL...",
+        "DETECTANDO CARTUCHO: " + game.title.toUpperCase(),
         "STATUS: OK",
         "PRONTO PARA JOGAR"
     ];
@@ -20,16 +24,15 @@ function startBoot(game) {
             i++;
         } else {
             clearInterval(interval);
-            // Quando terminar o texto, mostra o botão para abrir o jogo
+            // Libera o botão
             btnStart.style.display = "block";
         }
-    }, 800); // Velocidade do loading
+    }, 600); // Velocidade um pouco mais rápida
 
-    // Ao clicar no botão que apareceu:
     btnStart.onclick = () => {
-        // AQUI você chama a função que abre o emulador
+        // AQUI você chama o seu emulador
+        console.log("Abrindo ROM:", game.romUrl);
+        alert("Iniciando Jogo!"); 
         // Exemplo: window.location.href = "emulador.html?rom=" + game.romUrl;
-        console.log("Abrindo jogo:", game.title);
-        alert("O jogo " + game.title + " deveria abrir aqui!");
     };
 }

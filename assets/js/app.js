@@ -11,12 +11,10 @@ async function loadGames() {
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("invalidScreen").style.display = "flex";
+            alert("Erro: Jogo não encontrado!");
             return;
         }
 
-        // Preenche as informações
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
@@ -24,39 +22,36 @@ async function loadGames() {
         document.getElementById("players").innerText = "Jogadores: " + CURRENT_GAME.players;
         document.getElementById("developer").innerText = "Desenvolvedora: " + CURRENT_GAME.developer;
 
-        // Configura o botão
+        // Configuração do botão
         const btnJogar = document.getElementById("btnJogar");
-        
-        // Remove listeners antigos se houver
-        btnJogar.onclick = null; 
-        
-        btnJogar.addEventListener("click", async () => {
-            clickSound.play();
-            
-            // Força Fullscreen (O navegador só deixa se for dentro deste clique)
+        btnJogar.onclick = async () => {
             try {
+                clickSound.play();
+                
+                // Forçar tela cheia
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
                 }
                 if (screen.orientation && screen.orientation.lock) {
                     await screen.orientation.lock('landscape');
                 }
-            } catch (e) {
-                console.log("Modo tela cheia não suportado pelo navegador");
-            }
 
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("bootScreen").style.display = "flex";
-            
-            if (typeof startBoot === 'function') {
-                startBoot();
-            } else {
-                console.error("Função startBoot não encontrada!");
+                document.getElementById("gameScreen").style.display = "none";
+                document.getElementById("bootScreen").style.display = "flex";
+                
+                // Chamada segura da função boot
+                if (typeof startBoot === 'function') {
+                    startBoot();
+                } else {
+                    alert("Erro: A função startBoot não foi carregada no boot.js");
+                }
+            } catch (err) {
+                alert("Erro ao iniciar: " + err.message);
             }
-        });
+        };
 
     } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        alert("Erro crítico no app.js: " + error.message);
     }
 }
 

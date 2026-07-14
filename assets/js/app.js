@@ -1,32 +1,23 @@
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
-let CURRENT_GAME = null;
-const clickSound = new Audio('assets/life.mp3');
 
-async function loadGames() {
+document.addEventListener("DOMContentLoaded", async () => {
     const response = await fetch("games.json?ts=" + Date.now());
     const data = await response.json();
-    CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
+    const game = data.games.find(g => g.key === GAME_KEY);
 
-    if (!CURRENT_GAME) return;
+    if (!game) return;
 
-    document.getElementById("gameCover").src = CURRENT_GAME.cover;
-    document.getElementById("title").innerText = CURRENT_GAME.title;
-    document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
-    document.getElementById("year").innerText = "Ano: " + CURRENT_GAME.year;
-    document.getElementById("players").innerText = "Jogadores: " + CURRENT_GAME.players;
-    document.getElementById("developer").innerText = "Desenvolvedora: " + CURRENT_GAME.developer;
+    // Preenche as infos (mantenha os IDs do seu HTML)
+    document.getElementById("gameCover").src = game.cover;
+    document.getElementById("title").innerText = game.title;
 
+    // Botão Jogar
     document.getElementById("btnJogar").onclick = () => {
-        clickSound.play();
-        
-        // Removemos as funções de fullscreen e orientação daqui
+        // Apenas troca de tela, sem forçar nada no navegador
         document.getElementById("gameScreen").style.display = "none";
-        document.getElementById("bootScreen").style.display = "flex";
+        document.getElementById("bootScreen").style.display = "block";
         
-        // Iniciamos o boot
-        startBoot(CURRENT_GAME);
+        startBoot(game);
     };
-}
-
-document.addEventListener("DOMContentLoaded", loadGames);
+});

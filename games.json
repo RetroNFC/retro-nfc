@@ -1,14 +1,5 @@
-[
-  {
-    "key": "7af34e18bc95d02f61aa89cd1e4b3279",
-    "title": "Donkey Kong Country 2",
-    "subtitle": "Diddy's Kong Quest",
-    "year": "1995",
-    "players": "1-2",
-    "developer": "Rare",
-    "cover": "https://cdn.emulatorgamer.com/covers/snes/donkey-kong-country-2-diddys-kong-quest.webp",
-    "core": "snes",
-    "romUrl": "roms/donkey_kong_country_2.smc"
+{
+  "config": {
     "theme": "#6E3FD8",
     "bootColor": "#05070B",
     "bootText": [
@@ -18,16 +9,165 @@
       "████████████████████████████",
       "",
       "LIGANDO SISTEMA...",
-      "VERIFICANDO PROCESSADOR...OK",
-      "VERIFICANDO MEMÓRIA......OK",
-      "VERIFICANDO VÍDEO........OK",
-      "VERIFICANDO ÁUDIO........OK",
       "LENDO TAG NFC...",
       "CARTUCHO DETECTADO",
-      "DONKEY KONG COUNTRY 2",
-      "DIDDY'S KONG QUEST",
       "PRONTO PARA JOGAR"
-    ],
-    "romUrl": "roms/dkc2"
-  }
-]
+    ]
+  },
+  "games": [
+    {
+      "key": "smw",
+      "title": "Super Mario World",
+      "subtitle": "Super Mario Bros. 4",
+      "year": "1990",
+      "players": "1-2",
+      "developer": "Nintendo",
+      "cover": "assets/capas/smw.png",
+      "core": "snes",
+      "romUrl": "assets/roms/smw.sfc"
+    },
+    {
+      "key": "dkc",
+      "title": "Donkey Kong Country",
+      "subtitle": "Tropical Freeze",
+      "year": "1994",
+      "players": "1-2",
+      "developer": "Rare",
+      "cover": "assets/capas/dkc.png",
+      "core": "snes",
+      "romUrl": "assets/roms/dkc.sfc"
+    },
+    {
+      "key": "dkc2",
+      "title": "Donkey Kong Country 2",
+      "subtitle": "Diddy's Kong Quest",
+      "year": "1995",
+      "players": "1-2",
+      "developer": "Rare",
+      "cover": "assets/capas/dkc2.png",
+      "core": "snes",
+      "romUrl": "assets/roms/dkc2.sfc"
+    },
+    {
+      "key": "dkc3",
+      "title": "Donkey Kong Country 3",
+      "subtitle": "Dixie Kong's Double Trouble!",
+      "year": "1996",
+      "players": "1-2",
+      "developer": "Rare",
+      "cover": "assets/capas/dkc3.png",
+      "core": "snes",
+      "romUrl": "assets/roms/dkc3.sfc"
+    },
+    {
+      "key": "smk",
+      "title": "Super Mario Kart",
+      "subtitle": "Kart Racing",
+      "year": "1992",
+      "players": "1-2",
+      "developer": "Nintendo",
+      "cover": "assets/capas/smk.png",
+      "core": "snes",
+      "romUrl": "assets/roms/smk.sfc"
+    },
+    {
+      "key": "smallstars",
+      "title": "Super Mario All-Stars",
+      "subtitle": "4 Classic Games",
+      "year": "1993",
+      "players": "1-2",
+      "developer": "Nintendo",
+      "cover": "assets/capas/smallstars.png",
+      "core": "snes",
+      "romUrl": "assets/roms/smallstars.sfc"
+    },
+    {
+      "key": "zelda",
+      "title": "The Legend of Zelda",
+      "subtitle": "A Link to the Past",
+      "year": "1991",
+      "players": "1",
+      "developer": "Nintendo",
+      "cover": "assets/capas/zelda.png",
+      "core": "snes",
+      "romUrl": "assets/roms/zelda.sfc"
+    },
+    {
+      "key": "metroid",
+      "title": "Super Metroid",
+      "subtitle": "Metroid 3",
+      "year": "1994",
+      "players": "1",
+      "developer": "Nintendo",
+      "cover": "assets/capas/metroid.png",
+      "core": "snes",
+      "romUrl": "assets/roms/metroid.sfc"
+    },
+    {
+      "key": "ct",
+      "title": "Chrono Trigger",
+      "subtitle": "Time Travel RPG",
+      "year": "1995",
+      "players": "1",
+      "developer": "Square",
+      "cover": "assets/capas/ct.png",
+      "core": "snes",
+      "romUrl": "assets/roms/ct.sfc"
+    },
+    {
+      "key": "megamanx",
+      "title": "Mega Man X",
+      "subtitle": "Action Platformer",
+      "year": "1993",
+      "players": "1",
+      "developer": "Capcom",
+      "cover": "assets/capas/megamanx.png",
+      "core": "snes",
+      "romUrl": "assets/roms/megamanx.sfc"
+    },
+    {
+      "key": "yi",
+      "title": "Yoshi's Island",
+      "subtitle": "Super Mario World 2",
+      "year": "1995",
+      "players": "1",
+      "developer": "Nintendo",
+      "cover": "assets/capas/yi.png",
+      "core": "snes",
+      "romUrl": "assets/roms/yi.sfc"
+    },
+    {
+      "key": "sr",
+      "title": "Sunset Riders",
+      "subtitle": "Wild West Action",
+      "year": "1993",
+      "players": "1-4",
+      "developer": "Konami",
+      "cover": "assets/capas/sr.png",
+      "core": "snes",
+      "romUrl": "assets/roms/sr.sfc"
+    },
+    {
+      "key": "topgear",
+      "title": "Top Gear",
+      "subtitle": "Racing Series",
+      "year": "1992",
+      "players": "1-2",
+      "developer": "Gremlin Graphics",
+      "cover": "assets/capas/topgear.png",
+      "core": "snes",
+      "romUrl": "assets/roms/topgear.sfc"
+    },
+    {
+      "key": "fzero",
+      "title": "F-Zero",
+      "subtitle": "Futuristic Racing",
+      "year": "1990",
+      "players": "1",
+      "developer": "Nintendo",
+      "cover": "assets/capas/fzero.png",
+      "core": "snes",
+      "romUrl": "assets/roms/fzero.sfc"
+    }
+  ]
+}

@@ -2,14 +2,14 @@ function startBoot(game) {
     const container = document.getElementById("bootTextContainer");
     const btnStart = document.getElementById("btnStartGame");
     
-    // Limpa qualquer texto anterior caso a função seja chamada mais de uma vez
-    container.innerHTML = "";
+    container.innerHTML = ""; 
     btnStart.style.display = "none";
 
+    // Usando os textos do seu JSON se existirem, ou padrão
     const lines = [
         "RETRO NFC SYSTEM v1.0",
         "LIGANDO SISTEMA...",
-        "VERIFICANDO KERNEL...",
+        "CARREGANDO KERNEL...",
         "DETECTANDO CARTUCHO: " + game.title.toUpperCase(),
         "STATUS: OK",
         "PRONTO PARA JOGAR"
@@ -20,19 +20,18 @@ function startBoot(game) {
         if (i < lines.length) {
             const p = document.createElement("p");
             p.innerText = lines[i];
+            p.style.margin = "5px 0";
             container.appendChild(p);
             i++;
         } else {
             clearInterval(interval);
-            // Libera o botão
-            btnStart.style.display = "block";
+            btnStart.style.display = "block"; // Aparece após o carregamento
         }
-    }, 600); // Velocidade um pouco mais rápida
+    }, 600);
 
     btnStart.onclick = () => {
-        // AQUI você chama o seu emulador
-        console.log("Abrindo ROM:", game.romUrl);
-        alert("Iniciando Jogo!"); 
-        // Exemplo: window.location.href = "emulador.html?rom=" + game.romUrl;
+        console.log("Abrindo:", game.romUrl);
+        alert("Iniciando ROM...");
+        // Aqui você coloca a chamada para o emulador
     };
 }

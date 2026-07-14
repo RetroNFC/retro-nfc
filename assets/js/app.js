@@ -15,6 +15,7 @@ async function loadGames() {
             return;
         }
 
+        // Preenche os dados visuais
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
@@ -22,36 +23,33 @@ async function loadGames() {
         document.getElementById("players").innerText = "Jogadores: " + CURRENT_GAME.players;
         document.getElementById("developer").innerText = "Desenvolvedora: " + CURRENT_GAME.developer;
 
-        // Configuração do botão
+        // Configura o botão para iniciar
         const btnJogar = document.getElementById("btnJogar");
         btnJogar.onclick = async () => {
+            clickSound.play();
+            
             try {
-                clickSound.play();
-                
-                // Forçar tela cheia
                 if (document.documentElement.requestFullscreen) {
                     await document.documentElement.requestFullscreen();
                 }
                 if (screen.orientation && screen.orientation.lock) {
                     await screen.orientation.lock('landscape');
                 }
+            } catch (e) {
+                console.log("Modo tela cheia ativado");
+            }
 
-                document.getElementById("gameScreen").style.display = "none";
-                document.getElementById("bootScreen").style.display = "flex";
-                
-                // Chamada segura da função boot
-                if (typeof startBoot === 'function') {
-                    startBoot();
-                } else {
-                    alert("Erro: A função startBoot não foi carregada no boot.js");
-                }
-            } catch (err) {
-                alert("Erro ao iniciar: " + err.message);
+            document.getElementById("gameScreen").style.display = "none";
+            document.getElementById("bootScreen").style.display = "flex";
+            
+            // AQUI ESTÁ O SEGREDO: Enviamos o CURRENT_GAME para o boot
+            if (typeof startBoot === 'function') {
+                startBoot(CURRENT_GAME); 
             }
         };
 
     } catch (error) {
-        alert("Erro crítico no app.js: " + error.message);
+        console.error("Erro ao carregar:", error);
     }
 }
 

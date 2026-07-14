@@ -1,73 +1,39 @@
-/* style.css */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Press Start 2P', monospace; }
-
-body { background: #05070B; color: #FFFFFF; width: 100%; min-height: 100vh; overflow-x: hidden; }
-
-/* Esconde o boot inicialmente */
-#bootScreen { 
-    display: none; 
-    flex-direction: column; 
-    align-items: center; 
-    padding: 20px; 
-}
-
-/* Legibilidade do terminal */
-.bootTerminal {
-    margin-top: 20px;
-    color: #5CFF8A; /* Verde terminal */
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-}
-
-/* Legibilidade forçada para todos os campos */
-#title, #subtitle, #year, #players, #developer, #description, .spec span, .spec strong {
-    color: #FFFFFF !important;
-}
-
-#description { margin-top: 20px; font-size: 14px; line-height: 1.6; color: #DDDDDD !important; }
-
-/* Terminal e Progresso */
-.bootLine { color: #5CFF8A; font-size: 16px; margin: 10px 0; text-shadow: 0 0 5px #5CFF8A; }
-#progressText {
-    font-size: 24px !important;
-    margin-top: 20px !important;
-    color: #FFFFFF !important;
-    font-family: 'Courier New', monospace !important;
-    letter-spacing: 4px;
-    display: block !important; /* Força o elemento a ser renderizado */
-    visibility: visible !important;
-}
-
-/* Botão Start */
-#startButton {
-    width: 280px;
-    height: 60px;
-    margin-top: 30px;
-    border: none;
-    border-radius: 12px;
-    background: #E84118;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(232, 65, 24, 0.4);
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-#startButton:active { transform: scale(0.95); }
-
-/* Ajuste da Capa */
-#cover { width: 280px; height: auto; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-.gameScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
-
-/* Esconde a tela de cartucho inválido por padrão */
-#invalidScreen {
-    display: none; 
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+/* --- ESTILOS DA TELA INICIAL (GAME INFO) --- */
+#title {
+    font-size: 22px; /* Reduzido para não quebrar a linha feio */
+    line-height: 1.3;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #FFFFFF;
     text-align: center;
+    text-transform: uppercase;
+}
+
+#subtitle {
+    font-size: 14px;
+    color: #CCCCCC; /* Cinza claro para dar contraste com o título */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#year, #players, #developer {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #AAAAAA; /* Texto de apoio menor e mais sutil */
+    text-align: center;
+}
+
+/* --- ESTILOS DA TELA DE BOOT --- */
+.bootLine {
+    font-size: 14px; /* Tamanho confortável para leitura */
+    line-height: 1.5;
+    text-align: center;
+}
+
+#progressText {
+    margin-top: 30px; /* Garante que a barra fique sempre afastada do texto, lá embaixo */
+    font-size: 24px;
+    text-align: center;
+    color: #FFFFFF;
+    letter-spacing: 3px; /* Espaço entre os "quadradinhos" */
 }

@@ -8,33 +8,25 @@
 </head>
 <body>
 
-    <!-- 1. TELA PRINCIPAL (Informações do Jogo) -->
     <section id="gameScreen">
         <img id="gameCover" src="" alt="Capa do Jogo">
         <h1 id="title">Carregando...</h1>
         <h2 id="subtitle"></h2>
-        
         <div class="info">
             <p id="year"></p>
             <p id="players"></p>
             <p id="developer"></p>
         </div>
-        
-        <!-- O BOTÃO TEM QUE ESTAR AQUI -->
         <button id="btnJogar">JOGAR</button>
     </section>
 
-    <!-- 2. TELA DE BOOT (Terminal) -->
     <section id="bootScreen" style="display: none;">
-    <div id="bootTextContainer"></div>
-    <!-- Este botão só aparece quando o loading terminar -->
-    <button id="btnStartGame" style="display:none; margin-top: 20px;">PRESS START</button>
-</section>
+        <div id="bootTextContainer"></div>
+        <button id="btnStartGame" style="display:none; margin-top: 20px;">PRESS START</button>
+    </section>
 
-    <!-- 3. TELA DO EMULADOR -->
     <section id="emulatorScreen" style="display: none;"></section>
 
-    <!-- 4. TELA DE ERRO -->
     <section id="invalidScreen" style="display: none;">
         <h1>Cartucho inválido</h1>
     </section>

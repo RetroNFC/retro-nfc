@@ -11,7 +11,7 @@ fetch("https://api.ipify.org?format=json")
     .then(data => { userIp = data.ip; })
     .catch(() => { userIp = "Não identificado"; });
 
-// 2. Detecta o dispositivo de forma detalhada (Sistema Operacional e Modelo se Android)
+// 2. Detecta o dispositivo de forma detalhada
 function getDeviceDetails() {
     const ua = navigator.userAgent;
     let os = "Desconhecido";
@@ -35,29 +35,40 @@ function getDeviceDetails() {
     return os + model;
 }
 
-// 3. Usa um "Observador" invisível para saber o exato milissegundo em que a tela do emulador abriu
+// 3. RASTREADOR PRINCIPAL: Ativa quando a tela do emulador NÃO for mais "none"
 const emulatorScreen = document.getElementById("emulatorScreen");
 if (emulatorScreen) {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            // Quando a tela do emulador mudar para 'block', iniciamos o cronômetro de jogo
-            if (mutation.attributeName === "style" && emulatorScreen.style.display === "block") {
+            // Se o estilo mudou e o display NÃO é mais "none", o jogo começou!
+            if (mutation.attributeName === "style" && emulatorScreen.style.display !== "none") {
                 playStartedAt = Date.now();
-                observer.disconnect(); // Desliga o observador para economizar memória do celular
+                observer.disconnect(); // Desliga o observador para poupar a bateria do celular
             }
         });
     });
-    observer.observe(emulatorScreen, { attributes: true });
+    observer.observe(emulatorScreen, { attributes: true, attributeFilter: ["style"] });
 }
 
-// 4. Função interna para enviar o relatório à planilha
+// 4. DUPLO SEGURO (FALLBACK): Se o observador falhar, o clique no botão serve como início estimado
+const btnJogar = document.getElementById("btnJogar");
+if (btnJogar) {
+    btnJogar.addEventListener("click", () => {
+        if (!playStartedAt) {
+            // Estima o início real somando 10 segundos (tempo médio da animação de boot)
+            playStartedAt = Date.now() + 10000; 
+        }
+    });
+}
+
+// 5. Envia o relatório à planilha
 function sendLog() {
     if (logSent || !playStartedAt) return;
     logSent = true;
 
     const timeSpentSeconds = Math.round((Date.now() - playStartedAt) / 1000);
     
-    // Evita salvar logs de menos de 1 segundo (caso o usuário abra e feche sem querer)
+    // Evita salvar logs insignificantes de menos de 1 segundo
     if (timeSpentSeconds < 1) return;
 
     const gameTitle = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) 
@@ -71,7 +82,6 @@ function sendLog() {
         tempo: timeSpentSeconds
     };
 
-    // keepalive: true força o navegador a terminar o envio mesmo se o app for fechado às pressas
     fetch(WEB_APP_URL, {
         method: "POST",
         mode: "no-cors",
@@ -81,7 +91,7 @@ function sendLog() {
     });
 }
 
-// 5. Dispara o salvamento se o usuário fechar a aba, mudar de aplicativo ou bloquear a tela
+// 6. Dispara o salvamento ao sair, minimizar ou fechar
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
         sendLog();

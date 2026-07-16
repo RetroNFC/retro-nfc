@@ -5,13 +5,13 @@ let userIp = "Buscando...";
 let playStartedAt = null;
 let logSent = false;
 
-// 1. Busca o IP de forma silenciosa assim que a página carrega
+// 1. Busca o IP
 fetch("https://api.ipify.org?format=json")
     .then(res => res.json())
     .then(data => { userIp = data.ip; })
     .catch(() => { userIp = "Não identificado"; });
 
-// 2. Detecta o dispositivo de forma detalhada
+// 2. Detecta dispositivo
 function getDeviceDetails() {
     const ua = navigator.userAgent;
     let os = "Desconhecido";
@@ -25,51 +25,43 @@ function getDeviceDetails() {
         os = "iOS";
         const match = ua.match(/CPU\s+iPhone\s+OS\s+([^\s;]+)/);
         if (match) model = ` (iPhone)`;
-    } else if (/Windows/.test(ua)) {
-        os = "Windows";
-    } else if (/Macintosh/.test(ua)) {
-        os = "macOS";
-    } else if (/Linux/.test(ua)) {
-        os = "Linux";
     }
     return os + model;
 }
 
-// 3. RASTREADOR PRINCIPAL: Ativa quando a tela do emulador NÃO for mais "none"
+// 3. RASTREADOR (Inicia ao carregar o emulador)
 const emulatorScreen = document.getElementById("emulatorScreen");
 if (emulatorScreen) {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            // Se o estilo mudou e o display NÃO é mais "none", o jogo começou!
-            if (mutation.attributeName === "style" && emulatorScreen.style.display !== "none") {
-                playStartedAt = Date.now();
-                observer.disconnect(); // Desliga o observador para poupar a bateria do celular
+            if (mutation.attributeName === "style" && emulatorScreen.style.display !== "none" && !playStartedAt) {
+                playStartedAt = Date.now(); // Marca o início real
             }
         });
     });
     observer.observe(emulatorScreen, { attributes: true, attributeFilter: ["style"] });
 }
 
-// 4. DUPLO SEGURO (FALLBACK): Se o observador falhar, o clique no botão serve como início estimado
+// 4. PLANO B (Clique no botão)
 const btnJogar = document.getElementById("btnJogar");
 if (btnJogar) {
     btnJogar.addEventListener("click", () => {
         if (!playStartedAt) {
-            // Estima o início real somando 10 segundos (tempo médio da animação de boot)
-            playStartedAt = Date.now() + 10000; 
+            playStartedAt = Date.now(); // Marca o início no clique
         }
     });
 }
 
-// 5. Envia o relatório à planilha
+// 5. Envia o log
 function sendLog() {
     if (logSent || !playStartedAt) return;
-    logSent = true;
-
+    
     const timeSpentSeconds = Math.round((Date.now() - playStartedAt) / 1000);
     
-    // Evita salvar logs insignificantes de menos de 1 segundo
-    if (timeSpentSeconds < 1) return;
+    // Filtro anti-spam: ignora sessões muito curtas (menos de 10s)
+    if (timeSpentSeconds < 10) return; 
+    
+    logSent = true; // Bloqueia envios duplicados
 
     const gameTitle = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) 
         ? CURRENT_GAME.title 
@@ -91,11 +83,8 @@ function sendLog() {
     });
 }
 
-// 6. Dispara o salvamento ao sair, minimizar ou fechar
+// 6. Gatilhos de saída
 document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        sendLog();
-    }
+    if (document.visibilityState === "hidden") sendLog();
 });
-
 window.addEventListener("pagehide", sendLog);

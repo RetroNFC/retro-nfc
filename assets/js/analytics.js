@@ -57,30 +57,34 @@ function sendLog() {
     if (logSent || !playStartedAt) return;
     
     const timeSpentSeconds = Math.round((Date.now() - playStartedAt) / 1000);
-    
-    // Filtro anti-spam: ignora sessões muito curtas (menos de 10s)
     if (timeSpentSeconds < 10) return; 
     
-    logSent = true; // Bloqueia envios duplicados
+    logSent = true; 
 
     const gameTitle = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) 
         ? CURRENT_GAME.title 
         : (document.getElementById("title") ? document.getElementById("title").textContent : "Jogo Desconhecido");
 
-    const payload = {
+    const payload = JSON.stringify({
         ip: userIp,
         dispositivo: getDeviceDetails(),
         jogo: gameTitle,
         tempo: timeSpentSeconds
-    };
-
-    fetch(WEB_APP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(payload),
-        keepalive: true
     });
+
+    // Usa sendBeacon (à prova de falhas para fechamento de abas no celular)
+    if (navigator.sendBeacon) {
+        navigator.sendBeacon(WEB_APP_URL, payload);
+    } else {
+        // Fallback caso o navegador seja muito antigo
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: payload,
+            keepalive: true
+        });
+    }
 }
 
 // 6. Gatilhos de saída

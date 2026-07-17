@@ -14,18 +14,28 @@ fetch("https://api.ipify.org?format=json")
 // 2. Detecta dispositivo
 function getDeviceDetails() {
     const ua = navigator.userAgent;
-    let os = "Desconhecido";
+    let os = "Outro";
     let model = "";
 
     if (/android/i.test(ua)) {
         os = "Android";
-        const match = ua.match(/Android\s+([^\s;]+);\s+([^;)]+)/);
-        if (match) model = ` (${match[2]})`;
-    } else if (/iPad|iPhone|iPod/.test(ua)) {
+        // Tenta capturar o modelo entre parênteses, geralmente o formato Android...; NomeDoModelo Build
+        const match = ua.match(/\(([^)]+)\)/); 
+        if (match && match[1]) {
+            const parts = match[1].split(';');
+            model = parts.length > 2 ? ` (${parts[1].trim()})` : " (Android Genérico)";
+        }
+    } else if (/iPhone|iPod|iPad/i.test(ua)) {
         os = "iOS";
-        const match = ua.match(/CPU\s+iPhone\s+OS\s+([^\s;]+)/);
-        if (match) model = ` (iPhone)`;
+        if (/iPhone/i.test(ua)) model = " (iPhone)";
+        else if (/iPad/i.test(ua)) model = " (iPad)";
+        else model = " (Apple)";
+    } else if (/Windows/i.test(ua)) {
+        os = "Windows PC";
+    } else if (/Macintosh/i.test(ua)) {
+        os = "Mac/Linux";
     }
+
     return os + model;
 }
 

@@ -66,8 +66,14 @@ if (btnJogar) {
 function sendLog() {
     if (logSent || !playStartedAt) return;
     
-    const timeSpentSeconds = Math.round((Date.now() - playStartedAt) / 1000);
-    if (timeSpentSeconds < 10) return; 
+    // Calcula o tempo em milissegundos
+    const timeSpentMs = Date.now() - playStartedAt;
+    
+    // Converte para minutos com 2 casas decimais (ex: 1.50)
+    const timeSpentMinutes = Math.round((timeSpentMs / 60000) * 100) / 100;
+    
+    // Filtro: ignora se jogou menos de 5 segundos (para evitar erros de clique)
+    if (timeSpentMs < 5000) return; 
     
     logSent = true; 
 
@@ -79,8 +85,21 @@ function sendLog() {
         ip: userIp,
         dispositivo: getDeviceDetails(),
         jogo: gameTitle,
-        tempo: timeSpentSeconds
+        tempo: timeSpentMinutes // Agora envia em minutos decimais
     });
+
+    if (navigator.sendBeacon) {
+        navigator.sendBeacon(WEB_APP_URL, payload);
+    } else {
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: payload,
+            keepalive: true
+        });
+    }
+}
 
     // Usa sendBeacon (à prova de falhas para fechamento de abas no celular)
     if (navigator.sendBeacon) {

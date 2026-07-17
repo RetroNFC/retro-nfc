@@ -4,38 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Retrô NFC</title>
-    
-    <!-- Importação do seu CSS corrigido -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-        <!-- Efeitos Visuais de Fundo (definidos no seu CSS) -->
     <div class="scanlines"></div>
-    <div class="background"></div>
-    <div class="topGlow"></div>
-    <div class="bottomGlow"></div>
-    <div class="crt"></div>
-    <div class="vignette"></div>
 
-    <!-- Tela de Erro usando as IDs e Classes CORRETAS do seu CSS -->
-    <!-- A classe "visible" força a tela a aparecer -->
-    <div id="invalidScreen" class="visible">
-        <div class="invalidCard">
-            <h1>RETRO NFC</h1>
-            <!-- Adicionei o H2 que estava estilizado no seu CSS mas faltava aqui -->
-            <h2>ERRO</h2>
-            <p>Cartucho NFC não detectado. Aproxime a sua tag.</p>
-        </div>
+    <!-- Tela de Abertura (Splash) -->
+    <div id="splashScreen">
+        <img src="assets/img/Retrô NFC.png" alt="Logo Retrô NFC">
     </div>
 
-    <!-- Importação dos seus scripts JS (baseado nos arquivos do seu ZIP) -->
-    <!-- Eles estão comentados. Remova as setas de comentário quando for integrar a lógica do leitor -->
-    <!--
-    <script src="assets/js/audio.js"></script>
-    <script src="assets/js/boot.js"></script>
-    <script src="assets/js/game.js"></script>
-    <script src="assets/js/app.js"></script>
-    -->
+    <!-- Tela do Jogo (Tela 1) -->
+    <div id="gameScreen">
+        <img id="gameCover" src="" alt="Capa">
+        <h1 id="title"></h1>
+        <h2 id="subtitle"></h2>
+        <div class="info">
+            <p id="year"></p>
+            <p id="players"></p>
+            <p id="developer"></p>
+        </div>
+        <button id="btnJogar">Carregar Jogo</button>
+    </div>
 
+    <!-- Tela de Boot (Tela 2) -->
+    <div id="bootScreen" style="display: none;">
+        <div class="bootTerminal" id="bootTerminal"></div>
+        <div class="progressText" id="progressText"></div>
+    </div>
 </body>
 </html>

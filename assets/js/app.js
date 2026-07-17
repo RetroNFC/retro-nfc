@@ -38,3 +38,16 @@ async function loadGames() {
 }
 
 document.addEventListener("DOMContentLoaded", loadGames);
+
+// Esconde a tela do jogo imediatamente ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+    const gameScreen = document.getElementById("gameScreen");
+    
+    // Esconde o jogo para mostrar a Splash Screen
+    gameScreen.style.display = "none"; 
+
+    // Mostra o jogo apenas após os 4 segundos da animação da splash
+    setTimeout(() => {
+        gameScreen.style.display = "flex"; 
+    }, 4000); // 4000ms = 4 segundos
+});

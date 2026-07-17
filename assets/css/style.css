@@ -91,13 +91,46 @@ body {
 }
 
 /* =========================================
-   TELA DE BOOT (TERMINAL)
+   TELA DE BOOT (COM FUNDO IMORTALIZE)
    ========================================= */
 #bootScreen {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 360px;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center;     /* Centraliza horizontalmente */
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    background-color: #050505; /* Fundo escuro base de segurança */
+    position: relative; /* Necessário para a imagem de fundo não escapar */
+    overflow: hidden;   /* Evita barras de rolagem por causa do desfoque */
+    z-index: 1;         /* Mantém os textos na frente de tudo */
+}
+
+/* Cria o fundo com a imagem, desfoque e transparência */
+#bootScreen::before {
+    content: "";
+    position: absolute;
+    /* Valores negativos evitam que o desfoque deixe as bordas brancas */
+    top: -15px; left: -15px; right: -15px; bottom: -15px; 
+    
+    /* Caminho da Imagem */
+    background: url('../img/Retrô NFC.png') center/cover no-repeat;
+    
+    /* O Segredo do visual: Deixa a imagem visível e aplica o Blur */
+    opacity: 0.30; 
+    filter: blur(5px); 
+    
+    z-index: -1; /* Joga a imagem para trás dos textos */
+    
+    /* Animação suave ao carregar a tela */
+    animation: fadeInBackground 2.5s ease-in-out forwards;
+}
+
+/* Animação do Fade (Surgimento suave da imagem) */
+@keyframes fadeInBackground {
+    from { opacity: 0; filter: blur(10px); }
+    to { opacity: 0.30; filter: blur(5px); }
 }
 
 .header {
@@ -114,12 +147,14 @@ body {
 /* Centraliza os textos verdes do terminal */
 .bootTerminal {
     width: 100%;
-    text-align: center; /* Muda de left para center */
+    text-align: center; 
     min-height: 220px;
     display: flex;
     flex-direction: column;
     align-items: center; /* Garante que as caixas fiquem no centro */
     gap: 12px;
+    z-index: 2; /* Garante que os textos fiquem à frente do fundo */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Sombra para leitura perfeita no neon */
 }
 
 .bootLine {
@@ -134,6 +169,23 @@ body {
     color: #ffffff;
     text-align: center;
     letter-spacing: 2px; /* Espaço entre os quadrados */
+}
+
+/* Estilo Nintendo para o Título do Jogo (Tela 2) */
+.nintendo-title {
+    color: #E60012 !important;
+    background-color: #FFFFFF !important;
+    border: 4px solid #E60012 !important;
+    border-radius: 50px !important;
+    padding: 12px 24px !important;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 18px !important; 
+    margin-top: 25px !important;
+    font-weight: bold;
+    display: inline-block;
+    font-family: 'Pretendo', sans-serif !important; 
+    letter-spacing: 2px !important;
 }
 
 /* =========================================
@@ -163,34 +215,4 @@ body {
     font-size: 10px;
     line-height: 1.5;
     color: #cccccc;
-}
-
-/* Centraliza a tela de boot e permite fundo */
-#bootScreen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center;     /* Centraliza horizontalmente */
-    width: 100vw;
-    height: 100vh;
-    padding: 20px;
-    /* Opcional: Se quiser adicionar o fundo depois, adicione: 
-       background: url('../img/seu-fundo.png') center/cover no-repeat; */
-}
-
-/* Estilo Nintendo para o Título do Jogo (Tela 2) */
-.nintendo-title {
-    color: #E60012 !important;
-    background-color: #FFFFFF !important;
-    border: 4px solid #E60012 !important;
-    border-radius: 50px !important;
-    padding: 12px 24px !important;
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 18px !important; /* Aumentei um pouco pois essa fonte costuma ser menor */
-    margin-top: 25px !important;
-    font-weight: bold;
-    display: inline-block;
-    font-family: 'Pretendo', sans-serif !important; /* <-- A MÁGICA AQUI */
-    letter-spacing: 2px !important;
 }

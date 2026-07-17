@@ -179,7 +179,7 @@
       "cover": "assets/capas/goof.png",
       "core": "snes",
       "romUrl": "assets/roms/goof.sfc"
-    }
+    },
 {
       "key": "c7e5a1b3-4f9d-4211-a8b2-3c1d9f8e4a55",
       "title": "Rock N' Roll Racing",
@@ -245,7 +245,7 @@
       "cover": "assets/capas/bomberman5.png",
       "core": "snes",
       "romUrl": "assets/roms/bomberman5.sfc"
-    }
+    },
     {
       "key": "c3eb0719-ad51-4877-0418-9c7d5f4e0a11",
       "title": "Mighty Morphin Power Rangers",

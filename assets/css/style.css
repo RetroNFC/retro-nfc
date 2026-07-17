@@ -111,19 +111,15 @@ body {
 #bootScreen::before {
     content: "";
     position: absolute;
-    /* Valores negativos evitam que o desfoque deixe as bordas brancas */
     top: -15px; left: -15px; right: -15px; bottom: -15px; 
     
-    /* Caminho da Imagem */
-    background: url('../img/Retrô NFC.png') center/cover no-repeat;
+    /* Alteramos de cover para 120% para a imagem ficar maior na tela */
+    background: url('../img/Retrô NFC.png') center/120% no-repeat;
     
-    /* O Segredo do visual: Deixa a imagem visível e aplica o Blur */
     opacity: 0.30; 
-    filter: blur(5px); 
+    filter: blur(4px); /* Diminui um pouco o blur para o rosto ficar mais nítido */
     
-    z-index: -1; /* Joga a imagem para trás dos textos */
-    
-    /* Animação suave ao carregar a tela */
+    z-index: -1; 
     animation: fadeInBackground 2.5s ease-in-out forwards;
 }
 

@@ -180,5 +180,126 @@
       "core": "snes",
       "romUrl": "assets/roms/goof.sfc"
     }
-  ]
+{
+      "key": "c7e5a1b3-4f9d-4211-a8b2-3c1d9f8e4a55",
+      "title": "Rock N' Roll Racing",
+      "subtitle": "",
+      "year": "1993",
+      "players": "1-2",
+      "developer": "Silicon & Synapse",
+      "cover": "assets/capas/rrr.png",
+      "core": "snes",
+      "romUrl": "assets/roms/rrr.sfc"
+    },
+    {
+      "key": "d8f6b2c4-5e0c-4322-b9c3-4d2e0a9f5b66",
+      "title": "Top Gear 3000",
+      "subtitle": "",
+      "year": "1995",
+      "players": "1-4",
+      "developer": "Gremlin Interactive",
+      "cover": "assets/capas/tg3000.png",
+      "core": "snes",
+      "romUrl": "assets/roms/tg3000.sfc"
+    },
+    {
+      "key": "e9a7c3d5-6f1d-4433-c0d4-5e3f1b0a6c77",
+      "title": "Contra III",
+      "subtitle": "The Alien Wars",
+      "year": "1992",
+      "players": "1-2",
+      "developer": "Konami",
+      "cover": "assets/capas/contra3.png",
+      "core": "snes",
+      "romUrl": "assets/roms/contra3.sfc"
+    },
+    {
+      "key": "f0b8d4e6-7a2e-4544-d1e5-6f4a2c1b7d88",
+      "title": "The Lion King",
+      "subtitle": "Disney",
+      "year": "1994",
+      "players": "1",
+      "developer": "Westwood Studios",
+      "cover": "assets/capas/lk.png",
+      "core": "snes",
+      "romUrl": "assets/roms/lk.sfc"
+    },
+    {
+      "key": "a1c9e5f7-8b3f-4655-e2f6-7a5b3d2c8e99",
+      "title": "Super Bomberman 3",
+      "subtitle": "",
+      "year": "1995",
+      "players": "1-5",
+      "developer": "Hudson Soft",
+      "cover": "assets/capas/bomberman3.png",
+      "core": "snes",
+      "romUrl": "assets/roms/bomberman3.sfc"
+    },
+    {
+      "key": "e62f4c7d-a1c8-4b2e-9d3f-5c0b8e713a99",
+      "title": "Super Bomberman 5",
+      "subtitle": "",
+      "year": "1997",
+      "players": "1-5",
+      "developer": "Hudson Soft",
+      "cover": "assets/capas/bomberman5.png",
+      "core": "snes",
+      "romUrl": "assets/roms/bomberman5.sfc"
+    }
+    {
+      "key": "c3eb0719-ad51-4877-0418-9c7d5f4e0a11",
+      "title": "Mighty Morphin Power Rangers",
+      "subtitle": "",
+      "year": "1994",
+      "players": "1-2",
+      "developer": "Natsume",
+      "cover": "assets/capas/pr.png",
+      "core": "snes",
+      "romUrl": "assets/roms/pr.sfc"
+    },
+    {
+      "key": "d4fc182a-be62-4988-1529-ad8e605f1b22",
+      "title": "Star Fox",
+      "subtitle": "",
+      "year": "1993",
+      "players": "1",
+      "developer": "Nintendo EAD",
+      "cover": "assets/capas/starfox.png",
+      "core": "snes",
+      "romUrl": "assets/roms/starfox.sfc"
+    },
+    {
+      "key": "e50d293b-cf73-4a99-263a-be9f71602c33",
+      "title": "Mortal Kombat 3",
+      "subtitle": "",
+      "year": "1995",
+      "players": "1-2",
+      "developer": "Midway",
+      "cover": "assets/capas/mk3.png",
+      "core": "snes",
+      "romUrl": "assets/roms/mk3.sfc"
+    },
+    {
+      "key": "f61e3a4c-d084-4baa-374b-cf0a82713d44",
+      "title": "Killer Instinct",
+      "subtitle": "",
+      "year": "1995",
+      "players": "1-2",
+      "developer": "Rare",
+      "cover": "assets/capas/ki.png",
+      "core": "snes",
+      "romUrl": "assets/roms/ki.sfc"
+    },
+    {
+      "key": "072f4b5d-e195-4cbb-485c-d01b93824e55",
+      "title": "Street Fighter II",
+      "subtitle": "The World Warrior",
+      "year": "1992",
+      "players": "1-2",
+      "developer": "Capcom",
+      "cover": "assets/capas/sf2.png",
+      "core": "snes",
+      "romUrl": "assets/roms/sf2.sfc"
+    }
+      ]
 }

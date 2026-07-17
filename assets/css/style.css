@@ -81,6 +81,7 @@ body {
     text-transform: uppercase;
     font-weight: bold;
     font-family: 'Pretendo', sans-serif !important; /* Aplica a fonte da Nintendo */
+    letter-spacing: 2px;
     transition: all 0.2s ease;
 }
 
@@ -191,4 +192,5 @@ body {
     font-weight: bold;
     display: inline-block;
     font-family: 'Pretendo', sans-serif !important; /* <-- A MÁGICA AQUI */
+    letter-spacing: 2px !important;
 }

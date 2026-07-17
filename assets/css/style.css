@@ -113,8 +113,8 @@ body {
     position: absolute;
     top: -15px; left: -15px; right: -15px; bottom: -15px; 
     
-    /* Alteramos de cover para 120% para a imagem ficar maior na tela */
-    background: url('../img/Retrô NFC.png') center/110% no-repeat;
+    /* Alteramos para 100% para a imagem não cortar o logo */
+    background: url('../img/Retrô NFC.png') center/100% no-repeat;
     
     opacity: 0.30; 
     filter: blur(4px); /* Diminui um pouco o blur para o rosto ficar mais nítido */
@@ -126,7 +126,7 @@ body {
 /* Animação do Fade (Surgimento suave da imagem) */
 @keyframes fadeInBackground {
     from { opacity: 0; filter: blur(10px); }
-    to { opacity: 0.30; filter: blur(5px); }
+    to { opacity: 0.30; filter: blur(4px); }
 }
 
 .header {
@@ -213,21 +213,23 @@ body {
     color: #cccccc;
 }
 
-/* Efeito de Scanlines (Linhas de TV Antiga) */
+/* =========================================
+   SPLASH E SCANLINES (NOVO)
+   ========================================= */
+#splashScreen {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #0d1117; display: flex; justify-content: center; align-items: center;
+    z-index: 100; animation: fadeSplash 4s ease-in-out forwards;
+}
+#splashScreen img { width: 80%; max-width: 400px; }
+
+@keyframes fadeSplash {
+    0% { opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; visibility: hidden; }
+}
+
 .scanlines {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* Garante que o efeito não bloqueie cliques nos botões */
-    z-index: 10;          /* Fica acima de tudo, mas invisível ao toque */
-    
-    /* Cria as listras horizontais */
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 50%,
-        rgba(0, 0, 0, 0.15) 50% /* O 0.15 controla a intensidade (aumente se quiser mais forte) */
-    );
-    background-size: 100% 4px; /* Altura da listra: 4px. Ajuste para 2px se quiser mais fino */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1000;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%);
+    background-size: 100% 4px;
 }

@@ -42,10 +42,10 @@ body {
 
 #gameCover {
     width: 100%;
-    max-width: 280px;
+    max-width: 322px; /* Aumentado em cerca de 15% */
     border-radius: 6px;
     margin-bottom: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.8); /* Dá um efeito 3D na capa */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.9); /* Aumentei um pouco a sombra para acompanhar o tamanho */
 }
 
 #title {
@@ -114,7 +114,7 @@ body {
     top: -15px; left: -15px; right: -15px; bottom: -15px; 
     
     /* Alteramos de cover para 120% para a imagem ficar maior na tela */
-    background: url('../img/Retrô NFC.png') center/120% no-repeat;
+    background: url('../img/Retrô NFC.png') center/110% no-repeat;
     
     opacity: 0.30; 
     filter: blur(4px); /* Diminui um pouco o blur para o rosto ficar mais nítido */
@@ -211,4 +211,23 @@ body {
     font-size: 10px;
     line-height: 1.5;
     color: #cccccc;
+}
+
+/* Efeito de Scanlines (Linhas de TV Antiga) */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Garante que o efeito não bloqueie cliques nos botões */
+    z-index: 10;          /* Fica acima de tudo, mas invisível ao toque */
+    
+    /* Cria as listras horizontais */
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 50%,
+        rgba(0, 0, 0, 0.15) 50% /* O 0.15 controla a intensidade (aumente se quiser mais forte) */
+    );
+    background-size: 100% 4px; /* Altura da listra: 4px. Ajuste para 2px se quiser mais fino */
 }

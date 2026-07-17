@@ -48,14 +48,8 @@ async function startBoot() {
     }
 
     const gameLine = document.createElement("div");
-    // Adicionamos a classe 'nintendo-title' que criamos no CSS
-    gameLine.className = "bootLine nintendo-title"; 
+    gameLine.className = "bootLine nintendo-title";
     gameLine.textContent = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) ? CURRENT_GAME.title : "Iniciando...";
-    terminal.appendChild(gameLine);
-    gameLine.style.color = "#FFD93D";
-    gameLine.style.fontSize = "14px";
-    gameLine.style.marginTop = "15px";
-    gameLine.style.fontWeight = "bold";
     terminal.appendChild(gameLine);
 
     // Finaliza a barra de carregamento no último bloco

@@ -114,7 +114,7 @@ body {
     top: -15px; left: -15px; right: -15px; bottom: -15px; 
     
     /* Alteramos para 100% para a imagem não cortar o logo */
-    background: url('../img/Retrô NFC.png') center/100% no-repeat;
+    background: url('../img/retronfc.png') center/100% no-repeat;
     
     opacity: 0.30; 
     filter: blur(4px); /* Diminui um pouco o blur para o rosto ficar mais nítido */

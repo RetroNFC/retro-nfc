@@ -44,7 +44,7 @@ async function startBoot() {
         const progressIndex = Math.floor(((i + 1) / etapas.length) * (BOOT_BLOCKS.length - 1));
         progressEl.textContent = BOOT_BLOCKS[progressIndex];
         
-        await sleep(1000); 
+        await sleep(2000); 
     }
 
     const gameLine = document.createElement("div");
@@ -55,7 +55,7 @@ async function startBoot() {
     // Finaliza a barra de carregamento no último bloco
     progressEl.textContent = BOOT_BLOCKS[BOOT_BLOCKS.length - 1];
 
-    await sleep(1000);
+    await sleep(2000);
     
     // --- INTEGRAÇÃO EMULATORJS (Automático) ---
     document.getElementById("bootScreen").style.display = "none";

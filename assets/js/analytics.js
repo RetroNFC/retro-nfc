@@ -1,6 +1,6 @@
 // assets/js/analytics.js
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFovgGIRAMLJXGQyrAXP5ppIiK6qgMgZwZyHi54zVrXHd9-zppumIR6wJu14Mi-bfO9Q/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNHyULYwTJoYZkS3qmHjplCnB75e6O5gOBrLMMzBPWILu_60_kiIkSPOvopyIPamN7lA/exec";
 let userIp = "Buscando...";
 let playStartedAt = null;
 let logSent = false;

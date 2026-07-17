@@ -48,8 +48,10 @@ async function startBoot() {
     }
 
     const gameLine = document.createElement("div");
-    gameLine.className = "bootLine";
+    // Adicionamos a classe 'nintendo-title' que criamos no CSS
+    gameLine.className = "bootLine nintendo-title"; 
     gameLine.textContent = (typeof CURRENT_GAME !== 'undefined' && CURRENT_GAME.title) ? CURRENT_GAME.title : "Iniciando...";
+    terminal.appendChild(gameLine);
     gameLine.style.color = "#FFD93D";
     gameLine.style.fontSize = "14px";
     gameLine.style.marginTop = "15px";

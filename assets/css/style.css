@@ -217,10 +217,17 @@ body {
    SPLASH E SCANLINES (NOVO)
    ========================================= */
 #splashScreen {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #0d1117; display: flex; justify-content: center; align-items: center;
-    z-index: 100; animation: fadeSplash 4s ease-in-out forwards;
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background-color: #0d1117; 
+    display: flex; /* Garante que ela esteja visível */
+    justify-content: center; 
+    align-items: center;
+    z-index: 9999; /* Z-index altíssimo para ficar sobre tudo */
+    animation: fadeSplash 4s ease-in-out forwards;
 }
+
 #splashScreen img { width: 80%; max-width: 400px; }
 
 @keyframes fadeSplash {

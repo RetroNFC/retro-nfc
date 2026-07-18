@@ -43,14 +43,17 @@ document.addEventListener("DOMContentLoaded", loadGames);
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
+    const scanlines = document.querySelector(".scanlines"); 
     
-    // Estado inicial: Jogo escondido, Splash aparecendo
+    // Estado inicial: Jogo escondido, Splash e Scanlines aparecendo
     gameScreen.style.display = "none"; 
     splashScreen.style.display = "flex"; 
+    if (scanlines) scanlines.style.display = "block";
 
     // Exatos 4 segundos depois... a troca acontece
     setTimeout(() => {
         splashScreen.style.display = "none"; // Mata a splash
+        if (scanlines) scanlines.style.display = "none"; // Mata as scanlines!
         gameScreen.style.display = "flex";   // Mostra a Tela 1 (Capa do jogo)
     }, 4000);
 });

@@ -236,12 +236,22 @@ body {
     align-items: center;
 }
 
+/* Configuração padrão (Desktop/Grande) */
 #splashScreen img { 
+    content: url('../img/retronfc.png'); /* Sua imagem original */
     width: 100vw;
-    height: 100dvh; /* Use 100dvh para garantir que não corte no mobile */
-    object-fit: contain; /* Isso força a imagem a caber inteira na tela */
+    height: 100dvh;
+    object-fit: cover; 
     opacity: 0; 
     animation: fadeLogo 4s ease-in-out forwards; 
+}
+
+/* Configuração Mobile (Detecta telas estreitas) */
+@media (max-width: 768px) {
+    #splashScreen img { 
+        content: url('../img/retronfc_mobile.png'); /* Sua nova imagem vertical */
+        object-fit: cover; /* Agora, com a proporção certa, o cover vai ficar perfeito */
+    }
 }
 
 /* O TEMPO EXATO: 1s entra, 2s parada, 1s sai = 4s totais */
@@ -284,4 +294,12 @@ body .ejs_start_button {
     padding: 15px 40px !important;
     cursor: pointer !important;
     z-index: 20000 !important; /* Maior que tudo */
+}
+
+/* Ajuste automático para a imagem de fundo do Boot no celular */
+@media (max-width: 768px) {
+    #bootScreen::before {
+        background-image: url('../img/retronfc_mobile.png') !important;
+        background-size: cover !important; /* Faz preencher a tela vertical perfeitamente */
+    }
 }

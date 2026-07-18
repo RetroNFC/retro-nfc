@@ -221,29 +221,41 @@ body {
 }
 
 /* =========================================
-   SPLASH E SCANLINES (NOVO)
+   SPLASH E SCANLINES (CORRIGIDO)
    ========================================= */
 #splashScreen {
     position: fixed; 
     top: 0; left: 0; 
     width: 100vw; height: 100vh;
     background-color: #0d1117; 
-    display: flex; /* Garante que ela esteja visível */
+    display: flex;
     justify-content: center; 
     align-items: center;
-    z-index: 9999; /* Z-index altíssimo para ficar sobre tudo */
-    animation: fadeSplash 4s ease-in-out forwards;
+    /* Reduzimos o z-index para as scanlines passarem por cima do fundo! */
+    z-index: 9000; 
 }
 
-#splashScreen img { width: 80%; max-width: 400px; }
+/* A ANIMAÇÃO VEM PARA A IMAGEM, NÃO PARA O FUNDO */
+#splashScreen img { 
+    width: 80%; 
+    max-width: 400px; 
+    opacity: 0; /* A imagem começa invisível */
+    animation: fadeLogo 4s ease-in-out forwards; /* Aplica o fade só nela */
+}
 
-@keyframes fadeSplash {
-    0% { opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; visibility: hidden; }
+/* O TEMPO EXATO: 1s entra, 2s parada, 1s sai = 4s totais */
+@keyframes fadeLogo {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; } /* Atinge o brilho máximo no segundo 1 */
+    75%  { opacity: 1; } /* Fica visível até o segundo 3 */
+    100% { opacity: 0; } /* Some completamente no segundo 4 */
 }
 
 .scanlines {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 1000;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; 
+    /* DEVE SER MAIOR QUE O SPLASH (9000) PARA DAR O EFEITO RETRÔ */
+    z-index: 9999; 
     background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%);
     background-size: 100% 4px;
 }

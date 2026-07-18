@@ -77,8 +77,3 @@ async function startBoot() {
         console.error("Jogo não encontrado para carregar o emulador.");
     }
 }
-
-// Adicione isto no final do seu arquivo para garantir que a Splash suma
-setTimeout(() => {
-    document.getElementById("splashScreen").style.display = "none";
-}, 4000);

@@ -55,5 +55,5 @@ document.addEventListener("DOMContentLoaded", () => {
         splashScreen.style.display = "none"; // Mata a splash
         if (scanlines) scanlines.style.display = "none"; // Mata as scanlines!
         gameScreen.style.display = "flex";   // Mostra a Tela 1 (Capa do jogo)
-    }, 4000);
+    }, 6000);
 });

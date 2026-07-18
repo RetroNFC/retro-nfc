@@ -237,8 +237,10 @@ body {
 
 /* A ANIMAÇÃO VEM PARA A IMAGEM, NÃO PARA O FUNDO */
 #splashScreen img { 
-    width: 80%; 
-    max-width: 400px; 
+    /* Ajustes para preencher a tela */
+    width: 100vw; 
+    height: 100vh;
+    object-fit: cover; /* Garante que a imagem preencha toda a área sem distorcer as proporções */
     opacity: 0; /* A imagem começa invisível */
     animation: fadeLogo 4s ease-in-out forwards; /* Aplica o fade só nela */
 }

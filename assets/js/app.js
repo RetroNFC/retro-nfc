@@ -39,15 +39,18 @@ async function loadGames() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Esconde a tela do jogo imediatamente ao carregar a página
+// Esconde a tela do jogo imediatamente e controla a Splash Screen
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
+    const splashScreen = document.getElementById("splashScreen");
     
-    // Esconde o jogo para mostrar a Splash Screen
+    // Estado inicial: Jogo escondido, Splash aparecendo
     gameScreen.style.display = "none"; 
+    splashScreen.style.display = "flex"; 
 
-    // Mostra o jogo apenas após os 4 segundos da animação da splash
+    // Exatos 4 segundos depois... a troca acontece
     setTimeout(() => {
-        gameScreen.style.display = "flex"; 
-    }, 4000); // 4000ms = 4 segundos
+        splashScreen.style.display = "none"; // Mata a splash
+        gameScreen.style.display = "flex";   // Mostra a Tela 1 (Capa do jogo)
+    }, 4000);
 });

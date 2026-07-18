@@ -238,8 +238,8 @@ body {
 
 #splashScreen img { 
     width: 100vw;
-    height: 100vh;
-    object-fit: cover; /* A imagem vai esticar/cortar levemente para preencher 100% da tela */
+    height: 100dvh; /* Use 100dvh para garantir que não corte no mobile */
+    object-fit: contain; /* Isso força a imagem a caber inteira na tela */
     opacity: 0; 
     animation: fadeLogo 4s ease-in-out forwards; 
 }

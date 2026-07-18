@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
     splashScreen.style.display = "flex"; 
     if (scanlines) scanlines.style.display = "block";
 
-    // Exatos 4 segundos depois... a troca acontece
+    // Exatos 5 segundos depois... a troca acontece
     setTimeout(() => {
         splashScreen.style.display = "none"; // Mata a splash
         if (scanlines) scanlines.style.display = "none"; // Mata as scanlines!
         gameScreen.style.display = "flex";   // Mostra a Tela 1 (Capa do jogo)
-    }, 6000);
+    }, 5000);
 });

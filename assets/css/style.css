@@ -243,7 +243,7 @@ body {
     height: 100dvh;
     object-fit: cover; 
     opacity: 0; 
-    animation: fadeLogo 6s ease-in-out forwards; 
+    animation: fadeLogo 15s ease-in-out forwards; 
 }
 
 /* Configuração Mobile (Detecta telas estreitas) */

@@ -224,23 +224,23 @@ body {
    SPLASH E SCANLINES (CORRIGIDO)
    ========================================= */
 #splashScreen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
-    background-color: black; /* Garante fundo preto */
     position: fixed;
     top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
     z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Garante que nada escape */
 }
 
 #splashScreen img { 
-    width: 90%;      /* Deixa uma margem nas laterais */
-    height: auto;    /* Ajusta a altura automaticamente */
-    max-height: 90vh;/* Garante que não ultrapasse a tela */
-    object-fit: contain; /* Mostra a imagem inteira sem distorcer */
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* A imagem vai esticar/cortar levemente para preencher 100% da tela */
     opacity: 0; 
     animation: fadeLogo 4s ease-in-out forwards; 
 }
@@ -264,12 +264,28 @@ body {
 
 /* Força o botão JOGAR a subir e ficar visível */
 .ejs_start_button {
-    bottom: 20% !important; /* Sobe o botão para 20% acima da base da tela */
-    position: absolute !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important; /* Centraliza horizontalmente */
-    z-index: 1000 !important;
-    /* Opcional: melhora o visual do botão */
-    padding: 15px 40px !important;
+    /* Forçar branding Retrô NFC */
+    background-color: #FFFFFF !important;
+    color: #E60012 !important;
+    border: 4px solid #E60012 !important;
     border-radius: 50px !important;
+    font-family: 'Pretendo', sans-serif !important;
+    font-size: 24px !important;
+    text-transform: uppercase !important;
+    
+    /* Centralização e posição */
+    position: absolute !important;
+    bottom: 20% !important; 
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    
+    /* Alinhamento do texto interno */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    
+    /* Dimensões */
+    padding: 15px 40px !important;
+    cursor: pointer !important;
+    z-index: 1000 !important;
 }

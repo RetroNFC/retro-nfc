@@ -244,7 +244,6 @@ body {
     opacity: 0; 
     animation: fadeLogo 4s ease-in-out forwards; 
 }
-}
 
 /* O TEMPO EXATO: 1s entra, 2s parada, 1s sai = 4s totais */
 @keyframes fadeLogo {

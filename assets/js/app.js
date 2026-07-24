@@ -1,23 +1,30 @@
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
+let IS_VALID = false; // Criamos essa trava para avisar o sistema se o jogo existe
 const clickSound = new Audio('assets/life.mp3'); 
 
 async function loadGames() {
     try {
         const response = await fetch("games.json?ts=" + Date.now());
-        const data = await response.json(); // "data" agora recebe o objeto completo
+        const data = await response.json(); 
         
-        // Acessamos "data.games" para encontrar o jogo dentro da lista
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
+            // SE DER ERRO: Avisa o sistema que é falso e mostra a imagem!
+            IS_VALID = false;
+            document.getElementById("splashScreen").style.display = "none";
+            const scanlines = document.querySelector(".scanlines"); 
+            if (scanlines) scanlines.style.display = "none";
             document.getElementById("gameScreen").style.display = "none";
+            
             document.getElementById("invalidScreen").style.display = "flex";
             return;
         }
 
-        // Atualizando os elementos da tela com base nos IDs do seu HTML
+        // SE O JOGO FOR VERDADEIRO:
+        IS_VALID = true;
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
@@ -28,7 +35,6 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            // A função startBoot() está no seu boot.js
             startBoot();
         });
 
@@ -50,10 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
     splashScreen.style.display = "flex"; 
     if (scanlines) scanlines.style.display = "block";
 
-    // Exatos 5 segundos depois... a troca acontece
+    // Exatos 5 segundos depois... a troca acontece (SÓ SE FOR VERDADEIRO)
     setTimeout(() => {
-        splashScreen.style.display = "none"; // Mata a splash
-        if (scanlines) scanlines.style.display = "none"; // Mata as scanlines!
-        gameScreen.style.display = "flex";   // Mostra a Tela 1 (Capa do jogo)
+        if (IS_VALID) { // A trava em ação!
+            splashScreen.style.display = "none"; 
+            if (scanlines) scanlines.style.display = "none"; 
+            gameScreen.style.display = "flex";   
+        }
     }, 5000);
 });

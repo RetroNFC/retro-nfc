@@ -70,5 +70,33 @@
     <script src="assets/js/app.js"></script>
     <script src="assets/js/boot.js"></script>
     <script src="assets/js/analytics.js"></script>
+
+    <script>
+    // Camuflagem de URL para proteção anti-compartilhamento
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Verifica se a URL atual tem o parâmetro '?k='
+        if (window.location.search.includes("k=")) {
+            
+            // Aguarda 500 milissegundos para garantir que o seu sistema (app.js/boot.js) 
+            // já tenha lido o código verdadeiro e começado a carregar o jogo
+            setTimeout(function() {
+                
+                if (window.history.replaceState) {
+                    // Opção 1: Deixar a URL totalmente limpa (só play.html)
+                    // const urlFalsa = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    
+                    // Opção 2: Colocar um código falso/bonito para enganar quem tentar copiar
+                    const urlFalsa = window.location.protocol + "//" + window.location.host + window.location.pathname + "?k=sessao-nfc-ativa-nao-compartilhar";
+                    
+                    // Substitui a URL na barra de endereços do usuário
+                    window.history.replaceState({ path: urlFalsa }, '', urlFalsa);
+                }
+                
+            }, 500); // 500ms é o atraso. Pode aumentar para 1000 se o jogo não carregar.
+        }
+    });
+</script>
+    
 </body>
 </html>

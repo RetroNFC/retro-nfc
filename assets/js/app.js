@@ -66,7 +66,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen de 3 segundos
+// Controle da Splash Screen de 4 segundos
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -84,5 +84,5 @@ document.addEventListener("DOMContentLoaded", () => {
             if (scanlines) scanlines.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 3000);
+    }, 4000);
 });

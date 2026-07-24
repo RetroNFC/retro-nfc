@@ -199,11 +199,18 @@ body {
    TELA DE ERRO (CARTUCHO INVÁLIDO)
    ========================================= */
 #invalidScreen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 320px;
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    background: #000 url('../img/invalido.png') no-repeat center center !important;
+    background-size: 100% 100% !important;
+    z-index: 9999999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
 }
 
 .errorTitle {

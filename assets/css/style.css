@@ -70,16 +70,18 @@ body {
 
 #btnJogar, #startButton {
     margin-top: 30px;
+    background-color: #E60012 !important; /* Fundo Vermelho */
+    color: #FFFFFF !important; /* Letra Branca */
+    border: 3px solid #FFFFFF !important; /* Borda Branca */
+    text-shadow: none !important; /* Sem sombra no texto */
+    
     padding: 16px 40px;
-    background-color: #E60012 !important; /* Fundo vermelho */
-    color: #FFFFFF !important; /* Letra branca */
-    border: 4px solid #E60012 !important; /* Borda branca grossa */
-    border-radius: 50px; /* Deixa redondo em formato de pílula */
+    border-radius: 50px;
     cursor: pointer;
-    text-shadow: none !important; /* Removemos a sombra 3D que tinha antes */
+    box-shadow: none;
     text-transform: uppercase;
     font-weight: bold;
-    font-family: 'Pretendo', sans-serif !important; /* Aplica a fonte da Nintendo */
+    font-family: 'Pretendo', sans-serif !important;
     letter-spacing: 2px;
     transition: all 0.2s ease;
 }
@@ -176,9 +178,11 @@ body {
 
 /* Estilo Nintendo para o Título do Jogo (Tela 2) */
 .nintendo-title {
-    color: #E60012 !important;
-    background-color: #FFFFFF !important;
-    border: 4px solid #E60012 !important;
+    background-color: #E60012 !important; /* Fundo Vermelho */
+    color: #FFFFFF !important; /* Letra Branca */
+    border: 3px solid #FFFFFF !important; /* Borda Branca */
+    text-shadow: none !important; /* Sem sombra no texto */
+    
     border-radius: 50px !important;
     padding: 15px 30px !important;
     text-transform: uppercase;
@@ -275,12 +279,11 @@ body {
 
 /* Força o botão JOGAR a subir e ficar visível */
 body .ejs_start_button {
-    background-color: #E60012 !important; /* Fundo agora é vermelho */
-    color: #FFFFFF !important; /* Letra agora é branca */
-    text-shadow: none !important; /* Remove qualquer sombra da letra */
-    border: 4px solid #E60012 !important; /* Mantém a borda vermelha para não dar diferença de tamanho */
+    background-color: #E60012 !important; /* Fundo Vermelho */
+    color: #FFFFFF !important; /* Letra Branca */
+    border: 3px solid #FFFFFF !important; /* Borda Branca */
+    text-shadow: none !important; /* Sem sombra no texto */
     
-    /* Mantenha o resto do seu código exatamente igual abaixo: */
     border-radius: 50px !important;
     font-family: 'Pretendo', sans-serif !important;
     font-size: 24px !important;

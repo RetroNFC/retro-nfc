@@ -188,7 +188,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen
+// Controle da Splash Screen (TELA ZERO)
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (scanlines) scanlines.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 3000); 
+    }, 5000); 
 });
 
 // Ativa Tela Cheia e Trava na Horizontal

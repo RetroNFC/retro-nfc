@@ -2,10 +2,10 @@
 // CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
 // =========================================
 
-// Altere "seu-usuario.github.io" para o seu usuário real do GitHub
-const DOMINIO_PERMITIDO = "retronfc.github.io"; 
+// Verifica se está rodando no seu localhost ou no seu GitHub Pages oficial
+const MEU_REPOSITORIO = "retro-nfc"; 
 
-if (window.location.hostname !== "localhost" && !window.location.hostname.includes(DOMINIO_PERMITIDO)) {
+if (window.location.hostname !== "localhost" && !window.location.href.includes(MEU_REPOSITORIO)) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }

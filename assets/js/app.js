@@ -1,4 +1,30 @@
 // =========================================
+// CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
+// =========================================
+
+// Altere "seu-usuario.github.io" para o seu usuário real do GitHub
+const DOMINIO_PERMITIDO = "https://retronfc.github.io/retro-nfc"; 
+
+if (window.location.hostname !== "localhost" && !window.location.hostname.includes(DOMINIO_PERMITIDO)) {
+    document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";
+    throw new Error("Execução bloqueada por segurança.");
+}
+
+// Bloqueio de Botão Direito
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Bloqueio de Teclas de Atalho de Desenvolvedor (F12, Ctrl+Shift+I, Ctrl+U, etc.)
+document.addEventListener('keydown', function(event) {
+    if (event.keyCode === 123 || // F12
+        (event.ctrlKey && event.shiftKey && event.keyCode === 73) || // Ctrl+Shift+I
+        (event.ctrlKey && event.shiftKey && event.keyCode === 67) || // Ctrl+Shift+C
+        (event.ctrlKey && event.keyCode === 85)) { // Ctrl+U
+        event.preventDefault();
+        return false;
+    }
+});
+
+// =========================================
 // CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
 // =========================================
 const PARAMS = new URLSearchParams(window.location.search);
@@ -15,7 +41,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let horaInicioJogo = null;
 
-// 1. Gera ou recupera um ID único e anônimo para o usuário (Fidelização Imortalize)
+// Gera ou recupera um ID único e anônimo para o usuário
 function obterIdJogador() {
     let jogadorId = localStorage.getItem('imortalize_user_id');
     if (!jogadorId) {
@@ -25,7 +51,7 @@ function obterIdJogador() {
     return jogadorId;
 }
 
-// 2. Identifica o Aparelho
+// Identifica o Aparelho
 function obterAparelho() {
     const ua = navigator.userAgent;
     if (/android/i.test(ua)) return "Android";
@@ -35,7 +61,7 @@ function obterAparelho() {
     return "Outro";
 }
 
-// 3. Identifica o Navegador
+// Identifica o Navegador
 function obterNavegador() {
     const ua = navigator.userAgent;
     if (/samsungbrowser/i.test(ua)) return "Samsung Internet";
@@ -45,7 +71,7 @@ function obterNavegador() {
     return "Outro";
 }
 
-// 4. Coleta IP, Localização e Envia IMEDIATAMENTE para o Supabase ao iniciar o jogo
+// Coleta IP, Localização e Envia IMEDIATAMENTE para o Supabase ao iniciar o jogo
 async function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
 
@@ -56,7 +82,6 @@ async function registrarLogAcessoImediato() {
     let ipUser = "Desconhecido";
     let localUser = "Desconhecida";
 
-    // Busca IP e Cidade de forma ultra-rápida e segura
     try {
         const response = await fetch("https://ipwho.is/");
         const data = await response.json();
@@ -65,7 +90,6 @@ async function registrarLogAcessoImediato() {
             ipUser = data.ip || "Desconhecido";
             localUser = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
         } else {
-            // Fallback caso a principal falhe
             const ipFallback = await fetch("https://api.ipify.org?format=json");
             const ipData = await ipFallback.json();
             ipUser = ipData.ip || "Desconhecido";
@@ -74,19 +98,17 @@ async function registrarLogAcessoImediato() {
         console.log("Erro ao buscar IP/Localização:", e);
     }
 
-    // Monta o pacote de dados
     const payload = {
         data_hora: dataHoraCompleta,
         jogo: CURRENT_GAME.title || "Desconhecido",
         jogador_id: obterIdJogador(),
-        tempo: "Sessão Iniciada", // Registra o início do acesso instantaneamente
+        tempo: "Sessão Iniciada",
         localizacao: localUser,
         ip: ipUser,
         aparelho: obterAparelho(),
         navegador: obterNavegador()
     };
 
-    // Envia para o Supabase com a página 100% ativa (sem falhas de fechamento)
     try {
         await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
@@ -98,14 +120,13 @@ async function registrarLogAcessoImediato() {
             },
             body: JSON.stringify(payload)
         });
-        console.log("Log de acesso registrado com sucesso!");
     } catch (error) {
         console.log("Erro ao enviar log:", error);
     }
 }
 
 // =========================================
-// CARREGAMENTO E FLUXO DO JOGO
+// CARREGAMENTO E FLUXO DO JOGO (SEM SPLASH)
 // =========================================
 async function loadGames() {
     try {
@@ -132,10 +153,19 @@ async function loadGames() {
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
+        // Oculta completamente qualquer resquício da Splash Screen e exibe a tela do jogo direto
+        const splashScreen = document.getElementById("splashScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        const scanlines = document.querySelector(".scanlines"); 
+
+        if (splashScreen) splashScreen.style.display = "none";
+        if (scanlines) scanlines.style.display = "none";
+        if (gameScreen) gameScreen.style.display = "flex";
+
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            registrarLogAcessoImediato(); // Dispara o envio imediato dos dados (IP, Cidade, Aparelho, Jogo)
+            registrarLogAcessoImediato(); 
             startBoot();
         });
 
@@ -163,25 +193,6 @@ function mostrarTelaErro() {
 }
 
 document.addEventListener("DOMContentLoaded", loadGames);
-
-// Controle da Tela ZERO (Splash Screen ajustada para 5 segundos)
-document.addEventListener("DOMContentLoaded", () => {
-    const gameScreen = document.getElementById("gameScreen");
-    const splashScreen = document.getElementById("splashScreen");
-    const scanlines = document.querySelector(".scanlines"); 
-    
-    if (gameScreen) gameScreen.style.display = "none"; 
-    if (splashScreen) splashScreen.style.display = "flex"; 
-    if (scanlines) splashScreen.style.display = "block";
-
-    setTimeout(() => {
-        if (IS_VALID) { 
-            if (splashScreen) splashScreen.style.display = "none"; 
-            if (scanlines) splashScreen.style.display = "none"; 
-            if (gameScreen) gameScreen.style.display = "flex";   
-        }
-    }, 5000); // 5 segundos garantidos para carregar em qualquer celular
-});
 
 // Ativa Tela Cheia e Trava na Horizontal
 ['click', 'touchstart'].forEach(eventType => {

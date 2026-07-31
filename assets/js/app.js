@@ -11,23 +11,31 @@ const clickSound = new Audio('assets/life.mp3');
 // SISTEMA DE INTELIGÊNCIA E LOGS (SUPABASE)
 // =========================================
 const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiqm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
 
 let tempoInicioJogo = null;
 let informacoesDeRede = { ip: "Desconhecido", localizacao: "Desconhecida" };
 
-// Busca IP e Localização em segundo plano LOGO QUE O SITE ABRE
+// Busca IP e Localização de forma ultra-confiável com ipwho.is
 async function prepararDadosDeRede() {
     try {
-        const geoResponse = await fetch("https://ipwhois.app/json/");
-        const geoData = await geoResponse.json();
-        informacoesDeRede.ip = geoData.ip || "Desconhecido";
-        informacoesDeRede.localizacao = geoData.city ? `${geoData.city} - ${geoData.region}` : "Desconhecida";
+        const response = await fetch("https://ipwho.is/");
+        const data = await response.json();
+        
+        if (data.success) {
+            informacoesDeRede.ip = data.ip || "Desconhecido";
+            informacoesDeRede.localizacao = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
+        } else {
+            // Se falhar, tenta pegar pelo menos o IP puro em outra rota segura
+            const ipFallback = await fetch("https://api.ipify.org?format=json");
+            const ipData = await ipFallback.json();
+            informacoesDeRede.ip = ipData.ip || "Desconhecido";
+        }
     } catch (e) {
-        console.log("Navegador bloqueou a busca de IP ou sem internet.");
+        console.log("Erro ao buscar dados de rede:", e);
     }
 }
-prepararDadosDeRede(); // Executa silenciosamente assim que o app.js é lido
+prepararDadosDeRede(); // Executa silenciosamente assim que o app.js é carregado
 
 // 1. Gera ou recupera um ID único e anônimo para o usuário (Fidelização Imortalize)
 function obterIdJogador() {
@@ -71,7 +79,7 @@ function registrarLogAcesso() {
     // Calcula tempo exato de retenção
     const segundosTotais = Math.floor((Date.now() - tempoInicioJogo) / 1000);
     
-    // Só salva se a pessoa ficou mais de 3 segundos no jogo (evita cliques acidentais)
+    // Só salva se a pessoa ficou mais de 3 segundos no jogo
     if (segundosTotais < 3) return;
 
     const minutos = Math.floor(segundosTotais / 60);
@@ -94,7 +102,6 @@ function registrarLogAcesso() {
     };
 
     try {
-        // Envio normal sem o keepalive (que estava bloqueando por causa da API Key)
         fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
             headers: { 
@@ -106,14 +113,13 @@ function registrarLogAcesso() {
             body: JSON.stringify(payload)
         });
         
-        // Zera o cronômetro para não enviar o mesmo dado duas vezes
         tempoInicioJogo = null; 
     } catch (error) {
         console.log("Erro ao salvar log no Supabase:", error);
     }
 }
 
-// 6. Gatilhos: Salva quando o usuário sai do jogo, troca de aba ou fecha o navegador
+// 6. Gatilhos: Salva quando o usuário sai do jogo ou fecha o navegador
 window.addEventListener("beforeunload", registrarLogAcesso);
 window.addEventListener("pagehide", registrarLogAcesso);
 document.addEventListener("visibilitychange", () => {

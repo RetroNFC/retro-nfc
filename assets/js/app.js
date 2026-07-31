@@ -3,7 +3,7 @@
 // =========================================
 
 // Altere "seu-usuario.github.io" para o seu usuário real do GitHub
-const DOMINIO_PERMITIDO = "https://retronfc.github.io/retro-nfc"; 
+const DOMINIO_PERMITIDO = "retronfc.github.io"; 
 
 if (window.location.hostname !== "localhost" && !window.location.hostname.includes(DOMINIO_PERMITIDO)) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";

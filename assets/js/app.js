@@ -2,10 +2,12 @@
 // CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
 // =========================================
 
-// Caminho exato do seu projeto no GitHub Pages
-const CAMINHO_PERMITIDO = "retronfc.github.io/retro-nfc"; 
+// Verifica se está rodando no seu GitHub Pages oficial ou em ambiente local
+const DOMINIO_PERMITIDO = "retronfc.github.io";
+const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
 
-if (window.location.hostname !== "localhost" && !window.location.href.includes(CAMINHO_PERMITIDO)) {
+if (!ehLocalhost && !ehGitHubOFicial) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }
@@ -156,7 +158,7 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            registrarLogAcessoImediato(); 
+            registrarLogAcessoImediato(); // Envia para o Supabase ao clicar em jogar
             startBoot();
         });
 
@@ -183,7 +185,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Tela ZERO (Splash Screen de 4 segundos, sem linhas retrô)
+// Controle da Tela ZERO (Splash Screen mantida em 4 segundos)
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -196,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (splashScreen) splashScreen.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 4000); // 4 segundos garantidos para carregar limpo
+    }, 4000); 
 });
 
 // Ativa Tela Cheia e Trava na Horizontal

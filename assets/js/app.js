@@ -86,3 +86,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 4000);
 });
+
+// Ativa a tela cheia no clique do último botão "JOGAR" do emulador
+document.addEventListener('click', function(event) {
+    // Verifica se o elemento clicado é o botão do emulador ou está dentro dele
+    if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
+        
+        const docElement = document.documentElement;
+        
+        // Dispara a tela cheia
+        if (docElement.requestFullscreen) {
+            docElement.requestFullscreen().catch(err => {
+                console.log("Erro ao tentar tela cheia:", err);
+            });
+        } else if (docElement.webkitRequestFullscreen) { /* Compatibilidade Safari/iOS */
+            docElement.webkitRequestFullscreen();
+        }
+    }
+});

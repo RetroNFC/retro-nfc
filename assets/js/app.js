@@ -2,10 +2,10 @@
 // CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
 // =========================================
 
-// Permite apenas o seu GitHub Pages oficial e o seu ambiente local de testes
-const DOMINIO_OFICIAL = "retronfc.github.io/retro-nfc"; 
+// Caminho exato do seu projeto no GitHub Pages
+const CAMINHO_PERMITIDO = "retronfc.github.io/retro-nfc"; 
 
-if (window.location.hostname !== "localhost" && !window.location.hostname.includes(DOMINIO_OFICIAL)) {
+if (window.location.hostname !== "localhost" && !window.location.href.includes(CAMINHO_PERMITIDO)) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }
@@ -126,7 +126,7 @@ async function registrarLogAcessoImediato() {
 }
 
 // =========================================
-// CARREGAMENTO E FLUXO DO JOGO (SEM SPLASH)
+// CARREGAMENTO E FLUXO DO JOGO
 // =========================================
 async function loadGames() {
     try {
@@ -153,15 +153,6 @@ async function loadGames() {
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
-        // Oculta completamente qualquer resquício da Splash Screen e exibe a tela do jogo direto
-        const splashScreen = document.getElementById("splashScreen");
-        const gameScreen = document.getElementById("gameScreen");
-        const scanlines = document.querySelector(".scanlines"); 
-
-        if (splashScreen) splashScreen.style.display = "none";
-        if (scanlines) scanlines.style.display = "none";
-        if (gameScreen) gameScreen.style.display = "flex";
-
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
@@ -180,11 +171,9 @@ function mostrarTelaErro() {
     
     const splash = document.getElementById("splashScreen");
     const gameScreen = document.getElementById("gameScreen");
-    const scanlines = document.querySelector(".scanlines"); 
     
     if (splash) splash.style.display = "none";
     if (gameScreen) gameScreen.style.display = "none";
-    if (scanlines) scanlines.style.display = "none";
     
     const invalidScreen = document.getElementById("invalidScreen");
     if (invalidScreen) {
@@ -193,6 +182,22 @@ function mostrarTelaErro() {
 }
 
 document.addEventListener("DOMContentLoaded", loadGames);
+
+// Controle da Tela ZERO (Splash Screen de 4 segundos, sem linhas retrô)
+document.addEventListener("DOMContentLoaded", () => {
+    const gameScreen = document.getElementById("gameScreen");
+    const splashScreen = document.getElementById("splashScreen");
+    
+    if (gameScreen) gameScreen.style.display = "none"; 
+    if (splashScreen) splashScreen.style.display = "flex"; 
+
+    setTimeout(() => {
+        if (IS_VALID) { 
+            if (splashScreen) splashScreen.style.display = "none"; 
+            if (gameScreen) gameScreen.style.display = "flex";   
+        }
+    }, 4000); // 4 segundos garantidos para carregar limpo
+});
 
 // Ativa Tela Cheia e Trava na Horizontal
 ['click', 'touchstart'].forEach(eventType => {

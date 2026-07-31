@@ -1,9 +1,117 @@
+// =========================================
+// CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
+// =========================================
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
 let IS_VALID = false; 
 const clickSound = new Audio('assets/life.mp3'); 
 
+// =========================================
+// SISTEMA DE INTELIGÊNCIA E LOGS (SUPABASE)
+// =========================================
+const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
+
+let tempoInicioJogo = null;
+
+// 1. Gera ou recupera um ID único e anônimo para o usuário (Fidelização Imortalize)
+function obterIdJogador() {
+    let jogadorId = localStorage.getItem('imortalize_user_id');
+    if (!jogadorId) {
+        jogadorId = 'usr_' + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem('imortalize_user_id', jogadorId);
+    }
+    return jogadorId;
+}
+
+// 2. Identifica o Aparelho
+function obterAparelho() {
+    const ua = navigator.userAgent;
+    if (/android/i.test(ua)) return "Android";
+    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS (Apple)";
+    if (/windows/i.test(ua)) return "Windows PC";
+    if (/macintosh/i.test(ua)) return "Mac OS";
+    return "Outro";
+}
+
+// 3. Identifica o Navegador
+function obterNavegador() {
+    const ua = navigator.userAgent;
+    if (/samsungbrowser/i.test(ua)) return "Samsung Internet";
+    if (/chrome|crios/i.test(ua) && !/edge|opr|brave/i.test(ua)) return "Chrome";
+    if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) return "Safari";
+    if (/firefox|fxios/i.test(ua)) return "Firefox";
+    return "Outro";
+}
+
+// 4. Inicia o cronômetro do jogo
+function iniciarContadorTempo() {
+    tempoInicioJogo = Date.now();
+}
+
+// 5. Coleta tudo e envia para o Supabase
+async function registrarLogAcesso() {
+    if (!CURRENT_GAME || !tempoInicioJogo) return;
+
+    // Calcula tempo exato de retenção na tela do jogo
+    const segundosTotais = Math.floor((Date.now() - tempoInicioJogo) / 1000);
+    const minutos = Math.floor(segundosTotais / 60);
+    const segundos = segundosTotais % 60;
+    const tempoFormatado = `${minutos}m ${segundos}s`;
+
+    // Data e Hora legível (Padrão Brasil)
+    const dataHoraAcesso = new Date().toLocaleString('pt-BR');
+
+    try {
+        // Coleta IP e Geolocalização gratuitamente via ipwhois
+        const geoResponse = await fetch("https://ipwhois.app/json/");
+        const geoData = await geoResponse.json();
+        const userIp = geoData.ip || "Desconhecido";
+        const userLoc = geoData.city ? `${geoData.city} - ${geoData.region}` : "Desconhecida";
+
+        // Monta o pacote de dados exatamente com os nomes das colunas da tabela
+        const payload = {
+            data_hora: dataHoraAcesso,
+            jogo: CURRENT_GAME.title || "Desconhecido",
+            jogador_id: obterIdJogador(),
+            tempo: tempoFormatado,
+            localizacao: userLoc,
+            ip: userIp,
+            aparelho: obterAparelho(),
+            navegador: obterNavegador()
+        };
+
+        // Dispara para o banco de dados
+        await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log("Dados de uso capturados com sucesso!");
+
+    } catch (error) {
+        console.log("Erro ao processar dados de uso:", error);
+    }
+}
+
+// 6. Gatilhos: Salva quando o usuário sai do jogo ou fecha o navegador
+window.addEventListener("beforeunload", registrarLogAcesso);
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+        registrarLogAcesso();
+    }
+});
+
+// =========================================
+// CARREGAMENTO E FLUXO DO JOGO
+// =========================================
 async function loadGames() {
     try {
         // Se o usuário acessar totalmente sem o parâmetro 'k'
@@ -36,6 +144,7 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
+            iniciarContadorTempo(); // Inicia a contagem do tempo de jogo para os logs
             startBoot();
         });
 
@@ -66,7 +175,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen de 5 segundos
+// Controle da Splash Screen de 3 segundos
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -84,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (scanlines) scanlines.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 5000);
+    }, 3000); // Splash reduzida para 3 segundos
 });
 
 // Ativa Tela Cheia e Trava na Horizontal no toque do botão "JOGAR"

@@ -64,14 +64,14 @@ function iniciarContadorTempo() {
     tempoInicioJogo = Date.now();
 }
 
-// 5. Coleta tudo e envia para o Supabase de forma assíncrona blindada
+// 5. Coleta tudo e envia para o Supabase
 function registrarLogAcesso() {
     if (!CURRENT_GAME || !tempoInicioJogo) return;
 
     // Calcula tempo exato de retenção
     const segundosTotais = Math.floor((Date.now() - tempoInicioJogo) / 1000);
     
-    // Opcional: Só salva se a pessoa ficou mais de 3 segundos no jogo
+    // Só salva se a pessoa ficou mais de 3 segundos no jogo (evita cliques acidentais)
     if (segundosTotais < 3) return;
 
     const minutos = Math.floor(segundosTotais / 60);
@@ -94,10 +94,9 @@ function registrarLogAcesso() {
     };
 
     try {
-        // Envio com "keepalive: true" impede que o navegador mate o envio ao fechar a aba
+        // Envio normal sem o keepalive (que estava bloqueando por causa da API Key)
         fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
-            keepalive: true, 
             headers: { 
                 "Content-Type": "application/json",
                 "apikey": SUPABASE_KEY,
@@ -107,15 +106,16 @@ function registrarLogAcesso() {
             body: JSON.stringify(payload)
         });
         
-        // Zera o cronômetro para não enviar duplicado
+        // Zera o cronômetro para não enviar o mesmo dado duas vezes
         tempoInicioJogo = null; 
     } catch (error) {
         console.log("Erro ao salvar log no Supabase:", error);
     }
 }
 
-// 6. Gatilhos: Salva quando o usuário sai do jogo ou fecha o navegador
+// 6. Gatilhos: Salva quando o usuário sai do jogo, troca de aba ou fecha o navegador
 window.addEventListener("beforeunload", registrarLogAcesso);
+window.addEventListener("pagehide", registrarLogAcesso);
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
         registrarLogAcesso();

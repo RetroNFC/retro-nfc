@@ -66,7 +66,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen de 4 segundos
+// Controle da Splash Screen de 5 segundos
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -84,23 +84,31 @@ document.addEventListener("DOMContentLoaded", () => {
             if (scanlines) scanlines.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 4000);
+    }, 5000);
 });
 
-// Ativa a tela cheia no clique do último botão "JOGAR" do emulador
-document.addEventListener('click', function(event) {
-    // Verifica se o elemento clicado é o botão do emulador ou está dentro dele
-    if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
-        
-        const docElement = document.documentElement;
-        
-        // Dispara a tela cheia
-        if (docElement.requestFullscreen) {
-            docElement.requestFullscreen().catch(err => {
-                console.log("Erro ao tentar tela cheia:", err);
-            });
-        } else if (docElement.webkitRequestFullscreen) { /* Compatibilidade Safari/iOS */
-            docElement.webkitRequestFullscreen();
+// Ativa Tela Cheia e Trava na Horizontal no toque do botão "JOGAR"
+['click', 'touchstart'].forEach(eventType => {
+    document.addEventListener(eventType, function(event) {
+        if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
+            
+            const docElement = document.documentElement;
+
+            // 1. Pedido de Tela Cheia (Funciona em Android e iOS)
+            const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
+            
+            if (requestFS) {
+                requestFS.call(docElement).then(() => {
+                    // 2. Força o celular a ficar na HORIZONTAL (Paisagem) automaticamente
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(err => {
+                            console.log("Rotação automática não permitida pelo aparelho:", err);
+                        });
+                    }
+                }).catch(err => {
+                    console.log("Erro ao entrar em Tela Cheia:", err);
+                });
+            }
         }
-    }
+    }, true); // O 'true' ativa a FASE DE CAPTURA, pegando o toque ANTES do emulador interceptar
 });

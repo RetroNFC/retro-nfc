@@ -14,6 +14,20 @@ const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
 
 let tempoInicioJogo = null;
+let informacoesDeRede = { ip: "Desconhecido", localizacao: "Desconhecida" };
+
+// Busca IP e Localização em segundo plano LOGO QUE O SITE ABRE
+async function prepararDadosDeRede() {
+    try {
+        const geoResponse = await fetch("https://ipwhois.app/json/");
+        const geoData = await geoResponse.json();
+        informacoesDeRede.ip = geoData.ip || "Desconhecido";
+        informacoesDeRede.localizacao = geoData.city ? `${geoData.city} - ${geoData.region}` : "Desconhecida";
+    } catch (e) {
+        console.log("Navegador bloqueou a busca de IP ou sem internet.");
+    }
+}
+prepararDadosDeRede(); // Executa silenciosamente assim que o app.js é lido
 
 // 1. Gera ou recupera um ID único e anônimo para o usuário (Fidelização Imortalize)
 function obterIdJogador() {
@@ -50,41 +64,40 @@ function iniciarContadorTempo() {
     tempoInicioJogo = Date.now();
 }
 
-// 5. Coleta tudo e envia para o Supabase
-async function registrarLogAcesso() {
+// 5. Coleta tudo e envia para o Supabase de forma assíncrona blindada
+function registrarLogAcesso() {
     if (!CURRENT_GAME || !tempoInicioJogo) return;
 
-    // Calcula tempo exato de retenção na tela do jogo
+    // Calcula tempo exato de retenção
     const segundosTotais = Math.floor((Date.now() - tempoInicioJogo) / 1000);
+    
+    // Opcional: Só salva se a pessoa ficou mais de 3 segundos no jogo
+    if (segundosTotais < 3) return;
+
     const minutos = Math.floor(segundosTotais / 60);
     const segundos = segundosTotais % 60;
     const tempoFormatado = `${minutos}m ${segundos}s`;
 
-    // Data e Hora legível (Padrão Brasil)
+    // Data e Hora
     const dataHoraAcesso = new Date().toLocaleString('pt-BR');
 
+    // Monta o pacote
+    const payload = {
+        data_hora: dataHoraAcesso,
+        jogo: CURRENT_GAME.title || "Desconhecido",
+        jogador_id: obterIdJogador(),
+        tempo: tempoFormatado,
+        localizacao: informacoesDeRede.localizacao,
+        ip: informacoesDeRede.ip,
+        aparelho: obterAparelho(),
+        navegador: obterNavegador()
+    };
+
     try {
-        // Coleta IP e Geolocalização gratuitamente via ipwhois
-        const geoResponse = await fetch("https://ipwhois.app/json/");
-        const geoData = await geoResponse.json();
-        const userIp = geoData.ip || "Desconhecido";
-        const userLoc = geoData.city ? `${geoData.city} - ${geoData.region}` : "Desconhecida";
-
-        // Monta o pacote de dados exatamente com os nomes das colunas da tabela
-        const payload = {
-            data_hora: dataHoraAcesso,
-            jogo: CURRENT_GAME.title || "Desconhecido",
-            jogador_id: obterIdJogador(),
-            tempo: tempoFormatado,
-            localizacao: userLoc,
-            ip: userIp,
-            aparelho: obterAparelho(),
-            navegador: obterNavegador()
-        };
-
-        // Dispara para o banco de dados
-        await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
+        // Envio com "keepalive: true" impede que o navegador mate o envio ao fechar a aba
+        fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
+            keepalive: true, 
             headers: { 
                 "Content-Type": "application/json",
                 "apikey": SUPABASE_KEY,
@@ -93,11 +106,11 @@ async function registrarLogAcesso() {
             },
             body: JSON.stringify(payload)
         });
-
-        console.log("Dados de uso capturados com sucesso!");
-
+        
+        // Zera o cronômetro para não enviar duplicado
+        tempoInicioJogo = null; 
     } catch (error) {
-        console.log("Erro ao processar dados de uso:", error);
+        console.log("Erro ao salvar log no Supabase:", error);
     }
 }
 
@@ -114,7 +127,6 @@ document.addEventListener("visibilitychange", () => {
 // =========================================
 async function loadGames() {
     try {
-        // Se o usuário acessar totalmente sem o parâmetro 'k'
         if (!GAME_KEY) {
             mostrarTelaErro();
             return;
@@ -123,16 +135,13 @@ async function loadGames() {
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
-        // Procura o jogo correspondente à chave da URL no JSON
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
         if (!CURRENT_GAME) {
-            // SE A CHAVE NÃO EXISTE NO JSON (Cartucho Inválido)
             mostrarTelaErro();
             return;
         }
 
-        // SE O JOGO FOR VERDADEIRO:
         IS_VALID = true;
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
@@ -144,7 +153,7 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            iniciarContadorTempo(); // Inicia a contagem do tempo de jogo para os logs
+            iniciarContadorTempo(); 
             startBoot();
         });
 
@@ -157,7 +166,6 @@ async function loadGames() {
 function mostrarTelaErro() {
     IS_VALID = false;
     
-    // Esconde todas as outras telas possíveis
     const splash = document.getElementById("splashScreen");
     const gameScreen = document.getElementById("gameScreen");
     const scanlines = document.querySelector(".scanlines"); 
@@ -166,7 +174,6 @@ function mostrarTelaErro() {
     if (gameScreen) gameScreen.style.display = "none";
     if (scanlines) scanlines.style.display = "none";
     
-    // Mostra a tela de erro em tela cheia absoluta
     const invalidScreen = document.getElementById("invalidScreen");
     if (invalidScreen) {
         invalidScreen.style.display = "block";
@@ -175,49 +182,42 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen de 3 segundos
+// Controle da Splash Screen
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
     const scanlines = document.querySelector(".scanlines"); 
     
-    // Estado inicial
     if (gameScreen) gameScreen.style.display = "none"; 
     if (splashScreen) splashScreen.style.display = "flex"; 
     if (scanlines) scanlines.style.display = "block";
 
     setTimeout(() => {
-        // Só transita para a tela do jogo se o cartucho for válido
         if (IS_VALID) { 
             if (splashScreen) splashScreen.style.display = "none"; 
             if (scanlines) scanlines.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 3000); // Splash reduzida para 3 segundos
+    }, 3000); 
 });
 
-// Ativa Tela Cheia e Trava na Horizontal no toque do botão "JOGAR"
+// Ativa Tela Cheia e Trava na Horizontal
 ['click', 'touchstart'].forEach(eventType => {
     document.addEventListener(eventType, function(event) {
         if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
             
             const docElement = document.documentElement;
-
-            // 1. Pedido de Tela Cheia (Funciona em Android e iOS)
             const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
             
             if (requestFS) {
                 requestFS.call(docElement).then(() => {
-                    // 2. Força o celular a ficar na HORIZONTAL (Paisagem) automaticamente
                     if (screen.orientation && screen.orientation.lock) {
                         screen.orientation.lock('landscape').catch(err => {
-                            console.log("Rotação automática não permitida pelo aparelho:", err);
+                            console.log("Rotação automática bloqueada.");
                         });
                     }
-                }).catch(err => {
-                    console.log("Erro ao entrar em Tela Cheia:", err);
-                });
+                }).catch(err => console.log("Erro de tela cheia."));
             }
         }
-    }, true); // O 'true' ativa a FASE DE CAPTURA, pegando o toque ANTES do emulador interceptar
+    }, true); 
 });

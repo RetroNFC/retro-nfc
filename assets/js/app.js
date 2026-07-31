@@ -13,29 +13,7 @@ const clickSound = new Audio('assets/life.mp3');
 const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiqm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
 
-let tempoInicioJogo = null;
-let informacoesDeRede = { ip: "Desconhecido", localizacao: "Desconhecida" };
-
-// Busca IP e Localização de forma ultra-confiável com ipwho.is
-async function prepararDadosDeRede() {
-    try {
-        const response = await fetch("https://ipwho.is/");
-        const data = await response.json();
-        
-        if (data.success) {
-            informacoesDeRede.ip = data.ip || "Desconhecido";
-            informacoesDeRede.localizacao = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
-        } else {
-            // Se falhar, tenta pegar pelo menos o IP puro em outra rota segura
-            const ipFallback = await fetch("https://api.ipify.org?format=json");
-            const ipData = await ipFallback.json();
-            informacoesDeRede.ip = ipData.ip || "Desconhecido";
-        }
-    } catch (e) {
-        console.log("Erro ao buscar dados de rede:", e);
-    }
-}
-prepararDadosDeRede(); // Executa silenciosamente assim que o app.js é carregado
+let horaInicioJogo = null;
 
 // 1. Gera ou recupera um ID único e anônimo para o usuário (Fidelização Imortalize)
 function obterIdJogador() {
@@ -67,42 +45,50 @@ function obterNavegador() {
     return "Outro";
 }
 
-// 4. Inicia o cronômetro do jogo
-function iniciarContadorTempo() {
-    tempoInicioJogo = Date.now();
-}
+// 4. Coleta IP, Localização e Envia IMEDIATAMENTE para o Supabase ao iniciar o jogo
+async function registrarLogAcessoImediato() {
+    if (!CURRENT_GAME) return;
 
-// 5. Coleta tudo e envia para o Supabase
-function registrarLogAcesso() {
-    if (!CURRENT_GAME || !tempoInicioJogo) return;
+    horaInicioJogo = new Date().toLocaleTimeString('pt-BR');
+    const dataAcesso = new Date().toLocaleDateString('pt-BR');
+    const dataHoraCompleta = `${dataAcesso} ${horaInicioJogo}`;
 
-    // Calcula tempo exato de retenção
-    const segundosTotais = Math.floor((Date.now() - tempoInicioJogo) / 1000);
-    
-    // Só salva se a pessoa ficou mais de 3 segundos no jogo
-    if (segundosTotais < 3) return;
+    let ipUser = "Desconhecido";
+    let localUser = "Desconhecida";
 
-    const minutos = Math.floor(segundosTotais / 60);
-    const segundos = segundosTotais % 60;
-    const tempoFormatado = `${minutos}m ${segundos}s`;
+    // Busca IP e Cidade de forma ultra-rápida e segura
+    try {
+        const response = await fetch("https://ipwho.is/");
+        const data = await response.json();
+        
+        if (data.success) {
+            ipUser = data.ip || "Desconhecido";
+            localUser = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
+        } else {
+            // Fallback caso a principal falhe
+            const ipFallback = await fetch("https://api.ipify.org?format=json");
+            const ipData = await ipFallback.json();
+            ipUser = ipData.ip || "Desconhecido";
+        }
+    } catch (e) {
+        console.log("Erro ao buscar IP/Localização:", e);
+    }
 
-    // Data e Hora
-    const dataHoraAcesso = new Date().toLocaleString('pt-BR');
-
-    // Monta o pacote
+    // Monta o pacote de dados
     const payload = {
-        data_hora: dataHoraAcesso,
+        data_hora: dataHoraCompleta,
         jogo: CURRENT_GAME.title || "Desconhecido",
         jogador_id: obterIdJogador(),
-        tempo: tempoFormatado,
-        localizacao: informacoesDeRede.localizacao,
-        ip: informacoesDeRede.ip,
+        tempo: "Sessão Iniciada", // Registra o início do acesso instantaneamente
+        localizacao: localUser,
+        ip: ipUser,
         aparelho: obterAparelho(),
         navegador: obterNavegador()
     };
 
+    // Envia para o Supabase com a página 100% ativa (sem falhas de fechamento)
     try {
-        fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
+        await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
@@ -112,21 +98,11 @@ function registrarLogAcesso() {
             },
             body: JSON.stringify(payload)
         });
-        
-        tempoInicioJogo = null; 
+        console.log("Log de acesso registrado com sucesso!");
     } catch (error) {
-        console.log("Erro ao salvar log no Supabase:", error);
+        console.log("Erro ao enviar log:", error);
     }
 }
-
-// 6. Gatilhos: Salva quando o usuário sai do jogo ou fecha o navegador
-window.addEventListener("beforeunload", registrarLogAcesso);
-window.addEventListener("pagehide", registrarLogAcesso);
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-        registrarLogAcesso();
-    }
-});
 
 // =========================================
 // CARREGAMENTO E FLUXO DO JOGO
@@ -159,7 +135,7 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            iniciarContadorTempo(); 
+            registrarLogAcessoImediato(); // Dispara o envio imediato dos dados (IP, Cidade, Aparelho, Jogo)
             startBoot();
         });
 
@@ -188,7 +164,7 @@ function mostrarTelaErro() {
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Splash Screen (TELA ZERO)
+// Controle da Tela ZERO (Splash Screen ajustada para 5 segundos)
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -196,15 +172,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (gameScreen) gameScreen.style.display = "none"; 
     if (splashScreen) splashScreen.style.display = "flex"; 
-    if (scanlines) scanlines.style.display = "block";
+    if (scanlines) splashScreen.style.display = "block";
 
     setTimeout(() => {
         if (IS_VALID) { 
             if (splashScreen) splashScreen.style.display = "none"; 
-            if (scanlines) scanlines.style.display = "none"; 
+            if (scanlines) splashScreen.style.display = "none"; 
             if (gameScreen) gameScreen.style.display = "flex";   
         }
-    }, 5000); 
+    }, 5000); // 5 segundos garantidos para carregar em qualquer celular
 });
 
 // Ativa Tela Cheia e Trava na Horizontal

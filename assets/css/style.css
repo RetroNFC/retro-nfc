@@ -273,17 +273,6 @@ body {
     100% { opacity: 0; } /* Some completamente no segundo 4 */
 }
 
-.scanlines {
-    position: fixed; 
-    top: 0; left: 0; 
-    width: 100vw; 
-    height: 100dvh;
-    pointer-events: none; 
-    z-index: 10000; /* Sempre no topo */
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%);
-    background-size: 100% 4px;
-}
-
 /* Força o botão JOGAR a subir e ficar visível */
 body .ejs_start_button {
     background-color: #E60012 !important; /* Fundo Vermelho */

@@ -67,7 +67,6 @@ function obterNavegador() {
     return "Outro";
 }
 
-// "Digital" do hardware para cruzar dados quando o cache é limpo
 function obterDigitalAparelho() {
     const tela = `${window.screen.width}x${window.screen.height}`;
     const nucleos = navigator.hardwareConcurrency || 'Desconhecido';
@@ -84,6 +83,11 @@ function formatarTempoDeJogo(ms) {
     if (horas > 0) return `${horas}h ${minutos}m ${segundos}s`;
     if (minutos > 0) return `${minutos}m ${segundos}s`;
     return `${segundos}s`;
+}
+
+// NOVO: Função para deixar a data no formato brasileiro, sem o +00
+function obterDataBonita() {
+    return new Date().toLocaleString('pt-BR'); 
 }
 
 // =========================================
@@ -111,10 +115,10 @@ async function registrarLogAcessoImediato() {
 
     const payload = {
         sessao_id: sessaoAtualId, 
-        data_hora: new Date().toISOString(), // Formato aceito pelo banco para ordenar data
+        data_hora: obterDataBonita(), // Usa a data formatada bonitinha
         jogo: CURRENT_GAME.title,
         jogador_id: obterIdJogador(),
-        tempo: "Sessão Iniciada (Jogando...)", // Status inicial
+        tempo: "Sessão Iniciada (Jogando...)", 
         localizacao: localUser,
         ip: ipUser,
         aparelho: obterAparelho(),
@@ -147,24 +151,21 @@ function atualizarTempoSessao() {
     const tempoJogadoMs = Date.now() - tempoInicio;
     const tempoFormatado = formatarTempoDeJogo(tempoJogadoMs);
 
-    // Faz um PATCH (atualização) na linha específica usando o sessao_id
     const patchUrl = `${SUPABASE_URL}/rest/v1/logs_acesso?sessao_id=eq.${sessaoAtualId}`;
     const payload = { tempo: tempoFormatado };
 
-    // Usamos keepalive/sendBeacon para garantir que o envio ocorra mesmo se a aba for fechada
-    const headers = {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Prefer": "return=minimal"
-    };
-
-    if (navigator.sendBeacon) {
-        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-        navigator.sendBeacon(patchUrl, blob); // Funciona no background ao fechar aba
-    } else {
-        fetch(patchUrl, { method: 'PATCH', headers: headers, body: JSON.stringify(payload), keepalive: true });
-    }
+    // CORREÇÃO: Usamos keepalive true ao invés de sendBeacon para não perder o cabeçalho de autenticação
+    fetch(patchUrl, { 
+        method: 'PATCH', 
+        headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Prefer": "return=minimal"
+        }, 
+        body: JSON.stringify(payload), 
+        keepalive: true // Isso garante que o navegador envie mesmo fechando a aba
+    }).catch(e => console.log("Falha ao atualizar tempo", e));
 }
 
 // Escuta quando o usuário sai da página, troca de aba, ou bloqueia o celular

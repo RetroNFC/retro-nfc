@@ -85,7 +85,7 @@ function formatarTempoDeJogo(ms) {
     return `${segundos}s`;
 }
 
-// NOVO: Função para deixar a data no formato brasileiro, sem o +00
+// Função para deixar a data no formato brasileiro, sem o +00
 function obterDataBonita() {
     return new Date().toLocaleString('pt-BR'); 
 }
@@ -93,29 +93,30 @@ function obterDataBonita() {
 // =========================================
 // BANCO DE DADOS: INICIO DE SESSÃO (POST)
 // =========================================
-async function registrarLogAcessoImediato() {
+function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
 
     sessaoAtualId = gerarUUID(); // ID único para essa jogatina
     tempoInicio = Date.now(); // Inicia o cronômetro
 
-    let ipUser = "Desconhecido";
-    let localUser = "Desconhecida";
+    // 1. Inicia a busca de IP em paralelo (sem travar o jogo)
+    fetch("https://ipwho.is/")
+        .then(res => res.json())
+        .then(data => {
+            let ipUser = data.success ? data.ip : "Desconhecido";
+            let localUser = (data.success && data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
+            enviarParaSupabase(ipUser, localUser);
+        })
+        .catch(() => {
+            enviarParaSupabase("Desconhecido", "Desconhecida");
+        });
+}
 
-    try {
-        const response = await fetch("https://ipwho.is/");
-        const data = await response.json();
-        if (data.success) {
-            ipUser = data.ip;
-            localUser = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
-        }
-    } catch (e) {
-        console.log("Erro API IP:", e);
-    }
-
+// 2. Função isolada para garantir o envio imediato
+async function enviarParaSupabase(ipUser, localUser) {
     const payload = {
         sessao_id: sessaoAtualId, 
-        data_hora: obterDataBonita(), // Usa a data formatada bonitinha
+        data_hora: obterDataBonita(), 
         jogo: CURRENT_GAME.title,
         jogador_id: obterIdJogador(),
         tempo: "Sessão Iniciada (Jogando...)", 
@@ -127,7 +128,7 @@ async function registrarLogAcessoImediato() {
     };
 
     try {
-        await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
+        const req = await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
@@ -135,17 +136,24 @@ async function registrarLogAcessoImediato() {
                 "Authorization": `Bearer ${SUPABASE_KEY}`,
                 "Prefer": "return=minimal"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            keepalive: true // GARANTE que o navegador envie mesmo que o startBoot mude algo
         });
+
+        // DETECTOR DE ERROS: Se o Supabase recusar, vai pular um alerta na tela!
+        if (!req.ok) {
+            const erroSupabase = await req.text();
+            alert("⚠️ ERRO NO SUPABASE! Tire um print deste aviso e me mostre:\n\n" + erroSupabase);
+        }
     } catch (error) {
-        console.error("Erro no Supabase:", error);
+        alert("⚠️ ERRO DE REDE AO SALVAR:\n" + error.message);
     }
 }
 
 // =========================================
 // BANCO DE DADOS: FIM DE SESSÃO (PATCH)
 // =========================================
-function atualizarTempoSessao() {
+async function atualizarTempoSessao() {
     if (!sessaoAtualId || tempoInicio === 0) return;
 
     const tempoJogadoMs = Date.now() - tempoInicio;
@@ -154,18 +162,26 @@ function atualizarTempoSessao() {
     const patchUrl = `${SUPABASE_URL}/rest/v1/logs_acesso?sessao_id=eq.${sessaoAtualId}`;
     const payload = { tempo: tempoFormatado };
 
-    // CORREÇÃO: Usamos keepalive true ao invés de sendBeacon para não perder o cabeçalho de autenticação
-    fetch(patchUrl, { 
-        method: 'PATCH', 
-        headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": `Bearer ${SUPABASE_KEY}`,
-            "Prefer": "return=minimal"
-        }, 
-        body: JSON.stringify(payload), 
-        keepalive: true // Isso garante que o navegador envie mesmo fechando a aba
-    }).catch(e => console.log("Falha ao atualizar tempo", e));
+    try {
+        const req = await fetch(patchUrl, { 
+            method: 'PATCH', 
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Prefer": "return=minimal"
+            }, 
+            body: JSON.stringify(payload), 
+            keepalive: true // Essencial para envio no momento em que a aba é fechada
+        });
+
+        if (!req.ok) {
+            const erroSupabase = await req.text();
+            console.error("Erro Patch:", erroSupabase); // Fica oculto caso o F12 esteja fechado
+        }
+    } catch (e) {
+        console.log("Falha ao atualizar tempo", e);
+    }
 }
 
 // Escuta quando o usuário sai da página, troca de aba, ou bloqueia o celular

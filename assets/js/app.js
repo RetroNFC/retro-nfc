@@ -4,18 +4,20 @@
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
+const ehArquivoLocal = window.location.protocol === "file:"; // Permite testar direto do PC
 
-if (!ehLocalhost && !ehGitHubOFicial) {
+if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }
 
-document.addEventListener('contextmenu', event => event.preventDefault());
-document.addEventListener('keydown', function(event) {
-    if (event.keyCode === 123 || (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 67)) || (event.ctrlKey && event.keyCode === 85)) {
-        event.preventDefault(); return false;
-    }
-});
+// ⚠️ DESATIVADO TEMPORARIAMENTE para podermos ver se há erros no F12
+// document.addEventListener('contextmenu', event => event.preventDefault());
+// document.addEventListener('keydown', function(event) {
+//     if (event.keyCode === 123 || (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 67)) || (event.ctrlKey && event.keyCode === 85)) {
+//         event.preventDefault(); return false;
+//     }
+// });
 
 // =========================================
 // CONFIGURAÇÕES GLOBAIS
@@ -27,11 +29,12 @@ let IS_VALID = false;
 const clickSound = new Audio('assets/life.mp3'); 
 
 const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g;    
 
-// Variáveis para medir tempo
+// 🔥 ATENÇÃO: Cole sua chave nova EXATAMENTE entre as aspas abaixo!
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
+
 let tempoInicio = 0;
-let sessaoAtualId = null;
+let sessaoAtualId = null; 
 
 // =========================================
 // SISTEMA DE COLETA AVANÇADA DE DADOS
@@ -85,7 +88,6 @@ function formatarTempoDeJogo(ms) {
     return `${segundos}s`;
 }
 
-// Função para deixar a data no formato brasileiro, sem o +00
 function obterDataBonita() {
     return new Date().toLocaleString('pt-BR'); 
 }
@@ -96,10 +98,9 @@ function obterDataBonita() {
 function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
 
-    sessaoAtualId = gerarUUID(); // ID único para essa jogatina
-    tempoInicio = Date.now(); // Inicia o cronômetro
+    sessaoAtualId = gerarUUID(); 
+    tempoInicio = Date.now(); 
 
-    // 1. Inicia a busca de IP em paralelo (sem travar o jogo)
     fetch("https://ipwho.is/")
         .then(res => res.json())
         .then(data => {
@@ -112,7 +113,6 @@ function registrarLogAcessoImediato() {
         });
 }
 
-// 2. Função isolada para garantir o envio imediato
 async function enviarParaSupabase(ipUser, localUser) {
     const payload = {
         sessao_id: sessaoAtualId, 
@@ -137,16 +137,15 @@ async function enviarParaSupabase(ipUser, localUser) {
                 "Prefer": "return=minimal"
             },
             body: JSON.stringify(payload),
-            keepalive: true // GARANTE que o navegador envie mesmo que o startBoot mude algo
+            keepalive: true 
         });
 
-        // DETECTOR DE ERROS: Se o Supabase recusar, vai pular um alerta na tela!
         if (!req.ok) {
             const erroSupabase = await req.text();
-            alert("⚠️ ERRO NO SUPABASE! Tire um print deste aviso e me mostre:\n\n" + erroSupabase);
+            alert("⚠️ ERRO NO SUPABASE!\n" + erroSupabase);
         }
     } catch (error) {
-        alert("⚠️ ERRO DE REDE AO SALVAR:\n" + error.message);
+        console.log("Erro de rede:", error);
     }
 }
 
@@ -163,7 +162,7 @@ async function atualizarTempoSessao() {
     const payload = { tempo: tempoFormatado };
 
     try {
-        const req = await fetch(patchUrl, { 
+        await fetch(patchUrl, { 
             method: 'PATCH', 
             headers: {
                 "Content-Type": "application/json",
@@ -172,41 +171,39 @@ async function atualizarTempoSessao() {
                 "Prefer": "return=minimal"
             }, 
             body: JSON.stringify(payload), 
-            keepalive: true // Essencial para envio no momento em que a aba é fechada
+            keepalive: true 
         });
-
-        if (!req.ok) {
-            const erroSupabase = await req.text();
-            console.error("Erro Patch:", erroSupabase); // Fica oculto caso o F12 esteja fechado
-        }
     } catch (e) {
         console.log("Falha ao atualizar tempo", e);
     }
 }
 
-// Escuta quando o usuário sai da página, troca de aba, ou bloqueia o celular
-window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-        atualizarTempoSessao();
-    }
-});
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') atualizarTempoSessao(); });
 window.addEventListener('pagehide', atualizarTempoSessao);
 window.addEventListener('beforeunload', atualizarTempoSessao);
-
 
 // =========================================
 // CARREGAMENTO DO JOGO E EVENTOS 
 // =========================================
 async function loadGames() {
     try {
-        if (!GAME_KEY) { mostrarTelaErro(); return; }
+        // Se estiver testando local e esquecer de por ?k=nome-do-jogo no final do link
+        if (!GAME_KEY) { 
+            console.error("Aviso: Parâmetro ?k= está faltando na URL.");
+            mostrarTelaErro(); 
+            return; 
+        }
 
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
-        if (!CURRENT_GAME) { mostrarTelaErro(); return; }
+        if (!CURRENT_GAME) { 
+            console.error("Jogo não encontrado no games.json!");
+            mostrarTelaErro(); 
+            return; 
+        }
 
         IS_VALID = true;
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
@@ -219,11 +216,20 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            registrarLogAcessoImediato(); // Dispara o POST inicial
-            startBoot();
+            registrarLogAcessoImediato(); // POST imediato
+            if (typeof startBoot === "function") {
+                startBoot(); // Função do emulador
+            }
         });
 
+        // Tira a tela de splash IMEDIATAMENTE após carregar tudo
+        const splashScreen = document.getElementById("splashScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        if (splashScreen) splashScreen.style.display = "none";
+        if (gameScreen) gameScreen.style.display = "flex";
+
     } catch (error) {
+        console.error("Erro Fatal no carregamento:", error);
         mostrarTelaErro();
     }
 }
@@ -232,14 +238,12 @@ function mostrarTelaErro() {
     IS_VALID = false;
     const splash = document.getElementById("splashScreen");
     const gameScreen = document.getElementById("gameScreen");
+    const invalidScreen = document.getElementById("invalidScreen");
+    
     if (splash) splash.style.display = "none";
     if (gameScreen) gameScreen.style.display = "none";
-    
-    const invalidScreen = document.getElementById("invalidScreen");
     if (invalidScreen) invalidScreen.style.display = "block";
 }
-
-document.addEventListener("DOMContentLoaded", loadGames);
 
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
@@ -247,13 +251,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (gameScreen) gameScreen.style.display = "none"; 
     if (splashScreen) splashScreen.style.display = "flex"; 
-
-    setTimeout(() => {
-        if (IS_VALID) { 
-            if (splashScreen) splashScreen.style.display = "none"; 
-            if (gameScreen) gameScreen.style.display = "flex";   
-        }
-    }, 4000); 
+    
+    loadGames(); // Inicia o jogo
 });
 
 ['click', 'touchstart'].forEach(eventType => {
@@ -264,9 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (requestFS) {
                 requestFS.call(docElement).then(() => {
                     if (screen.orientation && screen.orientation.lock) {
-                        screen.orientation.lock('landscape').catch(err => console.log("Rotação bloqueada."));
+                        screen.orientation.lock('landscape').catch(() => {});
                     }
-                }).catch(err => console.log("Erro de tela cheia."));
+                }).catch(() => {});
             }
         }
     }, true); 

@@ -4,20 +4,12 @@
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
-const ehArquivoLocal = window.location.protocol === "file:"; // Permite testar direto do PC
+const ehArquivoLocal = window.location.protocol === "file:"; 
 
 if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }
-
-// ⚠️ DESATIVADO TEMPORARIAMENTE para podermos ver se há erros no F12
-// document.addEventListener('contextmenu', event => event.preventDefault());
-// document.addEventListener('keydown', function(event) {
-//     if (event.keyCode === 123 || (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 67)) || (event.ctrlKey && event.keyCode === 85)) {
-//         event.preventDefault(); return false;
-//     }
-// });
 
 // =========================================
 // CONFIGURAÇÕES GLOBAIS
@@ -29,8 +21,6 @@ let IS_VALID = false;
 const clickSound = new Audio('assets/life.mp3'); 
 
 const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
-
-// 🔥 ATENÇÃO: Cole sua chave nova EXATAMENTE entre as aspas abaixo!
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
 
 let tempoInicio = 0;
@@ -128,7 +118,7 @@ async function enviarParaSupabase(ipUser, localUser) {
     };
 
     try {
-        const req = await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
+        await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
@@ -139,13 +129,8 @@ async function enviarParaSupabase(ipUser, localUser) {
             body: JSON.stringify(payload),
             keepalive: true 
         });
-
-        if (!req.ok) {
-            const erroSupabase = await req.text();
-            alert("⚠️ ERRO NO SUPABASE!\n" + erroSupabase);
-        }
     } catch (error) {
-        console.log("Erro de rede:", error);
+        console.log("Erro de rede ao salvar log:", error);
     }
 }
 
@@ -187,23 +172,14 @@ window.addEventListener('beforeunload', atualizarTempoSessao);
 // =========================================
 async function loadGames() {
     try {
-        // Se estiver testando local e esquecer de por ?k=nome-do-jogo no final do link
-        if (!GAME_KEY) { 
-            console.error("Aviso: Parâmetro ?k= está faltando na URL.");
-            mostrarTelaErro(); 
-            return; 
-        }
+        if (!GAME_KEY) { mostrarTelaErro(); return; }
 
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
-        if (!CURRENT_GAME) { 
-            console.error("Jogo não encontrado no games.json!");
-            mostrarTelaErro(); 
-            return; 
-        }
+        if (!CURRENT_GAME) { mostrarTelaErro(); return; }
 
         IS_VALID = true;
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
@@ -214,22 +190,15 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
         const startBtn = document.getElementById("btnJogar");
-        startBtn.addEventListener("click", () => {
+        startBtn.onclick = () => {
             clickSound.play();
-            registrarLogAcessoImediato(); // POST imediato
+            registrarLogAcessoImediato(); // Dispara o POST inicial
             if (typeof startBoot === "function") {
-                startBoot(); // Função do emulador
+                startBoot(); 
             }
-        });
-
-        // Tira a tela de splash IMEDIATAMENTE após carregar tudo
-        const splashScreen = document.getElementById("splashScreen");
-        const gameScreen = document.getElementById("gameScreen");
-        if (splashScreen) splashScreen.style.display = "none";
-        if (gameScreen) gameScreen.style.display = "flex";
+        };
 
     } catch (error) {
-        console.error("Erro Fatal no carregamento:", error);
         mostrarTelaErro();
     }
 }
@@ -251,8 +220,17 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (gameScreen) gameScreen.style.display = "none"; 
     if (splashScreen) splashScreen.style.display = "flex"; 
-    
-    loadGames(); // Inicia o jogo
+
+    // Carrega os dados em background enquanto exibe a tela zero
+    loadGames();
+
+    // Mantém exatamente os 4 segundos de suspense da tela zero que você configurou
+    setTimeout(() => {
+        if (IS_VALID) { 
+            if (splashScreen) splashScreen.style.display = "none"; 
+            if (gameScreen) gameScreen.style.display = "flex";   
+        }
+    }, 4000); 
 });
 
 ['click', 'touchstart'].forEach(eventType => {

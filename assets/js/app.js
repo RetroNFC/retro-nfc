@@ -31,7 +31,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // Variáveis para medir tempo
 let tempoInicio = 0;
-let sessaoAtualId = null; 
+let sessaoAtualId = null;
 
 // =========================================
 // SISTEMA DE COLETA AVANÇADA DE DADOS

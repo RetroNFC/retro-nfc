@@ -1,33 +1,24 @@
 // =========================================
 // CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
 // =========================================
-
-// Verifica se está rodando no seu GitHub Pages oficial ou em ambiente local
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
 
 if (!ehLocalhost && !ehGitHubOFicial) {
-    document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif; text-align:center;'><h1>Acesso Não Autorizado</h1></div>";
+    document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }
 
-// Bloqueio de Botão Direito
 document.addEventListener('contextmenu', event => event.preventDefault());
-
-// Bloqueio de Teclas de Atalho de Desenvolvedor (F12, Ctrl+Shift+I, Ctrl+U, etc.)
 document.addEventListener('keydown', function(event) {
-    if (event.keyCode === 123 || // F12
-        (event.ctrlKey && event.shiftKey && event.keyCode === 73) || // Ctrl+Shift+I
-        (event.ctrlKey && event.shiftKey && event.keyCode === 67) || // Ctrl+Shift+C
-        (event.ctrlKey && event.keyCode === 85)) { // Ctrl+U
-        event.preventDefault();
-        return false;
+    if (event.keyCode === 123 || (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 67)) || (event.ctrlKey && event.keyCode === 85)) {
+        event.preventDefault(); return false;
     }
 });
 
 // =========================================
-// CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
+// CONFIGURAÇÕES GLOBAIS
 // =========================================
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
@@ -35,25 +26,29 @@ let CURRENT_GAME = null;
 let IS_VALID = false; 
 const clickSound = new Audio('assets/life.mp3'); 
 
-// =========================================
-// SISTEMA DE INTELIGÊNCIA E LOGS (SUPABASE)
-// =========================================
 const SUPABASE_URL = "https://dcdhdbcpukjlbwqjrfdn.supabase.co"; 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjZGhkYmNwdWtqbGJ3cWpyZmRuIiqm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MDUwODgsImV4cCI6MjEwMTA4MTA4OH0.qnxhnfPOJYg5JRnqUjSwN-WCK7LVpeFeirbnLF_rB-g";    
 
-let horaInicioJogo = null;
+// Variáveis para medir tempo
+let tempoInicio = 0;
+let sessaoAtualId = null; 
 
-// Gera ou recupera um ID único e anônimo para o usuário
+// =========================================
+// SISTEMA DE COLETA AVANÇADA DE DADOS
+// =========================================
+function gerarUUID() {
+    return 'sess_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
 function obterIdJogador() {
     let jogadorId = localStorage.getItem('imortalize_user_id');
     if (!jogadorId) {
-        jogadorId = 'usr_' + Math.random().toString(36).substring(2, 10);
+        jogadorId = 'usr_' + Math.random().toString(36).substring(2, 12);
         localStorage.setItem('imortalize_user_id', jogadorId);
     }
     return jogadorId;
 }
 
-// Identifica o Aparelho
 function obterAparelho() {
     const ua = navigator.userAgent;
     if (/android/i.test(ua)) return "Android";
@@ -63,23 +58,42 @@ function obterAparelho() {
     return "Outro";
 }
 
-// Identifica o Navegador
 function obterNavegador() {
     const ua = navigator.userAgent;
+    if (/Instagram/i.test(ua)) return "Navegador In-App (Instagram)";
     if (/samsungbrowser/i.test(ua)) return "Samsung Internet";
     if (/chrome|crios/i.test(ua) && !/edge|opr|brave/i.test(ua)) return "Chrome";
     if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) return "Safari";
-    if (/firefox|fxios/i.test(ua)) return "Firefox";
     return "Outro";
 }
 
-// Coleta IP, Localização e Envia IMEDIATAMENTE para o Supabase ao iniciar o jogo
+// "Digital" do hardware para cruzar dados quando o cache é limpo
+function obterDigitalAparelho() {
+    const tela = `${window.screen.width}x${window.screen.height}`;
+    const nucleos = navigator.hardwareConcurrency || 'Desconhecido';
+    const idioma = navigator.language || 'Desconhecido';
+    return `Tela: ${tela} | Núcleos: ${nucleos} | Idioma: ${idioma}`;
+}
+
+function formatarTempoDeJogo(ms) {
+    let segundosTotais = Math.floor(ms / 1000);
+    let horas = Math.floor(segundosTotais / 3600);
+    let minutos = Math.floor((segundosTotais % 3600) / 60);
+    let segundos = segundosTotais % 60;
+    
+    if (horas > 0) return `${horas}h ${minutos}m ${segundos}s`;
+    if (minutos > 0) return `${minutos}m ${segundos}s`;
+    return `${segundos}s`;
+}
+
+// =========================================
+// BANCO DE DADOS: INICIO DE SESSÃO (POST)
+// =========================================
 async function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
 
-    horaInicioJogo = new Date().toLocaleTimeString('pt-BR');
-    const dataAcesso = new Date().toLocaleDateString('pt-BR');
-    const dataHoraCompleta = `${dataAcesso} ${horaInicioJogo}`;
+    sessaoAtualId = gerarUUID(); // ID único para essa jogatina
+    tempoInicio = Date.now(); // Inicia o cronômetro
 
     let ipUser = "Desconhecido";
     let localUser = "Desconhecida";
@@ -87,28 +101,25 @@ async function registrarLogAcessoImediato() {
     try {
         const response = await fetch("https://ipwho.is/");
         const data = await response.json();
-        
         if (data.success) {
-            ipUser = data.ip || "Desconhecido";
+            ipUser = data.ip;
             localUser = (data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
-        } else {
-            const ipFallback = await fetch("https://api.ipify.org?format=json");
-            const ipData = await ipFallback.json();
-            ipUser = ipData.ip || "Desconhecido";
         }
     } catch (e) {
-        console.log("Erro ao buscar IP/Localização:", e);
+        console.log("Erro API IP:", e);
     }
 
     const payload = {
-        data_hora: dataHoraCompleta,
-        jogo: CURRENT_GAME.title || "Desconhecido",
+        sessao_id: sessaoAtualId, 
+        data_hora: new Date().toISOString(), // Formato aceito pelo banco para ordenar data
+        jogo: CURRENT_GAME.title,
         jogador_id: obterIdJogador(),
-        tempo: "Sessão Iniciada",
+        tempo: "Sessão Iniciada (Jogando...)", // Status inicial
         localizacao: localUser,
         ip: ipUser,
         aparelho: obterAparelho(),
-        navegador: obterNavegador()
+        navegador: obterNavegador(),
+        digital_aparelho: obterDigitalAparelho()
     };
 
     try {
@@ -123,29 +134,62 @@ async function registrarLogAcessoImediato() {
             body: JSON.stringify(payload)
         });
     } catch (error) {
-        console.log("Erro ao enviar log:", error);
+        console.error("Erro no Supabase:", error);
     }
 }
 
 // =========================================
-// CARREGAMENTO E FLUXO DO JOGO
+// BANCO DE DADOS: FIM DE SESSÃO (PATCH)
+// =========================================
+function atualizarTempoSessao() {
+    if (!sessaoAtualId || tempoInicio === 0) return;
+
+    const tempoJogadoMs = Date.now() - tempoInicio;
+    const tempoFormatado = formatarTempoDeJogo(tempoJogadoMs);
+
+    // Faz um PATCH (atualização) na linha específica usando o sessao_id
+    const patchUrl = `${SUPABASE_URL}/rest/v1/logs_acesso?sessao_id=eq.${sessaoAtualId}`;
+    const payload = { tempo: tempoFormatado };
+
+    // Usamos keepalive/sendBeacon para garantir que o envio ocorra mesmo se a aba for fechada
+    const headers = {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=minimal"
+    };
+
+    if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        navigator.sendBeacon(patchUrl, blob); // Funciona no background ao fechar aba
+    } else {
+        fetch(patchUrl, { method: 'PATCH', headers: headers, body: JSON.stringify(payload), keepalive: true });
+    }
+}
+
+// Escuta quando o usuário sai da página, troca de aba, ou bloqueia o celular
+window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        atualizarTempoSessao();
+    }
+});
+window.addEventListener('pagehide', atualizarTempoSessao);
+window.addEventListener('beforeunload', atualizarTempoSessao);
+
+
+// =========================================
+// CARREGAMENTO DO JOGO E EVENTOS 
 // =========================================
 async function loadGames() {
     try {
-        if (!GAME_KEY) {
-            mostrarTelaErro();
-            return;
-        }
+        if (!GAME_KEY) { mostrarTelaErro(); return; }
 
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
         
-        if (!CURRENT_GAME) {
-            mostrarTelaErro();
-            return;
-        }
+        if (!CURRENT_GAME) { mostrarTelaErro(); return; }
 
         IS_VALID = true;
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
@@ -158,34 +202,28 @@ async function loadGames() {
         const startBtn = document.getElementById("btnJogar");
         startBtn.addEventListener("click", () => {
             clickSound.play();
-            registrarLogAcessoImediato(); // Envia para o Supabase ao clicar em jogar
+            registrarLogAcessoImediato(); // Dispara o POST inicial
             startBoot();
         });
 
     } catch (error) {
-        console.error("Erro ao carregar dados:", error);
         mostrarTelaErro();
     }
 }
 
 function mostrarTelaErro() {
     IS_VALID = false;
-    
     const splash = document.getElementById("splashScreen");
     const gameScreen = document.getElementById("gameScreen");
-    
     if (splash) splash.style.display = "none";
     if (gameScreen) gameScreen.style.display = "none";
     
     const invalidScreen = document.getElementById("invalidScreen");
-    if (invalidScreen) {
-        invalidScreen.style.display = "block";
-    }
+    if (invalidScreen) invalidScreen.style.display = "block";
 }
 
 document.addEventListener("DOMContentLoaded", loadGames);
 
-// Controle da Tela ZERO (Splash Screen mantida em 4 segundos)
 document.addEventListener("DOMContentLoaded", () => {
     const gameScreen = document.getElementById("gameScreen");
     const splashScreen = document.getElementById("splashScreen");
@@ -201,20 +239,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 4000); 
 });
 
-// Ativa Tela Cheia e Trava na Horizontal
 ['click', 'touchstart'].forEach(eventType => {
     document.addEventListener(eventType, function(event) {
         if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
-            
             const docElement = document.documentElement;
             const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
-            
             if (requestFS) {
                 requestFS.call(docElement).then(() => {
                     if (screen.orientation && screen.orientation.lock) {
-                        screen.orientation.lock('landscape').catch(err => {
-                            console.log("Rotação automática bloqueada.");
-                        });
+                        screen.orientation.lock('landscape').catch(err => console.log("Rotação bloqueada."));
                     }
                 }).catch(err => console.log("Erro de tela cheia."));
             }

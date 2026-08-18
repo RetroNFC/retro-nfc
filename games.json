@@ -270,7 +270,7 @@
     },
     {
       "key": "e50d293b-cf73-4a99-263a-be9f71602c33",
-      "title": "Mortal Kombat 3",
+      "title": "Mortal Kombat 3 Ultimate",
       "subtitle": "",
       "year": "1995",
       "players": "1-2",
@@ -301,5 +301,50 @@
       "core": "snes",
       "romUrl": "assets/roms/sf2.sfc"
     }
+    {
+      "key": "a2b3c4d5-e6f7-48a9-b0c1-d2e3f4a5b6c7",
+      "title": "Nosferatu",
+      "subtitle": "Nosferatu",
+      "year": "1994",
+      "players": "1",
+      "developer": "SETA Corporation",
+      "cover": "assets/capas/nosferatu.png",
+      "core": "snes",
+      "romUrl": "assets/roms/nosferatu.sfc"
+    },
+    {
+      "key": "b3c4d5e6-f7a8-49b0-c1d2-e3f4a5b6c7d8",
+      "title": "Blackthorne",
+      "subtitle": "",
+      "year": "1994",
+      "players": "1",
+      "developer": "Blizzard Entertainment",
+      "cover": "assets/capas/bt.png",
+      "core": "snes",
+      "romUrl": "assets/roms/bt.sfc"
+    },
+    {
+      "key": "c4d5e6f7-a8b9-40c1-d2e3-f4a5b6c7d8e9",
+      "title": "Final Fantasy VI",
+      "subtitle": "",
+      "year": "1994",
+      "players": "1",
+      "developer": "Square",
+      "cover": "assets/capas/ffVI.png",
+      "core": "snes",
+      "romUrl": "assets/roms/ffVI.sfc"
+    },
+    {
+      "key": "d5e6f7a8-b9c0-41d2-e3f4-a5b6c7d8e9f0",
+      "title": "Teenage Mutant Ninja Turtles IV",
+      "subtitle": "Turtles in Time",
+      "year": "1992",
+      "players": "1-2",
+      "developer": "Konami",
+      "cover": "assets/capas/tmnt.png",
+      "core": "snes",
+      "romUrl": "assets/roms/tmnt.sfc"
+    }
       ]
 }
+

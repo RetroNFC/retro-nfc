@@ -1,5 +1,5 @@
 // =========================================
-// CAMADA DE SEGURANÇA E PROTEÇÃO (ANTI-CÓPIA)
+// CAMADA DE SEGURANÇA E PROTEÇÃO
 // =========================================
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
@@ -12,7 +12,7 @@ if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
 }
 
 // =========================================
-// CONFIGURAÇÕES GLOBAIS
+// VARIÁVEIS GLOBAIS
 // =========================================
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
@@ -27,21 +27,14 @@ let tempoInicio = 0;
 let sessaoAtualId = null; 
 
 // =========================================
-// SISTEMA DE COLETA AVANÇADA DE DADOS
+// FUNÇÕES DE COLETA (MANTIDAS IGUAIS)
 // =========================================
-function gerarUUID() {
-    return 'sess_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-
+function gerarUUID() { return 'sess_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); }
 function obterIdJogador() {
     let jogadorId = localStorage.getItem('imortalize_user_id');
-    if (!jogadorId) {
-        jogadorId = 'usr_' + Math.random().toString(36).substring(2, 12);
-        localStorage.setItem('imortalize_user_id', jogadorId);
-    }
+    if (!jogadorId) { jogadorId = 'usr_' + Math.random().toString(36).substring(2, 12); localStorage.setItem('imortalize_user_id', jogadorId); }
     return jogadorId;
 }
-
 function obterAparelho() {
     const ua = navigator.userAgent;
     if (/android/i.test(ua)) return "Android";
@@ -50,7 +43,6 @@ function obterAparelho() {
     if (/macintosh/i.test(ua)) return "Mac OS";
     return "Outro";
 }
-
 function obterNavegador() {
     const ua = navigator.userAgent;
     if (/Instagram/i.test(ua)) return "Navegador In-App (Instagram)";
@@ -59,108 +51,54 @@ function obterNavegador() {
     if (/safari/i.test(ua) && !/chrome|crios/i.test(ua)) return "Safari";
     return "Outro";
 }
-
-function obterDigitalAparelho() {
-    const tela = `${window.screen.width}x${window.screen.height}`;
-    const nucleos = navigator.hardwareConcurrency || 'Desconhecido';
-    const idioma = navigator.language || 'Desconhecido';
-    return `Tela: ${tela} | Núcleos: ${nucleos} | Idioma: ${idioma}`;
-}
-
+function obterDigitalAparelho() { return `Tela: ${window.screen.width}x${window.screen.height} | Núcleos: ${navigator.hardwareConcurrency || 'N/A'} | Idioma: ${navigator.language || 'N/A'}`; }
 function formatarTempoDeJogo(ms) {
-    let segundosTotais = Math.floor(ms / 1000);
-    let horas = Math.floor(segundosTotais / 3600);
-    let minutos = Math.floor((segundosTotais % 3600) / 60);
-    let segundos = segundosTotais % 60;
-    
-    if (horas > 0) return `${horas}h ${minutos}m ${segundos}s`;
-    if (minutos > 0) return `${minutos}m ${segundos}s`;
-    return `${segundos}s`;
+    let s = Math.floor(ms / 1000); let h = Math.floor(s / 3600); let m = Math.floor((s % 3600) / 60); s = s % 60;
+    if (h > 0) return `${h}h ${m}m ${s}s`; if (m > 0) return `${m}m ${s}s`; return `${s}s`;
 }
-
-function obterDataBonita() {
-    return new Date().toLocaleString('pt-BR'); 
-}
+function obterDataBonita() { return new Date().toLocaleString('pt-BR'); }
 
 // =========================================
-// BANCO DE DADOS: INICIO DE SESSÃO (POST)
+// SUPABASE: POST E PATCH (MANTIDOS IGUAIS)
 // =========================================
 function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
-
     sessaoAtualId = gerarUUID(); 
     tempoInicio = Date.now(); 
-
     fetch("https://ipwho.is/")
         .then(res => res.json())
         .then(data => {
             let ipUser = data.success ? data.ip : "Desconhecido";
             let localUser = (data.success && data.city && data.region) ? `${data.city} - ${data.region}` : "Desconhecida";
             enviarParaSupabase(ipUser, localUser);
-        })
-        .catch(() => {
-            enviarParaSupabase("Desconhecido", "Desconhecida");
-        });
+        }).catch(() => enviarParaSupabase("Desconhecido", "Desconhecida"));
 }
 
 async function enviarParaSupabase(ipUser, localUser) {
     const payload = {
-        sessao_id: sessaoAtualId, 
-        data_hora: obterDataBonita(), 
-        jogo: CURRENT_GAME.title,
-        jogador_id: obterIdJogador(),
-        tempo: "Sessão Iniciada (Jogando...)", 
-        localizacao: localUser,
-        ip: ipUser,
-        aparelho: obterAparelho(),
-        navegador: obterNavegador(),
-        digital_aparelho: obterDigitalAparelho()
+        sessao_id: sessaoAtualId, data_hora: obterDataBonita(), jogo: CURRENT_GAME.title, jogador_id: obterIdJogador(),
+        tempo: "Sessão Iniciada (Jogando...)", localizacao: localUser, ip: ipUser, aparelho: obterAparelho(),
+        navegador: obterNavegador(), digital_aparelho: obterDigitalAparelho()
     };
-
     try {
         await fetch(`${SUPABASE_URL}/rest/v1/logs_acesso`, {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Prefer": "return=minimal"
-            },
-            body: JSON.stringify(payload),
-            keepalive: true 
+            headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" },
+            body: JSON.stringify(payload), keepalive: true 
         });
-    } catch (error) {
-        console.log("Erro de rede ao salvar log:", error);
-    }
+    } catch (e) { console.log(e); }
 }
 
-// =========================================
-// BANCO DE DADOS: FIM DE SESSÃO (PATCH)
-// =========================================
 async function atualizarTempoSessao() {
     if (!sessaoAtualId || tempoInicio === 0) return;
-
-    const tempoJogadoMs = Date.now() - tempoInicio;
-    const tempoFormatado = formatarTempoDeJogo(tempoJogadoMs);
-
     const patchUrl = `${SUPABASE_URL}/rest/v1/logs_acesso?sessao_id=eq.${sessaoAtualId}`;
-    const payload = { tempo: tempoFormatado };
-
     try {
         await fetch(patchUrl, { 
             method: 'PATCH', 
-            headers: {
-                "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Prefer": "return=minimal"
-            }, 
-            body: JSON.stringify(payload), 
-            keepalive: true 
+            headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Prefer": "return=minimal" }, 
+            body: JSON.stringify({ tempo: formatarTempoDeJogo(Date.now() - tempoInicio) }), keepalive: true 
         });
-    } catch (e) {
-        console.log("Falha ao atualizar tempo", e);
-    }
+    } catch (e) {}
 }
 
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') atualizarTempoSessao(); });
@@ -168,20 +106,21 @@ window.addEventListener('pagehide', atualizarTempoSessao);
 window.addEventListener('beforeunload', atualizarTempoSessao);
 
 // =========================================
-// CARREGAMENTO DO JOGO E EVENTOS 
+// LÓGICA DE JOGO, TELAS E EMULADOR
 // =========================================
 async function loadGames() {
     try {
         if (!GAME_KEY) { mostrarTelaErro(); return; }
 
+        // Carrega o games.json
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
         CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
-        
         if (!CURRENT_GAME) { mostrarTelaErro(); return; }
-
         IS_VALID = true;
+
+        // Preenche as informações da capa, título, ano, etc. (Elas ficam ocultas até o Terminal acabar)
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
@@ -189,13 +128,12 @@ async function loadGames() {
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
+        // Configura o ÚNICO botão de clique do sistema
         const startBtn = document.getElementById("btnJogar");
         startBtn.onclick = () => {
-            clickSound.play();
-            registrarLogAcessoImediato(); // Dispara o POST inicial
-            if (typeof startBoot === "function") {
-                startBoot(); 
-            }
+            clickSound.play(); // Toca o som do Mario
+            registrarLogAcessoImediato(); // Salva no Supabase
+            iniciarEmulador(); // Inicia o jogo direto!
         };
 
     } catch (error) {
@@ -203,48 +141,70 @@ async function loadGames() {
     }
 }
 
-function mostrarTelaErro() {
-    IS_VALID = false;
-    const splash = document.getElementById("splashScreen");
-    const gameScreen = document.getElementById("gameScreen");
-    const invalidScreen = document.getElementById("invalidScreen");
-    
-    if (splash) splash.style.display = "none";
-    if (gameScreen) gameScreen.style.display = "none";
-    if (invalidScreen) invalidScreen.style.display = "block";
+// NOVA FUNÇÃO: Faz a mágica de girar a tela e pular o botão nativo do emulador
+function iniciarEmulador() {
+    // Esconde a Ficha do Jogo e mostra a tela preta do Emulador
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("emulatorScreen").style.display = "block";
+    document.body.style.padding = "0";
+    document.body.style.backgroundColor = "#000000";
+
+    // 1. FORÇA A TELA CHEIA E A ROTAÇÃO IMEDIATAMENTE (Graças ao clique no botão)
+    const docElement = document.documentElement;
+    const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
+    if (requestFS) {
+        requestFS.call(docElement).then(() => {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+        }).catch(() => {});
+    }
+
+    // 2. CONFIGURA E INJETA O EMULADOR
+    if (typeof CURRENT_GAME !== 'undefined') {
+        window.EJS_player = '#game';
+        window.EJS_core = CURRENT_GAME.core; 
+        window.EJS_gameUrl = CURRENT_GAME.romUrl; 
+        window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/';
+        
+        // O TRUQUE DE MESTRE: Inicia o jogo automaticamente sem precisar do segundo botão (ejs_start_button)
+        window.EJS_startOnLoaded = true; 
+        
+        // Insere o script no HTML e o jogo começa!
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
+        document.body.appendChild(script);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const gameScreen = document.getElementById("gameScreen");
-    const splashScreen = document.getElementById("splashScreen");
-    
-    if (gameScreen) gameScreen.style.display = "none"; 
-    if (splashScreen) splashScreen.style.display = "flex"; 
+function mostrarTelaErro() {
+    IS_VALID = false;
+    document.getElementById("splashScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("bootScreen").style.display = "none";
+    document.getElementById("invalidScreen").style.display = "block";
+}
 
-    // Carrega os dados em background enquanto exibe a tela zero
+// INÍCIO DO FLUXO DO APLICATIVO
+document.addEventListener("DOMContentLoaded", () => {
+    // Garante que só o Splash Screen aparece primeiro
+    document.getElementById("gameScreen").style.display = "none"; 
+    document.getElementById("bootScreen").style.display = "none"; 
+    document.getElementById("splashScreen").style.display = "flex"; 
+
+    // Carrega os dados silenciosamente no fundo
     loadGames();
 
-    // Mantém exatamente os 4 segundos de suspense da tela zero que você configurou
+    // Segura a arte da tela Splash por exatamente 4 segundos...
     setTimeout(() => {
         if (IS_VALID) { 
-            if (splashScreen) splashScreen.style.display = "none"; 
-            if (gameScreen) gameScreen.style.display = "flex";   
+            // Após 4s, INICIA O TERMINAL VERDE AUTOMATICAMENTE (Sem clique!)
+            if (typeof startBoot === "function") {
+                startBoot(); 
+            }
         }
     }, 4000); 
 });
 
-['click', 'touchstart'].forEach(eventType => {
-    document.addEventListener(eventType, function(event) {
-        if (event.target && (event.target.classList.contains('ejs_start_button') || event.target.closest('.ejs_start_button'))) {
-            const docElement = document.documentElement;
-            const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
-            if (requestFS) {
-                requestFS.call(docElement).then(() => {
-                    if (screen.orientation && screen.orientation.lock) {
-                        screen.orientation.lock('landscape').catch(() => {});
-                    }
-                }).catch(() => {});
-            }
-        }
-    }, true); 
-});
+// Nota: Removemos o antigo código de 'touchstart' que ficava aqui embaixo, 
+// pois agora a função iniciarEmulador() cuida da tela cheia com perfeição!

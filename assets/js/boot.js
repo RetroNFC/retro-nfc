@@ -35,10 +35,9 @@ async function startBoot() {
     
     // Frases que aparecerão no terminal verde
     const etapas = [
-        "LIGANDO SISTEMA...",
+        "VERIFICANDO CARTUCHO...",
         "LENDO TAG NFC...",
-        "CARTUCHO VERIFICADO",
-        "CARREGANDO DADOS..."
+        "CARTUCHO VERIFICADO"
     ];
 
     // Loop que escreve cada linha dando uma pausa de 1 segundo (1000ms)
@@ -59,7 +58,7 @@ async function startBoot() {
     const doneLine = document.createElement("div");
     doneLine.className = "bootLine";
     doneLine.style.marginTop = "15px";
-    doneLine.textContent = "SISTEMA PRONTO!";
+    doneLine.textContent = "INICIANDO JOGO!";
     terminal.appendChild(doneLine);
 
     // Finaliza a barra de progresso (todos os quadrados pintados)

@@ -37,7 +37,7 @@ async function startBoot() {
     const etapas = [
         "VERIFICANDO CARTUCHO...",
         "LENDO TAG NFC...",
-        "CARTUCHO VERIFICADO"
+        "CARTUCHO VERIFICADO..."
     ];
 
     // Loop que escreve cada linha dando uma pausa de 1 segundo (1000ms)

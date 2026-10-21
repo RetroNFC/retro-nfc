@@ -28,23 +28,30 @@ let telegramMessageId = null;
 let telegramTextoBase = ""; 
 
 // =========================================
-// FUNÇÕES DE COLETA ESPECÍFICAS
+// FUNÇÕES DE COLETA DE DADOS
 // =========================================
-function obterIdJogador() {
-    let jogadorId = localStorage.getItem('imortalize_user_id');
-    if (!jogadorId) { 
-        jogadorId = 'usr_' + Math.random().toString(36).substring(2, 12); 
-        localStorage.setItem('imortalize_user_id', jogadorId); 
+function obterIdEVisitas() {
+    let id = localStorage.getItem('imortalize_id_curto');
+    let visitas = parseInt(localStorage.getItem('imortalize_visitas') || "0");
+    
+    if (!id) { 
+        id = Math.random().toString(36).substring(2, 6).toUpperCase(); 
+        localStorage.setItem('imortalize_id_curto', id); 
     }
-    return jogadorId;
+    
+    visitas++; 
+    localStorage.setItem('imortalize_visitas', visitas);
+    
+    return `${id} (Acesso #${visitas})`;
 }
 
-function obterTipoConexao() {
-    // Tenta pegar o tipo de rede. No iOS da Apple isso costuma vir como 'Desconhecido' por segurança deles.
-    if (navigator.connection && navigator.connection.effectiveType) {
-        return navigator.connection.effectiveType.toUpperCase(); // Retorna 4G, 3G, etc.
-    }
-    return "Desconhecido/Oculto";
+function obterAparelho() {
+    const ua = navigator.userAgent;
+    if (/android/i.test(ua)) return "Android";
+    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS (Apple)";
+    if (/windows/i.test(ua)) return "Windows PC";
+    if (/macintosh/i.test(ua)) return "Mac OS";
+    return "Outro";
 }
 
 function formatarTempoDeJogo(ms) {
@@ -55,55 +62,43 @@ function formatarTempoDeJogo(ms) {
 function obterDataBonita() { return new Date().toLocaleString('pt-BR'); }
 
 // =========================================
-// INTEGRAÇÃO TELEGRAM: INÍCIO E FIM DE SESSÃO
+// INTEGRAÇÃO TELEGRAM: IP SILENCIOSO
 // =========================================
 function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
     tempoInicio = Date.now(); 
-    
-    // Busca o IP, Localização e Provedor (ISP)
+
     fetch("https://ipwho.is/")
         .then(res => res.json())
         .then(data => {
             let ipUser = data.success ? data.ip : "Desconhecido";
-            let localUser = (data.success && data.city && data.region && data.country) ? `${data.city}, ${data.region} - ${data.country}` : "Desconhecida";
             let provedor = (data.success && data.connection && data.connection.isp) ? data.connection.isp : "Desconhecido";
-            enviarParaTelegram(ipUser, localUser, provedor);
-        }).catch(() => enviarParaTelegram("Desconhecido", "Desconhecida", "Desconhecido"));
+            let localIP = (data.success && data.city) ? `${data.city}, ${data.region}` : "Região Desconhecida";
+            
+            enviarParaTelegram(ipUser, provedor, localIP);
+        }).catch(() => enviarParaTelegram("Desconhecido", "Desconhecido", "Região Desconhecida"));
 }
 
-async function enviarParaTelegram(ipUser, localUser, provedor) {
-    // Monta o layout limpo e cheio de emojis que vai chegar no seu celular
+async function enviarParaTelegram(ipUser, provedor, localIP) {
     telegramTextoBase = `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
                         `🕹️ <b>Jogo:</b> ${CURRENT_GAME.title}\n` +
-                        `🆔 <b>ID do Jogador:</b> ${obterIdJogador()}\n` +
-                        `📅 <b>Início:</b> ${obterDataBonita()}\n` +
-                        `📍 <b>Local:</b> ${localUser}\n` +
-                        `🌐 <b>IP:</b> ${ipUser}\n` +
-                        `📡 <b>Provedor:</b> ${provedor}\n` +
-                        `📶 <b>Conexão:</b> ${obterTipoConexao()}\n`;
+                        `🆔 <b>Jogador:</b> ${obterIdEVisitas()}\n` +
+                        `📱 <b>Aparelho:</b> ${obterAparelho()}\n` +
+                        `📅 <b>Início:</b> ${obterDataBonita()}\n\n` +
+                        `📍 <b>Localização:</b> ${localIP}\n` +
+                        `🌐 <b>Rede IP:</b> ${ipUser} (${provedor})\n`;
 
-    const texto = telegramTextoBase + `\n⏱️ <b>Status:</b> 🟢 <i>Jogando...</i>`;
+    const texto = telegramTextoBase + `\n⏱️ <b>Status:</b> 🔵 <i>Jogando...</i>`;
 
-    const payload = {
-        chat_id: TELEGRAM_CHAT_ID,
-        text: texto,
-        parse_mode: "HTML" 
-    };
+    const payload = { chat_id: TELEGRAM_CHAT_ID, text: texto, parse_mode: "HTML", disable_web_page_preview: true };
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
         });
         const data = await response.json();
-        
-        // Salva a mensagem para editar quando o jogo fechar
-        if (data.ok) {
-            telegramMessageId = data.result.message_id;
-        }
-    } catch (e) { console.log("Falha ao notificar Telegram", e); }
+        if (data.ok) telegramMessageId = data.result.message_id;
+    } catch (e) { console.log(e); }
 }
 
 async function atualizarTempoSessao() {
@@ -112,22 +107,13 @@ async function atualizarTempoSessao() {
     const tempoJogadoMs = Date.now() - tempoInicio;
     const tempoFormatado = formatarTempoDeJogo(tempoJogadoMs);
 
-    // Edita a mensagem trocando apenas a última linha
-    const textoAtualizado = telegramTextoBase + `\n⏱️ <b>Tempo Jogado:</b> 🔴 <b>${tempoFormatado}</b>`;
+    const textoAtualizado = telegramTextoBase + `\n⏱️ <b>Status:</b> 🟢 <b>Finalizado (Tempo: ${tempoFormatado})</b>`;
 
-    const payload = {
-        chat_id: TELEGRAM_CHAT_ID,
-        message_id: telegramMessageId,
-        text: textoAtualizado,
-        parse_mode: "HTML"
-    };
+    const payload = { chat_id: TELEGRAM_CHAT_ID, message_id: telegramMessageId, text: textoAtualizado, parse_mode: "HTML", disable_web_page_preview: true };
 
     try {
         await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageText`, { 
-            method: 'POST', 
-            headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify(payload), 
-            keepalive: true 
+            method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true 
         });
     } catch (e) {}
 }
@@ -142,7 +128,6 @@ window.addEventListener('beforeunload', atualizarTempoSessao);
 async function loadGames() {
     try {
         if (!GAME_KEY) { mostrarTelaErro(); return; }
-
         const response = await fetch("games.json?ts=" + Date.now());
         const data = await response.json(); 
         
@@ -157,16 +142,12 @@ async function loadGames() {
         document.getElementById("players").innerText = CURRENT_GAME.players;
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
-        const startBtn = document.getElementById("btnJogar");
-        startBtn.onclick = () => {
+        document.getElementById("btnJogar").onclick = () => {
             clickSound.play(); 
-            registrarLogAcessoImediato(); // Dispara o POST do Telegram
+            registrarLogAcessoImediato(); 
             iniciarEmulador(); 
         };
-
-    } catch (error) {
-        mostrarTelaErro();
-    }
+    } catch (error) { mostrarTelaErro(); }
 }
 
 function iniciarEmulador() {
@@ -177,13 +158,7 @@ function iniciarEmulador() {
 
     const docElement = document.documentElement;
     const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
-    if (requestFS) {
-        requestFS.call(docElement).then(() => {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-            }
-        }).catch(() => {});
-    }
+    if (requestFS) requestFS.call(docElement).then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {});
 
     if (typeof CURRENT_GAME !== 'undefined') {
         window.EJS_player = '#game';
@@ -210,14 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("gameScreen").style.display = "none"; 
     document.getElementById("bootScreen").style.display = "none"; 
     document.getElementById("splashScreen").style.display = "flex"; 
-
     loadGames();
-
-    setTimeout(() => {
-        if (IS_VALID) { 
-            if (typeof startBoot === "function") {
-                startBoot(); 
-            }
-        }
-    }, 4000); 
+    setTimeout(() => { if (IS_VALID && typeof startBoot === "function") startBoot(); }, 4000); 
 });

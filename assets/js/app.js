@@ -123,7 +123,7 @@ window.addEventListener('pagehide', atualizarTempoSessao);
 window.addEventListener('beforeunload', atualizarTempoSessao);
 
 // =========================================
-// LÓGICA DE JOGO E EMULADOR (COM VIBRAÇÃO OTIMIZADA)
+// LÓGICA DE JOGO E EMULADOR (VIBRAÇÃO E REFLOW)
 // =========================================
 async function loadGames() {
     try {
@@ -143,24 +143,24 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
         const btn = document.getElementById("btnJogar");
+        let jaVibrou = false;
 
-        // 🔮 MAGIA SENSORIAL: Padrão que imita o encaixe físico (Curto, Pausa, Longo)
-        const dispararVibracao = () => {
+        // Trava de segurança contra vibrações duplas simultâneas
+        const executarVibracaoSólida = () => {
+            if (jaVibrou) return;
+            jaVibrou = true;
             try {
-                if (navigator.vibrate) {
-                    navigator.vibrate([40, 50, 150]); 
+                if ("vibrate" in navigator) {
+                    navigator.vibrate([60, 40, 120]); // Encaixe tátil curto-longo
                 }
             } catch(e) {}
+            setTimeout(() => { jaVibrou = false; }, 400);
         };
 
-        // Dispara no instante que o dedo trisca na tela (Específico para celulares como o Galaxy)
-        btn.addEventListener('touchstart', dispararVibracao, { passive: true });
+        btn.addEventListener("touchstart", executarVibracaoSólida, { passive: true });
 
         btn.onclick = () => {
-            // Se for PC ou se o touchstart falhar, ele vibra no clique padrão
-            dispararVibracao(); 
-            
-            // Inicia o áudio e a lógica
+            executarVibracaoSólida();
             clickSound.play().catch(()=>{}); 
             registrarLogAcessoImediato(); 
             iniciarEmulador(); 
@@ -174,7 +174,8 @@ function iniciarEmulador() {
     
     emulatorScreen.style.display = "block";
     
-    // 🔮 MAGIA VISUAL: Aciona o efeito da TV de tubo ligando
+    // TRUQUE DO REFLOW: Força o navegador a calcular o estilo antes de animar
+    void emulatorScreen.offsetWidth; 
     emulatorScreen.classList.add("crt-turn-on");
 
     document.body.style.padding = "0";

@@ -42,14 +42,14 @@ body {
 
 #gameCover {
     width: 100%;
-    max-width: 322px; /* Aumentado em cerca de 15% */
+    max-width: 322px;
     border-radius: 6px;
     margin-bottom: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.9); /* Aumentei um pouco a sombra para acompanhar o tamanho */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.9);
 }
 
 #title {
-    font-size: 16px; /* Menor e mais elegante */
+    font-size: 16px;
     line-height: 1.4;
     color: #ffffff;
     margin-bottom: 8px;
@@ -63,18 +63,17 @@ body {
 }
 
 .info p {
-    font-size: 10px; /* Textos de apoio bem ajustados */
+    font-size: 10px;
     line-height: 1.8;
     color: #999999;
 }
 
 #btnJogar, #startButton {
     margin-top: 30px;
-    background-color: #E60012 !important; /* Fundo Vermelho */
-    color: #FFFFFF !important; /* Letra Branca */
-    border: 3px solid #FFFFFF !important; /* Borda Branca */
-    text-shadow: none !important; /* Sem sombra no texto */
-    
+    background-color: #E60012 !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+    text-shadow: none !important;
     padding: 16px 40px;
     border-radius: 50px;
     cursor: pointer;
@@ -87,16 +86,16 @@ body {
 }
 
 #btnJogar {
-    font-size: 28px; /* Aumente este valor até ficar do tamanho que você quer */
+    font-size: 28px;
 }
 
 #startButton {
-    font-size: 18px; /* Mantenha o tamanho original aqui */
+    font-size: 18px;
 }
 
 #btnJogar:active, #startButton:active {
-    transform: scale(0.95); /* Dá uma leve afundada no botão todo */
-    background-color: #f0f0f0; /* Escurece o branco levemente ao clicar */
+    transform: scale(0.95);
+    background-color: #f0f0f0;
 }
 
 /* =========================================
@@ -105,34 +104,28 @@ body {
 #bootScreen {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center;     /* Centraliza horizontalmente */
+    justify-content: center;
+    align-items: center;
     width: 100vw;
     height: 100dvh;
     padding: 20px;
-    background-color: #050505; /* Fundo escuro base de segurança */
-    position: relative; /* Necessário para a imagem de fundo não escapar */
-    overflow: hidden;   /* Evita barras de rolagem por causa do desfoque */
-    z-index: 1;         /* Mantém os textos na frente de tudo */
+    background-color: #050505;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
-/* Cria o fundo com a imagem, desfoque e transparência */
 #bootScreen::before {
     content: "";
     position: absolute;
     top: -15px; left: -15px; right: -15px; bottom: -15px; 
-    
-    /* Alteramos para 100% para a imagem não cortar o logo */
     background: url('../img/retronfc.png') center/100% no-repeat;
-    
     opacity: 0.30; 
-    filter: blur(4px); /* Diminui um pouco o blur para o rosto ficar mais nítido */
-    
+    filter: blur(4px);
     z-index: -1; 
     animation: fadeInBackground 2.5s ease-in-out forwards;
 }
 
-/* Animação do Fade (Surgimento suave da imagem) */
 @keyframes fadeInBackground {
     from { opacity: 0; filter: blur(10px); }
     to { opacity: 0.30; filter: blur(4px); }
@@ -149,22 +142,21 @@ body {
     line-height: 1.6;
 }
 
-/* Centraliza os textos verdes do terminal */
 .bootTerminal {
     width: 100%;
     text-align: center; 
     min-height: 220px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Garante que as caixas fiquem no centro */
+    align-items: center;
     gap: 12px;
-    z-index: 2; /* Garante que os textos fiquem à frente do fundo */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Sombra para leitura perfeita no neon */
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .bootLine {
     font-size: 12px;
-    color: #5CFF8A; /* Verde terminal clássico */
+    color: #5CFF8A;
     line-height: 1.4;
 }
 
@@ -173,16 +165,14 @@ body {
     font-size: 18px;
     color: #ffffff;
     text-align: center;
-    letter-spacing: 2px; /* Espaço entre os quadrados */
+    letter-spacing: 2px;
 }
 
-/* Estilo Nintendo para o Título do Jogo (Tela 2) */
 .nintendo-title {
-    background-color: #E60012 !important; /* Fundo Vermelho */
-    color: #FFFFFF !important; /* Letra Branca */
-    border: 3px solid #FFFFFF !important; /* Borda Branca */
-    text-shadow: none !important; /* Sem sombra no texto */
-    
+    background-color: #E60012 !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+    text-shadow: none !important;
     border-radius: 50px !important;
     padding: 15px 30px !important;
     text-transform: uppercase;
@@ -232,7 +222,7 @@ body {
 }
 
 /* =========================================
-   SPLASH E SCANLINES (CORRIGIDO)
+   SPLASH E SCANLINES
    ========================================= */
 #splashScreen {
     position: fixed;
@@ -241,15 +231,14 @@ body {
     width: 100vw;
     height: 100dvh;
     background-color: black;
-    z-index: 9000; /* Abaixo das scanlines */
+    z-index: 9000;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Configuração padrão (Desktop/Grande) */
 #splashScreen img { 
-    content: url('../img/retronfc.png'); /* Sua imagem original */
+    content: url('../img/retronfc.png');
     width: 100vw;
     height: 100dvh;
     object-fit: cover; 
@@ -257,29 +246,29 @@ body {
     animation: fadeLogo 15s ease-in-out forwards; 
 }
 
-/* Configuração Mobile (Detecta telas estreitas) */
 @media (max-width: 768px) {
     #splashScreen img { 
-        content: url('../img/retronfc_mobile.png'); /* Sua nova imagem vertical */
-        object-fit: cover; /* Agora, com a proporção certa, o cover vai ficar perfeito */
+        content: url('../img/retronfc_mobile.png');
+        object-fit: cover;
+    }
+    #bootScreen::before {
+        background-image: url('../img/retronfc_mobile.png') !important;
+        background-size: cover !important;
     }
 }
 
-/* O TEMPO EXATO: 1s entra, 2s parada, 1s sai = 4s totais */
 @keyframes fadeLogo {
     0%   { opacity: 0; }
-    25%  { opacity: 1; } /* Atinge o brilho máximo no segundo 1 */
-    75%  { opacity: 1; } /* Fica visível até o segundo 3 */
-    100% { opacity: 0; } /* Some completamente no segundo 4 */
+    25%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
 }
 
-/* Força o botão JOGAR a subir e ficar visível */
 body .ejs_start_button {
-    background-color: #E60012 !important; /* Fundo Vermelho */
-    color: #FFFFFF !important; /* Letra Branca */
-    border: 3px solid #FFFFFF !important; /* Borda Branca */
-    text-shadow: none !important; /* Sem sombra no texto */
-    
+    background-color: #E60012 !important;
+    color: #FFFFFF !important;
+    border: 3px solid #FFFFFF !important;
+    text-shadow: none !important;
     border-radius: 50px !important;
     font-family: 'Pretendo', sans-serif !important;
     font-size: 24px !important;
@@ -296,19 +285,11 @@ body .ejs_start_button {
     z-index: 20000 !important;
 }
 
-/* Ajuste automático para a imagem de fundo do Boot no celular */
-@media (max-width: 768px) {
-    #bootScreen::before {
-        background-image: url('../img/retronfc_mobile.png') !important;
-        background-size: cover !important; /* Faz preencher a tela vertical perfeitamente */
-    }
-}
-
 /* =========================================
    FASE 1: EFEITO MÁGICO DE TV DE TUBO (CRT)
    ========================================= */
 .crt-turn-on {
-    animation: crtTurnOn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: crtTurnOn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards !important;
     transform-origin: center center;
     position: relative;
     z-index: 100;
@@ -321,16 +302,16 @@ body .ejs_start_button {
         opacity: 0;
     }
     10% {
-        transform: scale(1, 0.005); /* Risco brilhante horizontal */
+        transform: scale(1, 0.005);
         filter: brightness(10) contrast(10);
         opacity: 1;
     }
     40% {
-        transform: scale(1, 0.005); /* Segura o risco um instante */
+        transform: scale(1, 0.005);
         filter: brightness(10) contrast(10);
     }
     100% {
-        transform: scale(1, 1); /* Abre a tela do jogo */
+        transform: scale(1, 1);
         filter: brightness(1) contrast(1);
         opacity: 1;
     }

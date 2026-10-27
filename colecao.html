@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Coleção - Retrô NFC</title>
+    <title>Meus Cartuchos - Retrô NFC</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; } /* Trava as bordas para nada vazar da tela */
+        
         body { 
             background-color: #0d1117; 
             color: #fff; 
@@ -16,7 +18,19 @@
             min-height: 100vh;
         }
         
-        h1 { font-size: 18px; color: #E60012; margin-bottom: 10px; line-height: 1.5; }
+        /* Título alinhado verticalmente com o troféu maior */
+        h1 { 
+            font-size: 18px; 
+            color: #E60012; 
+            margin-bottom: 10px; 
+            line-height: 1.5; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+        }
+        .icone-trofeu { font-size: 26px; } 
+        
         p.sub { font-size: 10px; color: #888; margin-bottom: 40px; line-height: 1.6; }
         
         .grid { 
@@ -47,7 +61,7 @@
         
         .cartucho h3 { font-size: 9px; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
         
-        /* ESTADO: BLOQUEADO (Não possui o cartucho) */
+        /* ESTADO: BLOQUEADO */
         .bloqueado { opacity: 0.7; }
         .bloqueado img { filter: grayscale(100%) brightness(0.4) contrast(1.2); }
         .bloqueado::after { 
@@ -72,19 +86,21 @@
             text-transform: uppercase;
         }
         
-        /* ESTADO: DESBLOQUEADO (Possui o cartucho) */
+        /* ESTADO: DESBLOQUEADO */
         .desbloqueado { 
             border-color: #5CFF8A; 
             box-shadow: 0 0 15px rgba(92, 255, 138, 0.15); 
         }
         .desbloqueado h3 { color: #5CFF8A; }
+        
         .etiqueta-ok {
             background: #5CFF8A;
             color: #000;
-            font-size: 8px;
-            padding: 8px;
+            font-size: 7px; /* Fonte levemente ajustada para caber a palavra nova */
+            padding: 8px 4px; 
             border-radius: 10px;
             width: 100%;
+            text-align: center;
         }
         
         .btn-voltar { 
@@ -101,28 +117,23 @@
     </style>
 </head>
 <body>
-    <h1>🏆 MINHA COLEÇÃO</h1>
+    <h1><span class="icone-trofeu">🏆</span> MEUS CARTUCHOS</h1>
     <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC.</p>
     
-    <div class="grid" id="gridColecao">
-        <!-- O JavaScript injetará os jogos aqui -->
-    </div>
+    <div class="grid" id="gridColecao"></div>
 
     <button class="btn-voltar" onclick="history.back()">⬅ VOLTAR</button>
 
     <script>
         async function carregarColecao() {
             try {
-                // Lê o banco de dados de jogos
                 const response = await fetch("games.json?ts=" + Date.now());
                 const data = await response.json();
                 
-                // Lê os carimbos salvos no celular do cliente
                 const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
                 const grid = document.getElementById('gridColecao');
                 
-                // Substitua pelo número de WhatsApp de vendas do Retrô NFC
-                const numeroWhatsApp = "5519992087429"; 
+                const numeroWhatsApp = "5511999999999"; 
 
                 data.games.forEach(game => {
                     const temCartucho = colecaoSalva.includes(game.key);
@@ -133,7 +144,7 @@
                         card.innerHTML = `
                             <img src="${game.cover}" alt="${game.title}">
                             <h3>${game.title}</h3>
-                            <div class="etiqueta-ok">NA COLEÇÃO</div>
+                            <div class="etiqueta-ok">COLECIONADO</div>
                         `;
                     } else {
                         const textoZap = encodeURIComponent(`Olá! Quero comprar o cartucho do ${game.title} para a minha coleção Retrô NFC.`);

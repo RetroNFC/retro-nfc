@@ -89,6 +89,28 @@ body {
     background-color: #f0f0f0;
 }
 
+/* =========================================
+   BOTÃO DA ESTANTE DIGITAL
+   ========================================= */
+#btnEstante {
+    margin-top: 15px;
+    background-color: transparent;
+    color: #888888;
+    border: 2px solid #333333;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
+    transition: all 0.3s ease;
+}
+
+#btnEstante:active {
+    background-color: #333333;
+    color: #ffffff;
+}
+
 #bootScreen {
     display: flex;
     flex-direction: column;

@@ -1,7 +1,6 @@
 /* Importa a fonte retrô */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Importa a fonte idêntica à da Nintendo salva na sua pasta */
 @font-face {
     font-family: 'Pretendo';
     src: url('../fonts/Pretendo.ttf') format('truetype');
@@ -17,7 +16,7 @@
 }
 
 body {
-    background-color: #0d1117; /* Fundo escuro imersivo */
+    background-color: #0d1117;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,9 +25,6 @@ body {
     padding: 20px;
 }
 
-/* =========================================
-   TELA PRINCIPAL (GAME INFO)
-   ========================================= */
 #gameScreen {
     display: flex;
     flex-direction: column;
@@ -85,22 +81,14 @@ body {
     transition: all 0.2s ease;
 }
 
-#btnJogar {
-    font-size: 28px;
-}
-
-#startButton {
-    font-size: 18px;
-}
+#btnJogar { font-size: 28px; }
+#startButton { font-size: 18px; }
 
 #btnJogar:active, #startButton:active {
     transform: scale(0.95);
     background-color: #f0f0f0;
 }
 
-/* =========================================
-   TELA DE BOOT (COM FUNDO IMORTALIZE)
-   ========================================= */
 #bootScreen {
     display: flex;
     flex-direction: column;
@@ -131,16 +119,8 @@ body {
     to { opacity: 0.30; filter: blur(4px); }
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.bootLogo, .bootConsole {
-    font-size: 16px;
-    color: #ffffff;
-    line-height: 1.6;
-}
+.header { text-align: center; margin-bottom: 30px; }
+.bootLogo, .bootConsole { font-size: 16px; color: #ffffff; line-height: 1.6; }
 
 .bootTerminal {
     width: 100%;
@@ -154,107 +134,38 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.bootLine {
-    font-size: 12px;
-    color: #5CFF8A;
-    line-height: 1.4;
-}
+.bootLine { font-size: 12px; color: #5CFF8A; line-height: 1.4; }
+.progressText { margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center; letter-spacing: 2px; }
 
-.progressText {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #ffffff;
-    text-align: center;
-    letter-spacing: 2px;
-}
-
-.nintendo-title {
-    background-color: #E60012 !important;
-    color: #FFFFFF !important;
-    border: 3px solid #FFFFFF !important;
-    text-shadow: none !important;
-    border-radius: 50px !important;
-    padding: 15px 30px !important;
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 24px !important; 
-    margin-top: 25px !important;
-    font-weight: bold;
-    display: inline-block;
-    font-family: 'Pretendo', sans-serif !important; 
-    letter-spacing: 2px !important;
-}
-
-/* =========================================
-   TELA DE ERRO (CARTUCHO INVÁLIDO)
-   ========================================= */
 #invalidScreen {
     display: none;
     position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100dvh !important;
     background: #000 url('../img/invalido.png') no-repeat center center !important;
     background-size: 100% 100% !important;
     z-index: 9999999 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
 }
 
-.errorTitle {
-    font-size: 20px;
-    color: #ff3333;
-    margin-bottom: 10px;
-}
-
-.errorSub {
-    font-size: 14px;
-    color: #ffffff;
-    margin-bottom: 20px;
-}
-
-.errorText {
-    font-size: 10px;
-    line-height: 1.5;
-    color: #cccccc;
-}
-
-/* =========================================
-   SPLASH E SCANLINES
-   ========================================= */
 #splashScreen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
+    top: 0; left: 0;
+    width: 100vw; height: 100dvh;
     background-color: black;
     z-index: 9000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
 }
 
 #splashScreen img { 
     content: url('../img/retronfc.png');
-    width: 100vw;
-    height: 100dvh;
-    object-fit: cover; 
-    opacity: 0; 
+    width: 100vw; height: 100dvh;
+    object-fit: cover; opacity: 0; 
     animation: fadeLogo 15s ease-in-out forwards; 
 }
 
 @media (max-width: 768px) {
-    #splashScreen img { 
-        content: url('../img/retronfc_mobile.png');
-        object-fit: cover;
-    }
-    #bootScreen::before {
-        background-image: url('../img/retronfc_mobile.png') !important;
-        background-size: cover !important;
-    }
+    #splashScreen img { content: url('../img/retronfc_mobile.png'); object-fit: cover; }
+    #bootScreen::before { background-image: url('../img/retronfc_mobile.png') !important; background-size: cover !important; }
 }
 
 @keyframes fadeLogo {
@@ -264,55 +175,13 @@ body {
     100% { opacity: 0; }
 }
 
-body .ejs_start_button {
-    background-color: #E60012 !important;
-    color: #FFFFFF !important;
-    border: 3px solid #FFFFFF !important;
-    text-shadow: none !important;
-    border-radius: 50px !important;
-    font-family: 'Pretendo', sans-serif !important;
-    font-size: 24px !important;
-    text-transform: uppercase !important;
-    position: absolute !important;
-    bottom: 20% !important; 
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 15px 40px !important;
-    cursor: pointer !important;
-    z-index: 20000 !important;
+/* Efeito TV de Tubo de saída no botão JOGAR */
+.crt-shutdown {
+    animation: crtShutdown 0.4s ease-out forwards !important;
 }
 
-/* =========================================
-   FASE 1: EFEITO MÁGICO DE TV DE TUBO (CRT)
-   ========================================= */
-.crt-turn-on {
-    animation: crtTurnOn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards !important;
-    transform-origin: center center;
-    position: relative;
-    z-index: 100;
-}
-
-@keyframes crtTurnOn {
-    0% {
-        transform: scale(0, 0.005);
-        filter: brightness(10) contrast(10);
-        opacity: 0;
-    }
-    10% {
-        transform: scale(1, 0.005);
-        filter: brightness(10) contrast(10);
-        opacity: 1;
-    }
-    40% {
-        transform: scale(1, 0.005);
-        filter: brightness(10) contrast(10);
-    }
-    100% {
-        transform: scale(1, 1);
-        filter: brightness(1) contrast(1);
-        opacity: 1;
-    }
+@keyframes crtShutdown {
+    0% { transform: scale(1, 1); filter: brightness(1); opacity: 1; }
+    50% { transform: scale(1, 0.005); filter: brightness(5); opacity: 1; }
+    100% { transform: scale(0, 0); filter: brightness(10); opacity: 0; }
 }

@@ -93,17 +93,12 @@ body {
    BOTÃO DA ESTANTE DIGITAL
    ========================================= */
 #btnEstante {
-    margin-top: 15px;
+    margin-top: 30px; /* Afasta bem do botão JOGAR */
     background-color: transparent;
     color: #888888;
     border: 2px solid #333333;
     padding: 12px 25px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 10px;
-    text-transform: uppercase;
-    font-family: 'Press Start 2P', monospace;
-    transition: all 0.3s ease;
+    /* ... resto do código igual ... */
 }
 
 #btnEstante:active {

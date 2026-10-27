@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Coleção - Retrô NFC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #0d1117; 
+            color: #fff; 
+            font-family: 'Press Start 2P', monospace; 
+            text-align: center; 
+            padding: 30px 20px; 
+            margin: 0; 
+            min-height: 100vh;
+        }
+        
+        h1 { font-size: 18px; color: #E60012; margin-bottom: 10px; line-height: 1.5; }
+        p.sub { font-size: 10px; color: #888; margin-bottom: 40px; line-height: 1.6; }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 20px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        
+        .cartucho { 
+            position: relative; 
+            border-radius: 8px; 
+            background: #11151c; 
+            padding: 12px; 
+            border: 2px solid #333; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .cartucho img { 
+            width: 100%; 
+            border-radius: 4px; 
+            display: block; 
+            margin-bottom: 10px;
+        }
+        
+        .cartucho h3 { font-size: 9px; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
+        
+        /* ESTADO: BLOQUEADO (Não possui o cartucho) */
+        .bloqueado { opacity: 0.7; }
+        .bloqueado img { filter: grayscale(100%) brightness(0.4) contrast(1.2); }
+        .bloqueado::after { 
+            content: "🔒"; 
+            position: absolute; 
+            top: 35%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-size: 35px; 
+        }
+        
+        .btn-comprar { 
+            background: transparent; 
+            color: #888; 
+            border: 1px solid #555; 
+            padding: 8px; 
+            font-size: 8px; 
+            font-family: 'Press Start 2P'; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            width: 100%; 
+            text-transform: uppercase;
+        }
+        
+        /* ESTADO: DESBLOQUEADO (Possui o cartucho) */
+        .desbloqueado { 
+            border-color: #5CFF8A; 
+            box-shadow: 0 0 15px rgba(92, 255, 138, 0.15); 
+        }
+        .desbloqueado h3 { color: #5CFF8A; }
+        .etiqueta-ok {
+            background: #5CFF8A;
+            color: #000;
+            font-size: 8px;
+            padding: 8px;
+            border-radius: 10px;
+            width: 100%;
+        }
+        
+        .btn-voltar { 
+            margin-top: 50px; 
+            background: #333; 
+            color: #fff; 
+            border: none; 
+            padding: 15px 30px; 
+            font-size: 12px; 
+            font-family: 'Press Start 2P'; 
+            border-radius: 50px; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🏆 MINHA COLEÇÃO</h1>
+    <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC.</p>
+    
+    <div class="grid" id="gridColecao">
+        <!-- O JavaScript injetará os jogos aqui -->
+    </div>
+
+    <button class="btn-voltar" onclick="history.back()">⬅ VOLTAR</button>
+
+    <script>
+        async function carregarColecao() {
+            try {
+                // Lê o banco de dados de jogos
+                const response = await fetch("games.json?ts=" + Date.now());
+                const data = await response.json();
+                
+                // Lê os carimbos salvos no celular do cliente
+                const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+                const grid = document.getElementById('gridColecao');
+                
+                // Substitua pelo número de WhatsApp de vendas da Imortalize
+                const numeroWhatsApp = "5511999999999"; 
+
+                data.games.forEach(game => {
+                    const temCartucho = colecaoSalva.includes(game.key);
+                    const card = document.createElement('div');
+                    
+                    if (temCartucho) {
+                        card.className = "cartucho desbloqueado";
+                        card.innerHTML = `
+                            <img src="${game.cover}" alt="${game.title}">
+                            <h3>${game.title}</h3>
+                            <div class="etiqueta-ok">NA COLEÇÃO</div>
+                        `;
+                    } else {
+                        const textoZap = encodeURIComponent(`Olá! Quero comprar o cartucho do ${game.title} para a minha coleção Retrô NFC.`);
+                        card.className = "cartucho bloqueado";
+                        card.innerHTML = `
+                            <img src="${game.cover}" alt="${game.title}">
+                            <h3>???</h3>
+                            <button class="btn-comprar" onclick="window.open('https://wa.me/${numeroWhatsApp}?text=${textoZap}', '_blank')">COMPRAR</button>
+                        `;
+                    }
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                console.log("Erro ao carregar a coleção", e);
+            }
+        }
+        
+        document.addEventListener("DOMContentLoaded", carregarColecao);
+    </script>
+</body>
+</html>

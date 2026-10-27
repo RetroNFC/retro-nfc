@@ -51,6 +51,15 @@ async function startBoot() {
         const progressIndex = Math.floor(((i + 1) / etapas.length) * (BOOT_BLOCKS.length - 1));
         progressEl.textContent = BOOT_BLOCKS[progressIndex];
         
+        // 🔮 MAGIA SENSORIAL (Fase 1): Padrões de vibração diferentes para cada etapa!
+        try {
+            if (navigator.vibrate) {
+                if (i === 0) navigator.vibrate(30); // 1. Pulso minúsculo na verificação
+                if (i === 1) navigator.vibrate([40, 60, 40, 60, 40]); // 2. Estalos rápidos simulando leitura de dados
+                if (i === 2) navigator.vibrate(200); // 3. Vibração longa e contínua de sucesso
+            }
+        } catch(e) { console.log("Vibração não suportada pelo aparelho"); }
+        
         await sleep(1000); // Pausa 1 segundo
     }
 
@@ -64,7 +73,10 @@ async function startBoot() {
     // Finaliza a barra de progresso (todos os quadrados pintados)
     progressEl.textContent = BOOT_BLOCKS[BOOT_BLOCKS.length - 1];
 
-    // Espera mais 1,5 segundos para o usuário ler "Sistema Pronto"
+    // 🔮 MAGIA SENSORIAL (Fase 1): Vibração final indicando que o terminal acabou
+    if (navigator.vibrate) navigator.vibrate(100);
+
+    // Espera mais 1,5 segundos para o usuário ler "Iniciando Jogo"
     await sleep(1500); 
     
     // FIM DO TERMINAL: Esconde o terminal e mostra a Ficha do Jogo com a Capa!

@@ -303,3 +303,35 @@ body .ejs_start_button {
         background-size: cover !important; /* Faz preencher a tela vertical perfeitamente */
     }
 }
+
+/* =========================================
+   FASE 1: EFEITO MÁGICO DE TV DE TUBO (CRT)
+   ========================================= */
+.crt-turn-on {
+    animation: crtTurnOn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    transform-origin: center center;
+    position: relative;
+    z-index: 100;
+}
+
+@keyframes crtTurnOn {
+    0% {
+        transform: scale(0, 0.005);
+        filter: brightness(10) contrast(10);
+        opacity: 0;
+    }
+    10% {
+        transform: scale(1, 0.005); /* Risco brilhante horizontal */
+        filter: brightness(10) contrast(10);
+        opacity: 1;
+    }
+    40% {
+        transform: scale(1, 0.005); /* Segura o risco um instante */
+        filter: brightness(10) contrast(10);
+    }
+    100% {
+        transform: scale(1, 1); /* Abre a tela do jogo */
+        filter: brightness(1) contrast(1);
+        opacity: 1;
+    }
+}

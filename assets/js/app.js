@@ -144,20 +144,24 @@ async function loadGames() {
 
         const btn = document.getElementById("btnJogar");
 
-        // 🔮 MAGIA SENSORIAL: Dispara a vibração no exato momento em que o dedo encosta na tela (pointerdown)
+        // 🔮 MAGIA SENSORIAL: Padrão que imita o encaixe físico (Curto, Pausa, Longo)
         const dispararVibracao = () => {
             try {
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(150); // Vibração sólida de 150ms
+                if (navigator.vibrate) {
+                    navigator.vibrate([40, 50, 150]); 
                 }
             } catch(e) {}
         };
 
-        btn.addEventListener('pointerdown', dispararVibracao, { once: false });
+        // Dispara no instante que o dedo trisca na tela (Específico para celulares como o Galaxy)
+        btn.addEventListener('touchstart', dispararVibracao, { passive: true });
 
         btn.onclick = () => {
-            dispararVibracao(); // Chamada de garantia no clique
-            clickSound.play(); 
+            // Se for PC ou se o touchstart falhar, ele vibra no clique padrão
+            dispararVibracao(); 
+            
+            // Inicia o áudio e a lógica
+            clickSound.play().catch(()=>{}); 
             registrarLogAcessoImediato(); 
             iniciarEmulador(); 
         };

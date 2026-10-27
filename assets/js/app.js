@@ -123,7 +123,7 @@ window.addEventListener('pagehide', atualizarTempoSessao);
 window.addEventListener('beforeunload', atualizarTempoSessao);
 
 // =========================================
-// LÓGICA DE JOGO E EMULADOR
+// LÓGICA DE JOGO E EMULADOR (ATUALIZADA)
 // =========================================
 async function loadGames() {
     try {
@@ -144,6 +144,10 @@ async function loadGames() {
 
         document.getElementById("btnJogar").onclick = () => {
             clickSound.play(); 
+            
+            // 🔮 MAGIA SENSORIAL: O "Encaixe" (Vibração forte ao clicar)
+            if (navigator.vibrate) navigator.vibrate([100, 50, 200]); 
+            
             registrarLogAcessoImediato(); 
             iniciarEmulador(); 
         };
@@ -152,7 +156,13 @@ async function loadGames() {
 
 function iniciarEmulador() {
     document.getElementById("gameScreen").style.display = "none";
-    document.getElementById("emulatorScreen").style.display = "block";
+    const emulatorScreen = document.getElementById("emulatorScreen");
+    
+    emulatorScreen.style.display = "block";
+    
+    // 🔮 MAGIA VISUAL: Aciona o "Flash" branco da TV de tubo ligando
+    emulatorScreen.classList.add("crt-turn-on");
+
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";
 

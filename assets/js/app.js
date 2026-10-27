@@ -1,6 +1,3 @@
-// =========================================
-// CAMADA DE SEGURANÇA E PROTEÇÃO
-// =========================================
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
@@ -11,9 +8,6 @@ if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
     throw new Error("Execução bloqueada por segurança.");
 }
 
-// =========================================
-// VARIÁVEIS GLOBAIS & CONFIGURAÇÃO TELEGRAM
-// =========================================
 const PARAMS = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
@@ -27,21 +21,15 @@ let tempoInicio = 0;
 let telegramMessageId = null; 
 let telegramTextoBase = ""; 
 
-// =========================================
-// FUNÇÕES DE COLETA DE DADOS
-// =========================================
 function obterIdEVisitas() {
     let id = localStorage.getItem('imortalize_id_curto');
     let visitas = parseInt(localStorage.getItem('imortalize_visitas') || "0");
-    
     if (!id) { 
         id = Math.random().toString(36).substring(2, 6).toUpperCase(); 
         localStorage.setItem('imortalize_id_curto', id); 
     }
-    
     visitas++; 
     localStorage.setItem('imortalize_visitas', visitas);
-    
     return `${id} (Acesso #${visitas})`;
 }
 
@@ -61,9 +49,6 @@ function formatarTempoDeJogo(ms) {
 
 function obterDataBonita() { return new Date().toLocaleString('pt-BR'); }
 
-// =========================================
-// INTEGRAÇÃO TELEGRAM: IP SILENCIOSO
-// =========================================
 function registrarLogAcessoImediato() {
     if (!CURRENT_GAME) return;
     tempoInicio = Date.now(); 
@@ -74,7 +59,6 @@ function registrarLogAcessoImediato() {
             let ipUser = data.success ? data.ip : "Desconhecido";
             let provedor = (data.success && data.connection && data.connection.isp) ? data.connection.isp : "Desconhecido";
             let localIP = (data.success && data.city) ? `${data.city}, ${data.region}` : "Região Desconhecida";
-            
             enviarParaTelegram(ipUser, provedor, localIP);
         }).catch(() => enviarParaTelegram("Desconhecido", "Desconhecido", "Região Desconhecida"));
 }
@@ -89,7 +73,6 @@ async function enviarParaTelegram(ipUser, provedor, localIP) {
                         `🌐 <b>Rede IP:</b> ${ipUser} (${provedor})\n`;
 
     const texto = telegramTextoBase + `\n⏱️ <b>Status:</b> 🔵 <i>Jogando...</i>`;
-
     const payload = { chat_id: TELEGRAM_CHAT_ID, text: texto, parse_mode: "HTML", disable_web_page_preview: true };
 
     try {
@@ -103,12 +86,9 @@ async function enviarParaTelegram(ipUser, provedor, localIP) {
 
 async function atualizarTempoSessao() {
     if (!telegramMessageId || tempoInicio === 0) return;
-
     const tempoJogadoMs = Date.now() - tempoInicio;
     const tempoFormatado = formatarTempoDeJogo(tempoJogadoMs);
-
     const textoAtualizado = telegramTextoBase + `\n⏱️ <b>Status:</b> 🟢 <b>Finalizado (Tempo: ${tempoFormatado})</b>`;
-
     const payload = { chat_id: TELEGRAM_CHAT_ID, message_id: telegramMessageId, text: textoAtualizado, parse_mode: "HTML", disable_web_page_preview: true };
 
     try {
@@ -122,9 +102,6 @@ window.addEventListener('visibilitychange', () => { if (document.visibilityState
 window.addEventListener('pagehide', atualizarTempoSessao);
 window.addEventListener('beforeunload', atualizarTempoSessao);
 
-// =========================================
-// LÓGICA DE JOGO E EMULADOR (VIBRAÇÃO E REFLOW)
-// =========================================
 async function loadGames() {
     try {
         if (!GAME_KEY) { mostrarTelaErro(); return; }
@@ -143,27 +120,22 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
         const btn = document.getElementById("btnJogar");
-        let jaVibrou = false;
-
-        // Trava de segurança contra vibrações duplas simultâneas
-        const executarVibracaoSólida = () => {
-            if (jaVibrou) return;
-            jaVibrou = true;
-            try {
-                if ("vibrate" in navigator) {
-                    navigator.vibrate([60, 40, 120]); // Encaixe tátil curto-longo
-                }
-            } catch(e) {}
-            setTimeout(() => { jaVibrou = false; }, 400);
-        };
-
-        btn.addEventListener("touchstart", executarVibracaoSólida, { passive: true });
 
         btn.onclick = () => {
-            executarVibracaoSólida();
+            // Vibra e toca o som no exato momento do clique
+            if (navigator.vibrate) {
+                try { navigator.vibrate(100); } catch(e){}
+            }
             clickSound.play().catch(()=>{}); 
             registrarLogAcessoImediato(); 
-            iniciarEmulador(); 
+
+            // Aplica a animação de TV desligando na tela de info antes de abrir o jogo
+            const gameScreen = document.getElementById("gameScreen");
+            gameScreen.classList.add("crt-shutdown");
+
+            setTimeout(() => {
+                iniciarEmulador();
+            }, 400);
         };
     } catch (error) { mostrarTelaErro(); }
 }
@@ -171,19 +143,20 @@ async function loadGames() {
 function iniciarEmulador() {
     document.getElementById("gameScreen").style.display = "none";
     const emulatorScreen = document.getElementById("emulatorScreen");
-    
     emulatorScreen.style.display = "block";
-    
-    // TRUQUE DO REFLOW: Força o navegador a calcular o estilo antes de animar
-    void emulatorScreen.offsetWidth; 
-    emulatorScreen.classList.add("crt-turn-on");
 
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";
 
     const docElement = document.documentElement;
     const requestFS = docElement.requestFullscreen || docElement.webkitRequestFullscreen || docElement.msRequestFullscreen;
-    if (requestFS) requestFS.call(docElement).then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {});
+    if (requestFS) {
+        requestFS.call(docElement).then(() => {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+        }).catch(() => {});
+    }
 
     if (typeof CURRENT_GAME !== 'undefined') {
         window.EJS_player = '#game';

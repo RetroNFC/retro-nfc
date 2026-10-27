@@ -112,6 +112,14 @@ async function loadGames() {
         if (!CURRENT_GAME) { mostrarTelaErro(); return; }
         IS_VALID = true;
 
+        // 🏆 SISTEMA DE COLEÇÃO (PASSO 1): Salva o jogo no celular
+        let colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+        if (!colecao.includes(CURRENT_GAME.key)) {
+            colecao.push(CURRENT_GAME.key);
+            localStorage.setItem('imortalize_colecao', JSON.stringify(colecao));
+        }
+        // Fim da adição
+
         document.getElementById("gameCover").src = CURRENT_GAME.cover;
         document.getElementById("title").innerText = CURRENT_GAME.title;
         document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;

@@ -1,3 +1,27 @@
+// ==========================================
+// TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
+// ==========================================
+function rastrearCliqueColecao(origem) {
+    const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
+    const CHAT_ID = "941396833";
+    
+    const dataHora = new Date().toLocaleString('pt-BR');
+    const mensagem = `👀 *VITRINE ACESSADA!*\n\nUm possível cliente acabou de entrar na sua coleção de cartuchos!\n\n📍 *Origem:* ${origem}\n🕒 *Data:* ${dataHora}\n\n#AcessoColecao`;
+    
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
+        keepalive: true
+    }).catch(err => console.log("Erro no radar", err));
+
+    setTimeout(() => {
+        window.location.href = 'colecao.html';
+    }, 150);
+}
+
 const DOMINIO_PERMITIDO = "retronfc.github.io";
 const ehLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);

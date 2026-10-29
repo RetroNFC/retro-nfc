@@ -147,25 +147,44 @@ body {
 
 .header { text-align: center; margin-bottom: 30px; }
 
-/* AJUSTE: Fonte pixelada com leitura limpa, acentos corretos e estilo "bold" forçado */
+/* AJUSTE: Letras bem maiores e mais grossas */
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
-    font-size: 26px; /* Tamanho maior e imponente */
+    font-size: 36px; /* Aumentado bastante */
     color: #E60012; 
-    line-height: 1.4;
+    line-height: 1.2;
     margin-bottom: 8px;
     letter-spacing: 2px;
-    /* O TRUQUE: Cria uma borda vermelha nela mesma para deixá-la bem grossa, mais a sombra preta */
-    text-shadow: 1px 1px 0px #E60012, -1px 0px 0px #E60012, 2px 2px 4px rgba(0,0,0,0.9);
+    /* Sombras em todos os lados para fazer o falso-negrito perfeito */
+    text-shadow: 1px 1px 0px #E60012, -1px 0px 0px #E60012, 0px 1px 0px #E60012, 0px -1px 0px #E60012, 4px 4px 5px rgba(0,0,0,0.9);
 }
 
 .bootConsole {
     font-family: 'Pretendo', sans-serif;
-    font-size: 14px;
+    font-size: 18px; /* Aumentado */
     color: #ffffff; 
     letter-spacing: 2px;
-    /* O TRUQUE: Deixa o branco mais espesso também */
-    text-shadow: 1px 1px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
+    /* Falso-negrito no branco também */
+    text-shadow: 1px 1px 0px #ffffff, -1px 0px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
+}
+
+/* NOVA BARRA DE CARREGAMENTO FLIPERAMA/8-BIT */
+.progress-container {
+    width: 240px;
+    height: 24px;
+    border: 3px solid #ffffff;
+    background-color: transparent;
+    margin-top: 10px;
+    padding: 2px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.8); /* Sombra dura estilo 8-bit */
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #5CFF8A; /* Verde neon do terminal */
+    box-shadow: 0 0 15px rgba(92, 255, 138, 0.4); /* Brilho neon leve */
+    transition: width 0.4s ease-out; /* Enche suavemente */
 }
 
 /* AJUSTE: Redução do min-height de 220px para 130px para subir a barra de progresso */

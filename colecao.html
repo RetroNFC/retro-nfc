@@ -147,7 +147,9 @@
             const CHAT_ID = "941396833";
             
             const dataHora = new Date().toLocaleString('pt-BR');
-            const mensagem = `🛒 *INTENÇÃO DE COMPRA!*\n\nUm cliente clicou para comprar um cartucho na estante!\n\n🕹️ *Jogo de interesse:* ${nomeJogo}\n🕒 *Data:* ${dataHora}\n\n#IntencaoCompra`;
+            
+            // Formatado com a hashtag de intenção de compra bem evidente
+            const mensagem = `#RELATORIO\n#IntencaoCompra\n\n🛒 *INTENÇÃO DE COMPRA!*\n🕹️ Jogo: ${nomeJogo}\n🕒 Data: ${dataHora}`;
             
             const urlTelegram = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
             

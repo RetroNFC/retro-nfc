@@ -16,7 +16,7 @@ async function rastrearCliqueColecao(origem) {
             
             const meusJogos = data.games
                 .filter(game => colecaoSalva.includes(game.key))
-                .map(game => `• ${game.title}`); // Removido o ID por extenso
+                .map(game => `• ${game.title}`);
                 
             if (meusJogos.length > 0) {
                 listaJogosPossui = meusJogos.join('\n');

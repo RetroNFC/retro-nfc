@@ -1,29 +1,19 @@
 // ==========================================
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
-async function rastrearCliqueColecao(origem) {
+function rastrearCliqueColecao(origem) {
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
+    // Pega os cartuchos salvos no navegador do cliente
     const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
     
     let listaJogosPossui = "Nenhum cartucho na estante ainda.";
     
     if (colecaoSalva.length > 0) {
-        try {
-            const response = await fetch("games.json?ts=" + Date.now());
-            const data = await response.json();
-            
-            const meusJogos = data.games
-                .filter(game => colecaoSalva.includes(game.key))
-                .map(game => `• ${game.title}`);
-                
-            if (meusJogos.length > 0) {
-                listaJogosPossui = meusJogos.join('\n');
-            }
-        } catch (e) {
-            listaJogosPossui = colecaoSalva.map(k => `• ${k}`).join('\n');
-        }
+        // Como o app.js pode não ter o games.json na mão de imediato, 
+        // listamos os IDs/chaves de forma limpa ou buscamos de forma segura
+        listaJogosPossui = colecaoSalva.map(k => `• ${k}`).join('\n');
     }
     
     const dataHora = new Date().toLocaleString('pt-BR');
@@ -31,16 +21,22 @@ async function rastrearCliqueColecao(origem) {
     
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     
+    // Envia o alerta para o Telegram com keepalive ativo
     fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
+        body: JSON.stringify({ 
+            chat_id: CHAT_ID, 
+            text: mensagem, 
+            parse_mode: 'Markdown' 
+        }),
         keepalive: true
     }).catch(err => console.log("Erro no radar", err));
 
+    // Redireciona para a página da coleção após meio segundo para dar tempo do fetch disparar
     setTimeout(() => {
         window.location.href = 'colecao.html';
-    }, 250);
+    }, 400);
 }
 
 const DOMINIO_PERMITIDO = "retronfc.github.io";

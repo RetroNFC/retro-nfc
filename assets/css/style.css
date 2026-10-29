@@ -218,21 +218,21 @@ body {
    ========================================= */
 #btnEstanteErro {
     position: absolute;
-    bottom: 18%; /* Posiciona abaixo da caixa de aviso e acima do logo */
+    bottom: 18%; 
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.85); /* Fundo escuro levemente transparente */
-    color: #ffffff; /* Texto branco e chamativo */
-    border: 2px solid #E60012; /* Borda vermelha Nintendo para dar destaque */
-    padding: 15px 25px;
+    background-color: rgba(0, 0, 0, 0.85); 
+    color: #ffffff; 
+    border: 3px solid #E60012; /* Borda mais grossa */
+    padding: 18px 35px; /* Botão mais "gordo" e fácil de clicar */
     border-radius: 50px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 12px; /* Letra maior */
     text-transform: uppercase;
     font-family: 'Press Start 2P', monospace;
     transition: all 0.3s ease;
     white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(230, 0, 18, 0.3); /* Brilho vermelho sutil */
+    box-shadow: 0 6px 20px rgba(230, 0, 18, 0.5); /* Brilho vermelho mais forte */
 }
 
 #btnEstanteErro:active {

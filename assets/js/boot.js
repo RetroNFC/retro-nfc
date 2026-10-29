@@ -19,7 +19,7 @@ async function startBoot() {
     const progressFill = document.getElementById("progressFill");
     
     terminal.innerHTML = "";
-    progressFill.style.width = "0%"; // Começa vazia
+    progressFill.style.width = "0%"; 
     
     const etapas = [
         "VERIFICANDO CARTUCHO...",
@@ -27,14 +27,17 @@ async function startBoot() {
         "CARTUCHO VERIFICADO..."
     ];
 
+    // O truque: Conta as 3 etapas + 1 (A mensagem final)
+    const totalPassos = etapas.length + 1;
+
     for (let i = 0; i < etapas.length; i++) {
         const line = document.createElement("div");
         line.className = "bootLine";
         line.textContent = etapas[i];
         terminal.appendChild(line);
         
-        // A mágica da barra de progresso enchendo
-        const porcentagem = Math.floor(((i + 1) / etapas.length) * 100);
+        // A barra enche proporcionalmente (25%, 50%, 75%...)
+        const porcentagem = Math.floor(((i + 1) / totalPassos) * 100);
         progressFill.style.width = porcentagem + "%";
         
         try {
@@ -53,6 +56,9 @@ async function startBoot() {
     doneLine.style.marginTop = "15px";
     doneLine.textContent = "INICIANDO JOGO!";
     terminal.appendChild(doneLine);
+
+    // Bate 100% sincronizado com a última mensagem
+    progressFill.style.width = "100%";
 
     if (navigator.vibrate) {
         try { navigator.vibrate(80); } catch(e) {}

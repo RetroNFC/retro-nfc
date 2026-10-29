@@ -1,56 +1,34 @@
 // ==========================================
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
-async function rastrearCliqueColecao(origem) {
+function rastrearCliqueColecao(origem) {
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
-    // Pega os IDs salvos no navegador do cliente
     const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-    
-    let listaJogosPossui = "Nenhum cartucho na estante ainda.";
-    
-    if (colecaoSalva.length > 0) {
-        try {
-            // Aguarda o carregamento do catálogo para traduzir os UUIDs nos nomes dos jogos
-            const response = await fetch("games.json?ts=" + Date.now());
-            const data = await response.json();
-            
-            const meusJogos = data.games
-                .filter(game => colecaoSalva.includes(game.key))
-                .map(game => `• ${game.title}`);
-                
-            if (meusJogos.length > 0) {
-                listaJogosPossui = meusJogos.join('\n');
-            }
-        } catch (e) {
-            listaJogosPossui = colecaoSalva.map(k => `• ${k}`).join('\n');
-        }
-    }
+    let listaResumo = colecaoSalva.length > 0 ? `${colecaoSalva.length} cartuchos salvos` : "Nenhum cartucho ainda";
     
     const dataHora = new Date().toLocaleString('pt-BR');
-    const mensagem = `👀 *VITRINE ACESSADA!*\n\nUm cliente abriu a estante de cartuchos!\n\n📍 *Origem:* ${origem}\n🕒 *Data:* ${dataHora}\n\n🎮 *Cartuchos que ele já possui:*\n${listaJogosPossui}\n\n#AcessoColecao`;
+    
+    // Formatado com a hashtag colada e visível para o Telegram indexar na busca
+    const mensagem = `#RELATORIO\n#AcessoColecao\n\n👀 *VITRINE ACESSADA!*\n📍 Origem: ${origem}\n🕒 Data: ${dataHora}\n🎮 Possui: ${listaResumo}`;
     
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     
-    try {
-        // Envia o alerta e aguarda a confirmação de envio da rede antes de prosseguir
-        await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                chat_id: CHAT_ID, 
-                text: mensagem, 
-                parse_mode: 'Markdown' 
-            }),
-            keepalive: true
-        });
-    } catch (err) {
-        console.log("Erro no radar", err);
-    }
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            chat_id: CHAT_ID, 
+            text: mensagem, 
+            parse_mode: 'Markdown' 
+        }),
+        keepalive: true
+    }).catch(err => console.log("Erro no radar", err));
 
-    // Só muda de página após o Telegram receber a mensagem com os nomes traduzidos
-    window.location.href = 'colecao.html';
+    setTimeout(() => {
+        window.location.href = 'colecao.html';
+    }, 300);
 }
 
 const DOMINIO_PERMITIDO = "retronfc.github.io";

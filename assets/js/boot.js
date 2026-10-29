@@ -28,8 +28,8 @@ async function startBoot() {
     progressEl.textContent = BOOT_BLOCKS[0];
     
     const etapas = [
-        "VERIFICANDO CARTUCHO...",
         "LENDO TAG NFC...",
+        "VERIFICANDO CARTUCHO...",
         "CARTUCHO VERIFICADO..."
     ];
 

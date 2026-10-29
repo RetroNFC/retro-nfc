@@ -1,10 +1,4 @@
-let isBooting = false; // Trava de segurança para não rodar o boot duas vezes
-
-const BOOT_BLOCKS = [
-    "□□□□□□□□□□", "■□□□□□□□□□", "■■□□□□□□□□", "■■■□□□□□□□", 
-    "■■■■□□□□□□", "■■■■■□□□□□", "■■■■■■□□□□", "■■■■■■■□□□", 
-    "■■■■■■■■□□", "■■■■■■■■■□", "■■■■■■■■■■"
-];
+let isBooting = false; 
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
@@ -22,14 +16,14 @@ async function startBoot() {
     document.getElementById("bootScreen").style.display = "flex";
 
     const terminal = document.getElementById("bootTerminal");
-    const progressEl = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
     
     terminal.innerHTML = "";
-    progressEl.textContent = BOOT_BLOCKS[0];
+    progressFill.style.width = "0%"; // Começa vazia
     
     const etapas = [
-        "LENDO TAG NFC...",
         "VERIFICANDO CARTUCHO...",
+        "LENDO TAG NFC...",
         "CARTUCHO VERIFICADO..."
     ];
 
@@ -39,8 +33,9 @@ async function startBoot() {
         line.textContent = etapas[i];
         terminal.appendChild(line);
         
-        const progressIndex = Math.floor(((i + 1) / etapas.length) * (BOOT_BLOCKS.length - 1));
-        progressEl.textContent = BOOT_BLOCKS[progressIndex];
+        // A mágica da barra de progresso enchendo
+        const porcentagem = Math.floor(((i + 1) / etapas.length) * 100);
+        progressFill.style.width = porcentagem + "%";
         
         try {
             if (navigator.vibrate) {
@@ -58,8 +53,6 @@ async function startBoot() {
     doneLine.style.marginTop = "15px";
     doneLine.textContent = "INICIANDO JOGO!";
     terminal.appendChild(doneLine);
-
-    progressEl.textContent = BOOT_BLOCKS[BOOT_BLOCKS.length - 1];
 
     if (navigator.vibrate) {
         try { navigator.vibrate(80); } catch(e) {}

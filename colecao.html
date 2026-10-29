@@ -142,9 +142,6 @@
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
     <script>
-        // ==========================================
-        // FUNÇÃO DE RASTREIO DA INTENÇÃO DE COMPRA
-        // ==========================================
         function rastrearCompra(nomeJogo, urlZap) {
             const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
             const CHAT_ID = "941396833";
@@ -171,8 +168,9 @@
                 
                 const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
                 const grid = document.getElementById('gridColecao');
+                grid.innerHTML = ""; // Limpa a grade antes de preencher
                 
-                 const numeroWhatsApp = "5519992087429"; 
+                const numeroWhatsApp = "5519992087429"; 
 
                 data.games.forEach(game => {
                     const temCartucho = colecaoSalva.includes(game.key);
@@ -186,7 +184,8 @@
                             <div class="etiqueta-ok">COLECIONADO</div>
                         `;
                     } else {
-                        const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
+                       const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
+                       const urlCompletaZap = `https://wa.me/${numeroWhatsApp}?text=${textoZap}`;
                         
                         card.className = "cartucho bloqueado";
                         card.innerHTML = `

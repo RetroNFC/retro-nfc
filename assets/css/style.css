@@ -85,35 +85,58 @@ body {
 #btnJogar { font-size: 28px; }
 #startButton { font-size: 18px; }
 
-/* Inverte as cores no momento exato do clique para um efeito visual tátil */
+/* =========================================
+   BOTÃO JOGAR (Estilo Neon Escuro)
+   ========================================= */
+#btnJogar, #startButton {
+    margin-top: 30px;
+    background-color: #050505 !important; /* Fundo super escuro/preto */
+    color: #E60012 !important; /* Letra vermelha Nintendo */
+    border: 3px solid #E60012 !important; /* Borda vermelha */
+    text-shadow: 0 0 5px rgba(230, 0, 18, 0.5) !important; /* Leve brilho na letra */
+    padding: 16px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(230, 0, 18, 0.2); /* Brilho vermelho bem suave em volta */
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: 'Pretendo', sans-serif !important;
+    letter-spacing: 2px;
+    transition: all 0.2s ease;
+}
+
+#btnJogar { font-size: 28px; }
+#startButton { font-size: 18px; }
+
+/* Inverte preenchendo de vermelho no momento do clique */
 #btnJogar:active, #startButton:active {
     transform: scale(0.95);
     background-color: #E60012 !important; 
     color: #FFFFFF !important;
-    box-shadow: 0 2px 5px rgba(230, 0, 18, 0.5);
+    box-shadow: 0 0 25px rgba(230, 0, 18, 0.6);
 }
 
 /* =========================================
-   BOTÃO DA ESTANTE DIGITAL (TELA PRINCIPAL)
+   BOTÃO DA ESTANTE (Secundário e Discreto)
    ========================================= */
 #btnEstante {
-    margin-top: 20px; /* Um pouco mais próximo do botão JOGAR para agrupar */
-    background-color: rgba(255, 255, 255, 0.08); /* Fundo com leve transparência branca */
-    color: #ffffff; /* Texto branco puro, super legível */
-    border: 2px solid #ffffff; /* Borda grossa e destacada */
-    padding: 16px 30px; /* Botão "gordo", idêntico à pegada do botão de erro */
+    margin-top: 20px; 
+    background-color: transparent; 
+    color: #888888; /* Cinza médio, elegante mas que não rouba a cena */
+    border: 2px solid #333333; /* Borda cinza escura */
+    padding: 14px 30px; 
     border-radius: 50px;
     cursor: pointer;
-    font-size: 11px; /* Fonte maior */
+    font-size: 10px; /* Tamanho confortável, sem exageros */
     text-transform: uppercase;
     font-family: 'Press Start 2P', monospace;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.25); /* Brilho prateado chique e moderno */
+    box-shadow: none; /* Removido o brilho para focar a atenção no JOGAR */
 }
 
 #btnEstante:active {
-    background-color: #ffffff;
-    color: #000000; /* Texto fica preto no momento do clique para dar contraste */
+    background-color: #333333;
+    color: #ffffff;
     transform: scale(0.95);
 }
 

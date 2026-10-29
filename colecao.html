@@ -8,6 +8,14 @@
     <style>
         * { box-sizing: border-box; }
         
+        /* Importa a fonte da Nintendo para a Coleção */
+        @font-face {
+            font-family: 'Pretendo';
+            src: url('assets/fonts/Pretendo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
         body { 
             background-color: #0d1117; 
             color: #fff; 
@@ -18,24 +26,34 @@
             min-height: 100vh;
         }
         
+        /* AJUSTE: Título com a fonte Pretendo e tamanho ajustado */
         h1 { 
-            font-size: 18px; 
+            font-family: 'Pretendo', sans-serif;
+            font-size: 22px; 
             color: #E60012; 
-            margin-bottom: 10px; 
+            margin-bottom: 15px; 
             line-height: 1.5; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            gap: 10px; 
+            gap: 12px; 
+            letter-spacing: 1px;
         }
         
         .icone-trofeu { 
+            font-family: 'Press Start 2P', monospace; /* Protege o emoji */
             font-size: 26px; 
             position: relative;
-            top: -4px; 
+            top: -2px; 
         } 
         
-        p.sub { font-size: 10px; color: #888; margin-bottom: 40px; line-height: 1.6; }
+        /* AJUSTE: Subtítulo branco e um pouco maior */
+        p.sub { 
+            font-size: 12px; 
+            color: #ffffff; 
+            margin-bottom: 40px; 
+            line-height: 1.6; 
+        }
         
         .grid { 
             display: grid; 
@@ -65,7 +83,6 @@
         
         .cartucho h3 { font-size: 9px; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
         
-        /* AJUSTE: Capa bloqueada mais clara para facilitar a identificação */
         .bloqueado { opacity: 0.95; }
         .bloqueado img { filter: grayscale(100%) brightness(0.7) contrast(1.1); }
         .bloqueado::after { 
@@ -77,7 +94,6 @@
             font-size: 35px; 
         }
         
-        /* AJUSTE: Botão Comprar em destaque (Branco visível) */
         .btn-comprar { 
             background: rgba(255, 255, 255, 0.05); 
             color: #ffffff; 
@@ -122,7 +138,7 @@
 </head>
 <body>
     <h1><span class="icone-trofeu">🏆</span> MEUS CARTUCHOS</h1>
-    <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC.</p>
+    <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC</p>
     
     <div class="grid" id="gridColecao"></div>
 
@@ -137,7 +153,6 @@
                 const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
                 const grid = document.getElementById('gridColecao');
                 
-                // Lembre-se de colocar o seu número aqui novamente
                 const numeroWhatsApp = "5519992087429"; 
 
                 data.games.forEach(game => {
@@ -153,6 +168,7 @@
                         `;
                     } else {
                         const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
+                        
                         card.className = "cartucho bloqueado";
                         card.innerHTML = `
                             <img src="${game.cover}" alt="${game.title}">

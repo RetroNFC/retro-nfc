@@ -8,7 +8,6 @@
     <style>
         * { box-sizing: border-box; }
         
-        /* Importa a fonte da Nintendo para a Coleção */
         @font-face {
             font-family: 'Pretendo';
             src: url('assets/fonts/Pretendo.ttf') format('truetype');
@@ -26,7 +25,6 @@
             min-height: 100vh;
         }
         
-        /* AJUSTE: Fonte aumentada para 26px para igualar ao troféu */
         h1 { 
             font-family: 'Pretendo', sans-serif;
             font-size: 26px; 
@@ -40,12 +38,11 @@
             letter-spacing: 1px;
         }
         
-        /* O troféu já tinha 26px, agora estão simétricos */
         .icone-trofeu { 
             font-family: 'Press Start 2P', monospace; 
             font-size: 26px; 
             position: relative;
-            top: -3px; /* Micro ajuste para a base do troféu alinhar perfeitamente com a base das letras */
+            top: -3px; 
         } 
         
         p.sub { 
@@ -145,6 +142,28 @@
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
     <script>
+        // ==========================================
+        // FUNÇÃO DE RASTREIO DA INTENÇÃO DE COMPRA
+        // ==========================================
+        function rastrearCompra(nomeJogo, urlZap) {
+            const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
+            const CHAT_ID = "941396833";
+            
+            const dataHora = new Date().toLocaleString('pt-BR');
+            const mensagem = `🛒 *INTENÇÃO DE COMPRA!*\n\nUm cliente clicou para comprar um cartucho na estante!\n\n🕹️ *Jogo de interesse:* ${nomeJogo}\n🕒 *Data:* ${dataHora}\n\n#IntencaoCompra`;
+            
+            const urlTelegram = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            fetch(urlTelegram, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
+                keepalive: true
+            }).catch(err => console.log("Erro no radar", err));
+
+            window.open(urlZap, '_blank');
+        }
+
         async function carregarColecao() {
             try {
                 const response = await fetch("games.json?ts=" + Date.now());
@@ -153,7 +172,7 @@
                 const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
                 const grid = document.getElementById('gridColecao');
                 
-                const numeroWhatsApp = "5519992087429"; 
+                 const numeroWhatsApp = "5519992087429"; 
 
                 data.games.forEach(game => {
                     const temCartucho = colecaoSalva.includes(game.key);
@@ -173,7 +192,7 @@
                         card.innerHTML = `
                             <img src="${game.cover}" alt="${game.title}">
                             <h3>???</h3>
-                            <button class="btn-comprar" onclick="window.open('https://wa.me/${numeroWhatsApp}?text=${textoZap}', '_blank')">COMPRAR</button>
+                            <button class="btn-comprar" onclick="rastrearCompra('${game.title}', '${urlCompletaZap}')">COMPRAR</button>
                         `;
                     }
                     grid.appendChild(card);

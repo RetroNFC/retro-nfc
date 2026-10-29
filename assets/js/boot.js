@@ -22,8 +22,8 @@ async function startBoot() {
     progressFill.style.width = "0%"; 
     
     const etapas = [
-        "VERIFICANDO CARTUCHO...",
         "LENDO TAG NFC...",
+        "VERIFICANDO CARTUCHO...",
         "CARTUCHO VERIFICADO..."
     ];
 

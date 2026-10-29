@@ -8,6 +8,7 @@
     font-style: normal;
 }
 
+/* CORREÇÃO DO TRAÇO PARA ASTERISCO AQUI */
 * {
     margin: 0;
     padding: 0;
@@ -93,12 +94,17 @@ body {
    BOTÃO DA ESTANTE DIGITAL
    ========================================= */
 #btnEstante {
-    margin-top: 30px; /* Afasta bem do botão JOGAR */
+    margin-top: 30px; 
     background-color: transparent;
     color: #888888;
     border: 2px solid #333333;
     padding: 12px 25px;
-    /* ... resto do código igual ... */
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
+    transition: all 0.3s ease;
 }
 
 #btnEstante:active {
@@ -106,6 +112,9 @@ body {
     color: #ffffff;
 }
 
+/* =========================================
+   TELA DE BOOT
+   ========================================= */
 #bootScreen {
     display: flex;
     flex-direction: column;
@@ -137,26 +146,31 @@ body {
 }
 
 .header { text-align: center; margin-bottom: 30px; }
+
+/* AJUSTE: Fonte pixelada com leitura limpa, acentos corretos e estilo "bold" forçado */
 .bootLogo {
-    font-family: 'Pretendo', sans-serif;
-    font-size: 24px; /* Maior para destacar a marca */
-    color: #E60012; /* Vermelho vibrante da Nintendo */
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px; 
+    color: #E60012; 
     line-height: 1.4;
-    margin-bottom: 5px;
-    letter-spacing: 2px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
 }
 
 .bootConsole {
-    font-family: 'Pretendo', sans-serif;
-    font-size: 14px;
-    color: #ffffff; /* Branco puro */
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #ffffff; 
     letter-spacing: 1px;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
 }
 
+/* AJUSTE: Redução do min-height de 220px para 130px para subir a barra de progresso */
 .bootTerminal {
     width: 100%;
     text-align: center; 
-    min-height: 220px;
+    min-height: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -166,7 +180,9 @@ body {
 }
 
 .bootLine { font-size: 12px; color: #5CFF8A; line-height: 1.4; }
-.progressText { margin-top: 20px; font-size: 18px; color: #ffffff; text-align: center; letter-spacing: 2px; }
+
+/* AJUSTE: Redução da margem do topo para aproximar a barra das letras verdes */
+.progressText { margin-top: 5px; font-size: 18px; color: #ffffff; text-align: center; letter-spacing: 2px; }
 
 #invalidScreen {
     display: none;

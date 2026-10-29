@@ -70,31 +70,33 @@ body {
    ========================================= */
 #btnJogar, #startButton {
     margin-top: 30px;
-    background-color: transparent !important; /* Remove o fundo sólido */
-    background-image: url('../img/jogar.png'); /* Puxa a sua imagem */
+    background-color: transparent !important; 
+    background-image: url('../img/jogar.png'); 
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    border: none !important; /* Remove a borda de CSS */
-    color: transparent !important; /* Esconde o texto "JOGAR" do HTML */
+    border: none !important; 
+    outline: none !important; /* Remove bordas de clique nativas do navegador */
+    -webkit-appearance: none; /* Remove o estilo padrão de botões em celulares */
+    color: transparent !important; 
     text-shadow: none !important;
     
-    /* Tamanho do botão (você pode aumentar ou diminuir esses valores) */
     width: 220px; 
     height: 100px; 
     
     padding: 0;
-    border-radius: 50px; /* Mantém o formato oval para a sombra acompanhar */
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* Sombra forte para dar profundidade 3D */
+    
+    /* A MÁGICA AQUI: O drop-shadow faz a sombra seguir o contorno EXATO da sua arte */
+    filter: drop-shadow(0px 8px 15px rgba(0, 0, 0, 0.7)); 
     transition: all 0.2s ease;
 }
 
 /* Efeito tátil e visual ao clicar */
 #btnJogar:active, #startButton:active {
-    transform: scale(0.95); /* Afunda o botão */
-    filter: brightness(1.2); /* Dá um "flash" de luz ao apertar */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+    transform: scale(0.95); 
+    /* Junta o flash de luz com uma sombra menor para dar a sensação de afundar */
+    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.9)) brightness(1.2); 
 }
 
 /* =========================================

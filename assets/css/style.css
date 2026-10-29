@@ -149,21 +149,23 @@ body {
 
 /* AJUSTE: Fonte pixelada com leitura limpa, acentos corretos e estilo "bold" forçado */
 .bootLogo {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 18px; 
+    font-family: 'Pretendo', sans-serif;
+    font-size: 26px; /* Tamanho maior e imponente */
     color: #E60012; 
     line-height: 1.4;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    /* O TRUQUE: Cria uma borda vermelha nela mesma para deixá-la bem grossa, mais a sombra preta */
+    text-shadow: 1px 1px 0px #E60012, -1px 0px 0px #E60012, 2px 2px 4px rgba(0,0,0,0.9);
 }
 
 .bootConsole {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
+    font-family: 'Pretendo', sans-serif;
+    font-size: 14px;
     color: #ffffff; 
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+    /* O TRUQUE: Deixa o branco mais espesso também */
+    text-shadow: 1px 1px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
 }
 
 /* AJUSTE: Redução do min-height de 220px para 130px para subir a barra de progresso */

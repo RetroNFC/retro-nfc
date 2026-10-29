@@ -12,7 +12,7 @@ async function rastrearCliqueColecao(origem) {
     
     if (colecaoSalva.length > 0) {
         try {
-            // Busca o games.json para traduzir os IDs nos nomes comerciais dos jogos
+            // Aguarda o carregamento do catálogo para traduzir os UUIDs nos nomes dos jogos
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
             
@@ -24,7 +24,6 @@ async function rastrearCliqueColecao(origem) {
                 listaJogosPossui = meusJogos.join('\n');
             }
         } catch (e) {
-            // Caso ocorra falha na rede, exibe os IDs como contingência
             listaJogosPossui = colecaoSalva.map(k => `• ${k}`).join('\n');
         }
     }
@@ -34,22 +33,24 @@ async function rastrearCliqueColecao(origem) {
     
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     
-    // Dispara a requisição para o Telegram mantendo o envio seguro
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            chat_id: CHAT_ID, 
-            text: mensagem, 
-            parse_mode: 'Markdown' 
-        }),
-        keepalive: true
-    }).catch(err => console.log("Erro no radar", err));
+    try {
+        // Envia o alerta e aguarda a confirmação de envio da rede antes de prosseguir
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                chat_id: CHAT_ID, 
+                text: mensagem, 
+                parse_mode: 'Markdown' 
+            }),
+            keepalive: true
+        });
+    } catch (err) {
+        console.log("Erro no radar", err);
+    }
 
-    // Pequeno atraso estratégico (300ms) para dar tempo exato do fetch partir antes de mudar de página
-    setTimeout(() => {
-        window.location.href = 'colecao.html';
-    }, 300);
+    // Só muda de página após o Telegram receber a mensagem com os nomes traduzidos
+    window.location.href = 'colecao.html';
 }
 
 const DOMINIO_PERMITIDO = "retronfc.github.io";

@@ -67,14 +67,14 @@ body {
 
 #btnJogar, #startButton {
     margin-top: 30px;
-    background-color: #E60012 !important;
-    color: #FFFFFF !important;
-    border: 3px solid #FFFFFF !important;
+    background-color: #FFFFFF !important; /* Fundo branco clássico */
+    color: #E60012 !important; /* Letra no vermelho Nintendo */
+    border: 4px solid #E60012 !important; /* Borda vermelha contornando a pílula */
     text-shadow: none !important;
     padding: 16px 40px;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: none;
+    box-shadow: 0 6px 15px rgba(230, 0, 18, 0.3); /* Sombra vermelha suave para saltar da tela escura */
     text-transform: uppercase;
     font-weight: bold;
     font-family: 'Pretendo', sans-serif !important;
@@ -85,31 +85,36 @@ body {
 #btnJogar { font-size: 28px; }
 #startButton { font-size: 18px; }
 
+/* Inverte as cores no momento exato do clique para um efeito visual tátil */
 #btnJogar:active, #startButton:active {
     transform: scale(0.95);
-    background-color: #f0f0f0;
+    background-color: #E60012 !important; 
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 5px rgba(230, 0, 18, 0.5);
 }
 
 /* =========================================
-   BOTÃO DA ESTANTE DIGITAL
+   BOTÃO DA ESTANTE DIGITAL (TELA PRINCIPAL)
    ========================================= */
 #btnEstante {
-    margin-top: 30px; 
-    background-color: transparent;
-    color: #888888;
-    border: 2px solid #333333;
-    padding: 12px 25px;
+    margin-top: 20px; /* Um pouco mais próximo do botão JOGAR para agrupar */
+    background-color: rgba(255, 255, 255, 0.08); /* Fundo com leve transparência branca */
+    color: #ffffff; /* Texto branco puro, super legível */
+    border: 2px solid #ffffff; /* Borda grossa e destacada */
+    padding: 16px 30px; /* Botão "gordo", idêntico à pegada do botão de erro */
     border-radius: 50px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 11px; /* Fonte maior */
     text-transform: uppercase;
     font-family: 'Press Start 2P', monospace;
     transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.25); /* Brilho prateado chique e moderno */
 }
 
 #btnEstante:active {
-    background-color: #333333;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000; /* Texto fica preto no momento do clique para dar contraste */
+    transform: scale(0.95);
 }
 
 /* =========================================

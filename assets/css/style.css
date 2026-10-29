@@ -137,7 +137,21 @@ body {
 }
 
 .header { text-align: center; margin-bottom: 30px; }
-.bootLogo, .bootConsole { font-size: 16px; color: #ffffff; line-height: 1.6; }
+.bootLogo {
+    font-family: 'Pretendo', sans-serif;
+    font-size: 24px; /* Maior para destacar a marca */
+    color: #E60012; /* Vermelho vibrante da Nintendo */
+    line-height: 1.4;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.bootConsole {
+    font-family: 'Pretendo', sans-serif;
+    font-size: 14px;
+    color: #ffffff; /* Branco puro */
+    letter-spacing: 1px;
+}
 
 .bootTerminal {
     width: 100%;

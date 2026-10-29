@@ -8,7 +8,7 @@
     font-style: normal;
 }
 
-/* CORREÇÃO DO TRAÇO PARA ASTERISCO AQUI */
+/* CORREÇÃO APLICADA: Asterisco global para resetar margens */
 * {
     margin: 0;
     padding: 0;
@@ -147,44 +147,23 @@ body {
 
 .header { text-align: center; margin-bottom: 30px; }
 
-/* AJUSTE: Letras bem maiores e mais grossas */
+/* AJUSTE: Letras bem maiores e mais grossas (Negrito artificial com text-shadow) */
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
-    font-size: 36px; /* Aumentado bastante */
+    font-size: 36px; 
     color: #E60012; 
     line-height: 1.2;
     margin-bottom: 8px;
     letter-spacing: 2px;
-    /* Sombras em todos os lados para fazer o falso-negrito perfeito */
     text-shadow: 1px 1px 0px #E60012, -1px 0px 0px #E60012, 0px 1px 0px #E60012, 0px -1px 0px #E60012, 4px 4px 5px rgba(0,0,0,0.9);
 }
 
 .bootConsole {
     font-family: 'Pretendo', sans-serif;
-    font-size: 18px; /* Aumentado */
+    font-size: 18px; 
     color: #ffffff; 
     letter-spacing: 2px;
-    /* Falso-negrito no branco também */
     text-shadow: 1px 1px 0px #ffffff, -1px 0px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
-}
-
-/* NOVA BARRA DE CARREGAMENTO FLIPERAMA/8-BIT */
-.progress-container {
-    width: 240px;
-    height: 24px;
-    border: 3px solid #ffffff;
-    background-color: transparent;
-    margin-top: 10px;
-    padding: 2px;
-    box-shadow: 4px 4px 0px rgba(0,0,0,0.8); /* Sombra dura estilo 8-bit */
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background-color: #5CFF8A; /* Verde neon do terminal */
-    box-shadow: 0 0 15px rgba(92, 255, 138, 0.4); /* Brilho neon leve */
-    transition: width 0.4s ease-out; /* Enche suavemente */
 }
 
 /* AJUSTE: Redução do min-height de 220px para 130px para subir a barra de progresso */
@@ -202,9 +181,28 @@ body {
 
 .bootLine { font-size: 12px; color: #5CFF8A; line-height: 1.4; }
 
-/* AJUSTE: Redução da margem do topo para aproximar a barra das letras verdes */
-.progressText { margin-top: 5px; font-size: 18px; color: #ffffff; text-align: center; letter-spacing: 2px; }
+/* NOVA BARRA DE CARREGAMENTO FLIPERAMA/8-BIT */
+.progress-container {
+    width: 240px;
+    height: 24px;
+    border: 3px solid #ffffff;
+    background-color: transparent;
+    margin-top: 10px;
+    padding: 2px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+}
 
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #5CFF8A; 
+    box-shadow: 0 0 15px rgba(92, 255, 138, 0.4); 
+    transition: width 0.4s ease-out; 
+}
+
+/* =========================================
+   TELAS DE ERRO E SPLASH
+   ========================================= */
 #invalidScreen {
     display: none;
     position: fixed !important;

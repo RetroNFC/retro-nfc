@@ -66,32 +66,35 @@ body {
 }
 
 /* =========================================
-   BOTÃO JOGAR (Letra Vermelha, Borda Branca)
+   BOTÃO JOGAR (Usando a imagem jogar.png)
    ========================================= */
 #btnJogar, #startButton {
     margin-top: 30px;
-    background-color: #050505 !important; 
-    color: #E60012 !important; 
-    border: 3px solid #ffffff !important; /* Borda Branca */
-    text-shadow: 0 0 5px rgba(230, 0, 18, 0.5) !important; 
-    padding: 16px 40px;
-    border-radius: 50px;
+    background-color: transparent !important; /* Remove o fundo sólido */
+    background-image: url('../img/jogar.png'); /* Puxa a sua imagem */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none !important; /* Remove a borda de CSS */
+    color: transparent !important; /* Esconde o texto "JOGAR" do HTML */
+    text-shadow: none !important;
+    
+    /* Tamanho do botão (você pode aumentar ou diminuir esses valores) */
+    width: 220px; 
+    height: 100px; 
+    
+    padding: 0;
+    border-radius: 50px; /* Mantém o formato oval para a sombra acompanhar */
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); 
-    text-transform: uppercase;
-    font-weight: bold;
-    font-family: 'Pretendo', sans-serif !important;
-    letter-spacing: 4px; /* Espaçamento maior entre as letras */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* Sombra forte para dar profundidade 3D */
     transition: all 0.2s ease;
 }
 
-#btnJogar { font-size: 28px; }
-#startButton { font-size: 18px; }
-
+/* Efeito tátil e visual ao clicar */
 #btnJogar:active, #startButton:active {
-    transform: scale(0.95);
-    background-color: #ffffff !important; 
-    color: #050505 !important;
+    transform: scale(0.95); /* Afunda o botão */
+    filter: brightness(1.2); /* Dá um "flash" de luz ao apertar */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
 }
 
 /* =========================================

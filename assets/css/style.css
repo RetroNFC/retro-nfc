@@ -98,21 +98,21 @@ body {
 }
 
 /* =========================================
-   BOTÕES DA ESTANTE (Com ícone CSS de Cartucho)
+   BOTÕES DA ESTANTE (Com a SUA imagem da fita)
    ========================================= */
 #btnEstante, #btnEstanteErro {
     background-color: transparent; 
-    color: #d1d1d1; /* Cinza prateado claro, mais vivo que o anterior */
-    border: 2px solid #666666; /* Borda mais clara */
+    color: #d1d1d1; /* Cinza prateado claro e elegante */
+    border: 2px solid #666666; 
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Press Start 2P', monospace;
     transition: all 0.3s ease;
-    display: flex; /* Necessário para alinhar o ícone CSS com o texto */
+    display: flex; 
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Espaço entre o ícone e o texto */
+    gap: 12px; 
 }
 
 /* Botão da tela principal (Abaixo do JOGAR) */
@@ -148,18 +148,16 @@ body {
     transform: translateX(-50%) scale(0.95);
 }
 
-/* O TRUQUE: O "Emoji" de Cartucho SNES feito em puro CSS */
+/* Puxa a sua imagem "fita.png" salva na pasta img */
 #btnEstante::before, #btnEstanteErro::before {
     content: "";
-    display: inline-block;
-    width: 14px;
-    height: 12px;
-    background-color: #8c8c8c; /* Cor do plástico do cartucho */
-    border-radius: 2px 2px 0 0; /* Topo arredondado */
-    border: 1px solid #4d4d4d;
-    position: relative;
-    /* Cria as duas ranhuras frontais do cartucho usando box-shadow */
-    box-shadow: inset 3px 0 0 -2px #333, inset -3px 0 0 -2px #333;
+    display: block;
+    width: 22px; /* Tamanho da fita (pode aumentar ou diminuir aqui) */
+    height: 18px;
+    background-image: url('../img/fita.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* =========================================

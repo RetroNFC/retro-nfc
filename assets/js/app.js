@@ -5,26 +5,24 @@ async function rastrearCliqueColecao(origem) {
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
-    // Pega os cartuchos que o usuário já desbloqueou no navegador dele
     const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
     
     let listaJogosPossui = "Nenhum cartucho na estante ainda.";
     
     if (colecaoSalva.length > 0) {
         try {
-            // Busca o catálogo para traduzir as chaves (keys) nos nomes bonitos dos jogos
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
             
             const meusJogos = data.games
                 .filter(game => colecaoSalva.includes(game.key))
-                .map(game => `• ${game.title} (ID: \`${game.key}\`)`);
+                .map(game => `• ${game.title}`); // Removido o ID por extenso
                 
             if (meusJogos.length > 0) {
                 listaJogosPossui = meusJogos.join('\n');
             }
         } catch (e) {
-            listaJogosPossui = colecaoSalva.map(k => `• ID: \`${k}\``).join('\n');
+            listaJogosPossui = colecaoSalva.map(k => `• ${k}`).join('\n');
         }
     }
     
@@ -33,7 +31,6 @@ async function rastrearCliqueColecao(origem) {
     
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     
-    // Dispara a notificação de forma silenciosa e aguarda um instante antes de redirecionar
     fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

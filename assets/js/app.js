@@ -1,15 +1,39 @@
 // ==========================================
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
-function rastrearCliqueColecao(origem) {
+async function rastrearCliqueColecao(origem) {
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
+    // Pega os cartuchos que o usuário já desbloqueou no navegador dele
+    const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+    
+    let listaJogosPossui = "Nenhum cartucho na estante ainda.";
+    
+    if (colecaoSalva.length > 0) {
+        try {
+            // Busca o catálogo para traduzir as chaves (keys) nos nomes bonitos dos jogos
+            const response = await fetch("games.json?ts=" + Date.now());
+            const data = await response.json();
+            
+            const meusJogos = data.games
+                .filter(game => colecaoSalva.includes(game.key))
+                .map(game => `• ${game.title} (ID: \`${game.key}\`)`);
+                
+            if (meusJogos.length > 0) {
+                listaJogosPossui = meusJogos.join('\n');
+            }
+        } catch (e) {
+            listaJogosPossui = colecaoSalva.map(k => `• ID: \`${k}\``).join('\n');
+        }
+    }
+    
     const dataHora = new Date().toLocaleString('pt-BR');
-    const mensagem = `👀 *VITRINE ACESSADA!*\n\nUm possível cliente acabou de entrar na sua coleção de cartuchos!\n\n📍 *Origem:* ${origem}\n🕒 *Data:* ${dataHora}\n\n#AcessoColecao`;
+    const mensagem = `👀 *VITRINE ACESSADA!*\n\nUm cliente abriu a estante de cartuchos!\n\n📍 *Origem:* ${origem}\n🕒 *Data:* ${dataHora}\n\n🎮 *Cartuchos que ele já possui:*\n${listaJogosPossui}\n\n#AcessoColecao`;
     
     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     
+    // Dispara a notificação de forma silenciosa e aguarda um instante antes de redirecionar
     fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -19,7 +43,7 @@ function rastrearCliqueColecao(origem) {
 
     setTimeout(() => {
         window.location.href = 'colecao.html';
-    }, 150);
+    }, 250);
 }
 
 const DOMINIO_PERMITIDO = "retronfc.github.io";

@@ -142,25 +142,15 @@
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
     <script>
-        async function rastrearCompra(nomeJogo, urlZap) {
-            const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
-            const CHAT_ID = "941396833";
+        function rastrearCompra(nomeJogo, urlZap) {
+            const URL_BACKEND = "https://script.google.com/macros/s/AKfycbwY79oSFvq9DYp6x-TFtG6znyarRqUTLa-3P72OdW6cz9vLKob5V3INi_fo42eskoAc/exec";
             
-            const dataHora = new Date().toLocaleString('pt-BR');
-            const mensagem = `🛒 *RESUMO DE INTENÇÃO DE COMPRA*\n\n🕹️ *Jogo:* ${nomeJogo}\n🕒 *Data:* ${dataHora}\n\n#IntencaoCompra`;
+            fetch(URL_BACKEND, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Compra", jogo: nomeJogo })
+            });
             
-            const urlTelegram = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            
-            try {
-                await fetch(urlTelegram, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' })
-                });
-            } catch (err) {
-                console.error("Erro interno no radar de compra", err);
-            }
-
             window.open(urlZap, '_blank');
         }
 
@@ -173,7 +163,7 @@
                 const grid = document.getElementById('gridColecao');
                 grid.innerHTML = ""; 
                 
-                const numeroWhatsApp = "5519992087429"; // Substitua pelo seu número real
+                const numeroWhatsApp = "5519992087429"; 
 
                 data.games.forEach(game => {
                     const temCartucho = colecaoSalva.includes(game.key);
@@ -197,7 +187,6 @@
                             <button class="btn-comprar">COMPRAR</button>
                         `;
 
-                        // Adição do event listener segura
                         const btnComprar = card.querySelector('.btn-comprar');
                         btnComprar.addEventListener('click', () => {
                             rastrearCompra(game.title, urlCompletaZap);

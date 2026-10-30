@@ -2,49 +2,35 @@
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
 async function rastrearCliqueColecao(origem) {
-    // 1. Feedback visual imediato para não parecer que o botão travou
-    const btn1 = document.getElementById('btnEstante');
-    const btn2 = document.getElementById('btnEstanteErro');
-    if (btn1) { btn1.innerText = "CARREGANDO..."; btn1.style.opacity = "0.5"; }
-    if (btn2) { btn2.innerText = "CARREGANDO..."; btn2.style.opacity = "0.5"; }
-    
-    const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
-    const CHAT_ID = "941396833";
-    
+    const b1 = document.getElementById('btnEstante');
+    const b2 = document.getElementById('btnEstanteErro');
+    if(b1) { b1.innerText = "CARREGANDO..."; b1.style.opacity = "0.5"; }
+    if(b2) { b2.innerText = "CARREGANDO..."; b2.style.opacity = "0.5"; }
+
+    const URL_BACKEND = "https://script.google.com/macros/s/AKfycbwY79oSFvq9DYp6x-TFtG6znyarRqUTLa-3P72OdW6cz9vLKob5V3INi_fo42eskoAc/exec"; 
+
     try {
         const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
         let listaJogos = "Nenhum cartucho na estante ainda.";
-        
+
         if (colecaoSalva.length > 0) {
-            // A leitura do JSON local no GitHub Pages leva milissegundos
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
-            
             const nomesJogos = colecaoSalva.map(chave => {
                 const jogoEncontrado = data.games.find(g => g.key === chave);
                 return jogoEncontrado ? `• ${jogoEncontrado.title}` : `• ID Desconhecido (${chave})`;
             });
-            
             listaJogos = nomesJogos.join('\n');
         }
-        
-        const dataHora = new Date().toLocaleString('pt-BR');
-        const mensagem = `📊 *RESUMO DE ACESSO - RETRÔ NFC*\n\n👀 *Vitrine Acessada*\n📍 Origem: ${origem}\n🕒 Data: ${dataHora}\n\n🎮 *Cartuchos que o cliente já possui:*\n${listaJogos}\n\n#AcessoColecao`;
-        
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-        
-        // 2. Envio sem trava (removido o await). O keepalive garante a entrega em segundo plano.
-        fetch(url, {
+
+        fetch(URL_BACKEND, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
-            keepalive: true
-        }).catch(err => console.error("Erro no radar:", err));
-        
-    } catch (erro) {
-        console.error("Erro interno no radar de coleção:", erro);
+            mode: 'no-cors',
+            body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Acesso", origem: origem, jogos: listaJogos })
+        });
+    } catch(e) {
+        console.error("Erro no tracker:", e);
     } finally {
-        // Redireciona na mesma hora, cortando a sensação de lentidão
         window.location.href = 'colecao.html';
     }
 }

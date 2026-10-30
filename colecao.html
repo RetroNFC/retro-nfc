@@ -142,23 +142,24 @@
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
     <script>
-        function rastrearCompra(nomeJogo, urlZap) {
+        async function rastrearCompra(nomeJogo, urlZap) {
             const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
             const CHAT_ID = "941396833";
             
             const dataHora = new Date().toLocaleString('pt-BR');
-            
-            // Formatado com a hashtag de intenção de compra bem evidente
-            const mensagem = `#RELATORIO\n#IntencaoCompra\n\n🛒 *INTENÇÃO DE COMPRA!*\n🕹️ Jogo: ${nomeJogo}\n🕒 Data: ${dataHora}`;
+            const mensagem = `🛒 *RESUMO DE INTENÇÃO DE COMPRA*\n\n🕹️ *Jogo:* ${nomeJogo}\n🕒 *Data:* ${dataHora}\n\n#IntencaoCompra`;
             
             const urlTelegram = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
             
-            fetch(urlTelegram, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
-                keepalive: true
-            }).catch(err => console.log("Erro no radar", err));
+            try {
+                await fetch(urlTelegram, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' })
+                });
+            } catch (err) {
+                console.error("Erro interno no radar de compra", err);
+            }
 
             window.open(urlZap, '_blank');
         }
@@ -172,7 +173,7 @@
                 const grid = document.getElementById('gridColecao');
                 grid.innerHTML = ""; 
                 
-                const numeroWhatsApp = "5519992087429"; // Lembre de colocar seu número real do WhatsApp aqui
+                const numeroWhatsApp = "5519992087429"; // Substitua pelo seu número real
 
                 data.games.forEach(game => {
                     const temCartucho = colecaoSalva.includes(game.key);
@@ -186,7 +187,6 @@
                             <div class="etiqueta-ok">COLECIONADO</div>
                         `;
                     } else {
-                        // Nova mensagem do WhatsApp solicitada
                         const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
                         const urlCompletaZap = `https://wa.me/${numeroWhatsApp}?text=${textoZap}`;
                         
@@ -197,6 +197,7 @@
                             <button class="btn-comprar">COMPRAR</button>
                         `;
 
+                        // Adição do event listener segura
                         const btnComprar = card.querySelector('.btn-comprar');
                         btnComprar.addEventListener('click', () => {
                             rastrearCompra(game.title, urlCompletaZap);
@@ -205,7 +206,7 @@
                     grid.appendChild(card);
                 });
             } catch (e) {
-                console.log("Erro ao carregar a coleção", e);
+                console.error("Erro ao carregar a coleção", e);
             }
         }
         

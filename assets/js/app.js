@@ -1,6 +1,3 @@
-// ==========================================
-// TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
-// ==========================================
 async function rastrearCliqueColecao(origem) {
     const b1 = document.getElementById('btnEstante');
     const b2 = document.getElementById('btnEstanteErro');
@@ -23,9 +20,11 @@ async function rastrearCliqueColecao(origem) {
             listaJogos = nomesJogos.join('\n');
         }
 
+        // Requisição cega e blindada contra CORS
         fetch(URL_BACKEND, {
             method: 'POST',
             mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Acesso", origem: origem, jogos: listaJogos })
         });
     } catch(e) {

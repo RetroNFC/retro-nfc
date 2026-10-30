@@ -2,6 +2,12 @@
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
 async function rastrearCliqueColecao(origem) {
+    // 1. Feedback visual imediato para não parecer que o botão travou
+    const btn1 = document.getElementById('btnEstante');
+    const btn2 = document.getElementById('btnEstanteErro');
+    if (btn1) { btn1.innerText = "CARREGANDO..."; btn1.style.opacity = "0.5"; }
+    if (btn2) { btn2.innerText = "CARREGANDO..."; btn2.style.opacity = "0.5"; }
+    
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
@@ -10,11 +16,10 @@ async function rastrearCliqueColecao(origem) {
         let listaJogos = "Nenhum cartucho na estante ainda.";
         
         if (colecaoSalva.length > 0) {
-            // Aguarda rigorosamente o carregamento do JSON
+            // A leitura do JSON local no GitHub Pages leva milissegundos
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
             
-            // Mapeia as chaves para os títulos reais
             const nomesJogos = colecaoSalva.map(chave => {
                 const jogoEncontrado = data.games.find(g => g.key === chave);
                 return jogoEncontrado ? `• ${jogoEncontrado.title}` : `• ID Desconhecido (${chave})`;
@@ -28,17 +33,18 @@ async function rastrearCliqueColecao(origem) {
         
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
         
-        // Dispara e aguarda a confirmação do Telegram antes de prosseguir
-        await fetch(url, {
+        // 2. Envio sem trava (removido o await). O keepalive garante a entrega em segundo plano.
+        fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' })
-        });
+            body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' }),
+            keepalive: true
+        }).catch(err => console.error("Erro no radar:", err));
         
     } catch (erro) {
         console.error("Erro interno no radar de coleção:", erro);
     } finally {
-        // Redirecionamento seguro, acionado apenas após a finalização do processo acima
+        // Redireciona na mesma hora, cortando a sensação de lentidão
         window.location.href = 'colecao.html';
     }
 }

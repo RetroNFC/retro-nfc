@@ -4,7 +4,7 @@ async function rastrearCliqueColecao(origem) {
     if(b1) { b1.innerText = "CARREGANDO..."; b1.style.opacity = "0.5"; }
     if(b2) { b2.innerText = "CARREGANDO..."; b2.style.opacity = "0.5"; }
 
-    const URL_BACKEND = "https://script.google.com/macros/s/AKfycbwY79oSFvq9DYp6x-TFtG6znyarRqUTLa-3P72OdW6cz9vLKob5V3INi_fo42eskoAc/exec"; 
+    const URL_BACKEND = "https://script.google.com/macros/s/AKfycbzGtxbso9DOC2wKeuTXjrQ0nHefoTyv_7v2bzu85ltTmuUzdIk8bBUjHmKt3xO11P1H/exec"; 
 
     try {
         const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');

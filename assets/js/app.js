@@ -1,34 +1,46 @@
 // ==========================================
 // TELEGRAM BACKOFFICE: CLIQUE NA COLEÇÃO
 // ==========================================
-function rastrearCliqueColecao(origem) {
+async function rastrearCliqueColecao(origem) {
     const BOT_TOKEN = "8651257279:AAGK-88zOogg8I51qraFA_0MkfZMU55KLzk"; 
     const CHAT_ID = "941396833";
     
-    const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-    let listaResumo = colecaoSalva.length > 0 ? `${colecaoSalva.length} cartuchos salvos` : "Nenhum cartucho ainda";
-    
-    const dataHora = new Date().toLocaleString('pt-BR');
-    
-    // Formatado com a hashtag colada e visível para o Telegram indexar na busca
-    const mensagem = `#RELATORIO\n#AcessoColecao\n\n👀 *VITRINE ACESSADA!*\n📍 Origem: ${origem}\n🕒 Data: ${dataHora}\n🎮 Possui: ${listaResumo}`;
-    
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            chat_id: CHAT_ID, 
-            text: mensagem, 
-            parse_mode: 'Markdown' 
-        }),
-        keepalive: true
-    }).catch(err => console.log("Erro no radar", err));
-
-    setTimeout(() => {
+    try {
+        const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+        let listaJogos = "Nenhum cartucho na estante ainda.";
+        
+        if (colecaoSalva.length > 0) {
+            // Aguarda rigorosamente o carregamento do JSON
+            const response = await fetch("games.json?ts=" + Date.now());
+            const data = await response.json();
+            
+            // Mapeia as chaves para os títulos reais
+            const nomesJogos = colecaoSalva.map(chave => {
+                const jogoEncontrado = data.games.find(g => g.key === chave);
+                return jogoEncontrado ? `• ${jogoEncontrado.title}` : `• ID Desconhecido (${chave})`;
+            });
+            
+            listaJogos = nomesJogos.join('\n');
+        }
+        
+        const dataHora = new Date().toLocaleString('pt-BR');
+        const mensagem = `📊 *RESUMO DE ACESSO - RETRÔ NFC*\n\n👀 *Vitrine Acessada*\n📍 Origem: ${origem}\n🕒 Data: ${dataHora}\n\n🎮 *Cartuchos que o cliente já possui:*\n${listaJogos}\n\n#AcessoColecao`;
+        
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        
+        // Dispara e aguarda a confirmação do Telegram antes de prosseguir
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: mensagem, parse_mode: 'Markdown' })
+        });
+        
+    } catch (erro) {
+        console.error("Erro interno no radar de coleção:", erro);
+    } finally {
+        // Redirecionamento seguro, acionado apenas após a finalização do processo acima
         window.location.href = 'colecao.html';
-    }, 300);
+    }
 }
 
 const DOMINIO_PERMITIDO = "retronfc.github.io";

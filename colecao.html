@@ -142,17 +142,18 @@
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
     <script>
-        function rastrearCompra(nomeJogo, urlZap) {
-            const URL_BACKEND = "https://script.google.com/macros/s/AKfycbwY79oSFvq9DYp6x-TFtG6znyarRqUTLa-3P72OdW6cz9vLKob5V3INi_fo42eskoAc/exec";
-            
-            fetch(URL_BACKEND, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Compra", jogo: nomeJogo })
-            });
-            
-            window.open(urlZap, '_blank');
-        }
+       function rastrearCompra(nomeJogo, urlZap) {
+    const URL_BACKEND = "https://script.google.com/macros/s/AKfycbwY79oSFvq9DYp6x-TFtG6znyarRqUTLa-3P72OdW6cz9vLKob5V3INi_fo42eskoAc/exec";
+    
+    fetch(URL_BACKEND, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Compra", jogo: nomeJogo })
+    });
+    
+    window.open(urlZap, '_blank');
+}
 
         async function carregarColecao() {
             try {

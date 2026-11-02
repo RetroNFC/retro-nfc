@@ -209,17 +209,7 @@ function iniciarEmulador() {
         window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/';
         window.EJS_startOnLoaded = true; 
         
-        // HABILITANDO O NETPLAY ONLINE
-        window.EJS_netplayServer = "https://netplay.emulatorjs.org/";
-        
-        // O Netplay exige um ID de jogo em formato NUMÉRICO. 
-        // Convertendo o seu GAME_KEY de texto para um número matemático fixo:
-        let numHash = 0;
-        for (let i = 0; i < GAME_KEY.length; i++) {
-            numHash = GAME_KEY.charCodeAt(i) + ((numHash << 5) - numHash);
-        }
-        window.EJS_gameID = Math.abs(numHash);
-        
+             
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';
         document.body.appendChild(script);

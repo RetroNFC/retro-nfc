@@ -208,6 +208,7 @@ function iniciarEmulador() {
         window.EJS_gameUrl = CURRENT_GAME.romUrl; 
         window.EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/';
         window.EJS_startOnLoaded = true; 
+        window.EJS_multitap = true; // ATIVA O NETPLAY MULTIPLAYER
         
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/data/loader.js';

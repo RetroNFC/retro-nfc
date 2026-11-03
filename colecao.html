@@ -144,14 +144,27 @@
     <script>
        function rastrearCompra(nomeJogo, urlZap) {
     const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
-    
-    fetch(URL_BACKEND, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Compra", jogo: nomeJogo })
+
+    const payload = JSON.stringify({
+        origemRequisicao: "SiteRetroNFC",
+        tipo: "Compra",
+        jogo: nomeJogo
     });
-    
+
+    // keepalive: no celular, o window.open costuma trocar a página atual
+    // pelo WhatsApp e cancelaria o POST sem essa opção.
+    try {
+        fetch(URL_BACKEND, {
+            method: 'POST',
+            mode: 'no-cors',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain' },
+            body: payload
+        });
+    } catch (e) {
+        console.error("Erro ao registrar compra:", e);
+    }
+
     window.open(urlZap, '_blank');
 }
 

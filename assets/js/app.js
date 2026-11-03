@@ -15,31 +15,43 @@ async function rastrearCliqueColecao(origem) {
     if (b1) { b1.innerText = "CARREGANDO..."; b1.style.opacity = "0.5"; }
     if (b2) { b2.innerText = "CARREGANDO..."; b2.style.opacity = "0.5"; }
 
+    let listaJogos = "Nenhum cartucho na estante ainda.";
+
     try {
         const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-        let listaJogos = "Nenhum cartucho na estante ainda.";
-
         if (colecaoSalva.length > 0) {
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
-            const nomesJogos = colecaoSalva.map(chave => {
+            listaJogos = colecaoSalva.map(chave => {
                 const jogoEncontrado = data.games.find(g => g.key === chave);
                 return jogoEncontrado ? `• ${jogoEncontrado.title}` : `• ID Desconhecido (${chave})`;
-            });
-            listaJogos = nomesJogos.join('\n');
+            }).join('\n');
         }
+    } catch (e) {
+        console.error("Erro ao montar a lista da estante:", e);
+    }
 
+    const payload = JSON.stringify({
+        origemRequisicao: "SiteRetroNFC",
+        tipo: "Acesso",
+        origem: origem,
+        jogos: listaJogos
+    });
+
+    // sendBeacon sobrevive à navegação. Um fetch normal seria cancelado
+    // no instante em que a página muda para colecao.html.
+    if (navigator.sendBeacon) {
+        navigator.sendBeacon(URL_BACKEND, payload);
+    } else {
         fetch(URL_BACKEND, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ origemRequisicao: "SiteRetroNFC", tipo: "Acesso", origem: origem, jogos: listaJogos })
+            body: payload
         });
-    } catch (e) {
-        console.error("Erro no tracker:", e);
-    } finally {
-        window.location.href = 'colecao.html';
     }
+
+    window.location.href = 'colecao.html';
 }
 
 // --- Verificação de domínio ---

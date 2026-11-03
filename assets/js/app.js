@@ -38,17 +38,18 @@ async function rastrearCliqueColecao(origem) {
         jogos: listaJogos
     });
 
-    // sendBeacon sobrevive à navegação. Um fetch normal seria cancelado
-    // no instante em que a página muda para colecao.html.
-    if (navigator.sendBeacon) {
-        navigator.sendBeacon(URL_BACKEND, payload);
-    } else {
-        fetch(URL_BACKEND, {
+    // keepalive mantém a requisição viva mesmo depois de a página navegar.
+    // Sem isso, o navegador cancela o POST no instante do redirecionamento.
+    try {
+        await fetch(URL_BACKEND, {
             method: 'POST',
             mode: 'no-cors',
+            keepalive: true,
             headers: { 'Content-Type': 'text/plain' },
             body: payload
         });
+    } catch (e) {
+        console.error("Erro ao registrar acesso:", e);
     }
 
     window.location.href = 'colecao.html';

@@ -65,7 +65,7 @@ const ehLocalhost      = hostAtual === "localhost" || hostAtual === "127.0.0.1";
 const ehDominioOficial = DOMINIOS_PERMITIDOS.some(d => hostAtual === d || hostAtual.endsWith("." + d));
 const ehArquivoLocal   = window.location.protocol === "file:";
 
-if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
+if (!ehLocalhost && !ehDominioOficial && !ehArquivoLocal) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";
     throw new Error("Execução bloqueada por segurança.");
 }

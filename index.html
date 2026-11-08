@@ -2,38 +2,26 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrô NFC</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- Tela de Abertura (Splash) -->
     <div id="splashScreen">
         <img src="assets/img/retronfc.png" alt="Logo Retrô NFC">
     </div>
-       
-    <!-- Tela do Jogo (Tela 1) -->
-    <div id="gameScreen">
-        <img id="gameCover" src="" alt="Capa">
-        <h1 id="title"></h1>
-        <h2 id="subtitle"></h2>
-        <div class="info">
-            <p id="year"></p>
-            <p id="players"></p>
-            <p id="developer"></p>
-        </div>
-        <button id="btnJogar">Carregar Jogo</button>
-    </div>
 
-    <!-- Tela de Boot (Tela 2) -->
-    <div id="bootScreen" style="display: none;">
-        <div class="bootTerminal" id="bootTerminal"></div>
-        <div class="progressText" id="progressText"></div>
-    </div>
+    <script>
+        (function () {
+            var destino = "play.html" + window.location.search;
+            window.location.replace(destino);
+        })();
+    </script>
 
-    <!-- CARREGAMENTO DOS SCRIPTS (Ordem corrigida) -->
-    <script src="js/game.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/boot.js"></script>
+    <noscript>
+        <p style="color:#fff;font-family:monospace;text-align:center;padding:20px;">
+            Ative o JavaScript ou <a href="play.html" style="color:#E60012;">clique aqui</a>.
+        </p>
+    </noscript>
 </body>
 </html>

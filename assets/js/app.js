@@ -56,10 +56,14 @@ async function rastrearCliqueColecao(origem) {
 }
 
 // --- Verificação de domínio ---
-const DOMINIO_PERMITIDO = "retronfc.github.io";
-const ehLocalhost   = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-const ehGitHubOFicial = window.location.hostname.includes(DOMINIO_PERMITIDO);
-const ehArquivoLocal  = window.location.protocol === "file:";
+const DOMINIOS_PERMITIDOS = [
+    "retronfc.github.io",
+    "retro-nfc.pages.dev"
+];
+const hostAtual        = window.location.hostname;
+const ehLocalhost      = hostAtual === "localhost" || hostAtual === "127.0.0.1";
+const ehDominioOficial = DOMINIOS_PERMITIDOS.some(d => hostAtual === d || hostAtual.endsWith("." + d));
+const ehArquivoLocal   = window.location.protocol === "file:";
 
 if (!ehLocalhost && !ehGitHubOFicial && !ehArquivoLocal) {
     document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";

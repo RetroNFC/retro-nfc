@@ -285,15 +285,31 @@ body {
     overflow: hidden;
 }
 
+/* BARRA DE CARREGAMENTO — sem borda, cores reveladas conforme enche */
+.progress-container {
+    width: 260px;
+    height: 26px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .06);
+    margin-top: 14px;
+    padding: 3px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, .70);
+    overflow: hidden;
+}
+
 .progress-fill {
     height: 100%;
     width: 0%;
     border-radius: 999px;
-    background: linear-gradient(90deg, #A020F0 0%, #00CFFF 40%, #FF8C00 75%, #FFD700 100%);
-    box-shadow:
-        0 0 14px rgba(230, 0, 18, .75),
-        inset 0 1px 0 rgba(255, 255, 255, .35);
-    transition: width .4s cubic-bezier(.3, .9, .3, 1);
+    /* O degradê tem o tamanho fixo da trilha (260px - 6px de padding = 254px).
+       A barra só "descobre" as cores: azul → roxo → laranja → amarelo */
+    background-image: linear-gradient(90deg, #00CFFF 0%, #A020F0 40%, #FF8C00 75%, #FFD700 100%);
+    background-size: 254px 100%;
+    background-repeat: no-repeat;
+    background-position: left center;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+    transition: width .8s cubic-bezier(.3, .9, .3, 1);
     position: relative;
     overflow: hidden;
 }

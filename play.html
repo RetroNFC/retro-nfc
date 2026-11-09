@@ -12,11 +12,8 @@
 
             var params = new URLSearchParams(window.location.search);
             var chave = params.get("k") || "";
-            var colecao = [];
-            try { colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]'); } catch (e) { colecao = []; }
 
             var url = "https://retro-nfc.pages.dev/play.html" + (chave ? "?k=" + encodeURIComponent(chave) : "");
-            if (colecao.length > 0) { url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao))); }
             window.location.replace(url);
         })();
     </script>

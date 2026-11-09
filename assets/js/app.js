@@ -1,10 +1,13 @@
 // =====================================================
-// RETRÔ NFC — app.js (v5)
+// RETRÔ NFC — app.js (v7)
 // Token do Telegram REMOVIDO do frontend.
-// Os dados vão para o Apps Script, que encaminha ao Telegram.
+// O frontend envia apenas campos estruturados (nunca HTML).
+// O Apps Script monta o texto e envia ao Telegram.
 // =====================================================
 
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
+
+const APP_VERSAO = "7.0";
 
 // Chaves do localStorage (todas padronizadas com o prefixo retronfc_)
 const CHAVE_COLECAO = 'retronfc_colecao';
@@ -40,6 +43,21 @@ async function obterJogos() {
     return (data && data.games) || [];
 }
 
+// --- Métricas de engajamento ---
+function contarCartuchos() {
+    try {
+        const c = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
+        return Array.isArray(c) ? c.length : 0;
+    } catch (e) { return 0; }
+}
+
+function classificarVisita() {
+    try {
+        const visitas = parseInt(localStorage.getItem(CHAVE_VISITAS) || "0", 10);
+        return visitas <= 1 ? "Primeira visita" : "Recorrente";
+    } catch (e) { return "—"; }
+}
+
 // --- Rastreamento do clique na estante ---
 async function rastrearCliqueColecao(origem) {
     marcarCarregandoEstante();
@@ -64,8 +82,11 @@ async function rastrearCliqueColecao(origem) {
         tipo: "Acesso",
         origem: origem,
         nome: obterNome(),
-        jogador: obterIdCurto(),
+        jogador: obterIdEVisitas(),
         aparelho: obterAparelho(),
+        cartuchos: contarCartuchos(),
+        visitante: classificarVisita(),
+        versao: APP_VERSAO,
         jogos: listaJogos
     });
 
@@ -275,17 +296,6 @@ function registrarLogAcessoImediato() {
 }
 
 function enviarInicioSessao(ipUser, provedor, localIP) {
-    const texto =
-        `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
-        `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
-        `🕹️ <b>Jogo:</b> ${CURRENT_GAME.title}\n` +
-        `🆔 <b>Jogador:</b> ${obterIdEVisitas()}\n` +
-        `📱 <b>Aparelho:</b> ${obterAparelho()}\n` +
-        `📅 <b>Início:</b> ${obterDataBonita()}\n\n` +
-        `📍 <b>Localização:</b> ${localIP}\n` +
-        `🌐 <b>Rede IP:</b> ${ipUser} (${provedor})\n\n` +
-        `⏱️ <b>Status:</b> 🔵 <i>Jogando...</i>`;
-
     fetch(URL_BACKEND, {
         method: 'POST',
         mode: 'no-cors',
@@ -295,7 +305,17 @@ function enviarInicioSessao(ipUser, provedor, localIP) {
             tipo: "TelegramSessao",
             acao: "inicio",
             sessaoId: SESSAO_ID,
-            texto: texto
+            versao: APP_VERSAO,
+            jogo: CURRENT_GAME.title,
+            nome: obterNome(),
+            jogador: obterIdEVisitas(),
+            aparelho: obterAparelho(),
+            cartuchos: contarCartuchos(),
+            visitante: classificarVisita(),
+            local: localIP,
+            ip: ipUser,
+            rede: provedor,
+            inicio: obterDataBonita()
         })
     });
 }
@@ -304,24 +324,19 @@ function encerrarSessao() {
     if (sessaoEnviada || tempoInicio === 0) return;
     sessaoEnviada = true;
 
-    const tempoFormatado = formatarTempoDeJogo(Date.now() - tempoInicio);
-    const jogo = CURRENT_GAME ? CURRENT_GAME.title : "Desconhecido";
-
-    const texto =
-        `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
-        `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
-        `🕹️ <b>Jogo:</b> ${jogo}\n` +
-        `🆔 <b>Jogador:</b> ${obterIdCurto()}\n` +
-        `📱 <b>Aparelho:</b> ${obterAparelho()}\n` +
-        `⏱️ <b>Tempo jogado:</b> ${tempoFormatado}\n\n` +
-        `✅ <b>Status:</b> 🟢 <i>Sessão encerrada</i>`;
-
     navigator.sendBeacon(URL_BACKEND, JSON.stringify({
         origemRequisicao: "SiteRetroNFC",
         tipo: "TelegramSessao",
         acao: "fim",
         sessaoId: SESSAO_ID,
-        texto: texto
+        versao: APP_VERSAO,
+        jogo: CURRENT_GAME ? CURRENT_GAME.title : "Desconhecido",
+        nome: obterNome(),
+        jogador: obterIdCurto(),
+        aparelho: obterAparelho(),
+        cartuchos: contarCartuchos(),
+        visitante: classificarVisita(),
+        tempo: formatarTempoDeJogo(Date.now() - tempoInicio)
     }));
 }
 

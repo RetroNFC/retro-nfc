@@ -8,7 +8,7 @@
     font-style: normal;
 }
 
-/* CORREÇÃO APLICADA: Asterisco global para resetar margens */
+/* Reset global */
 * {
     margin: 0;
     padding: 0;
@@ -66,76 +66,74 @@ body {
 }
 
 /* =========================================
-   BOTÃO JOGAR (Usando a imagem jogar.png)
+   BOTÃO JOGAR (imagem jogar.png)
    ========================================= */
 #btnJogar, #startButton {
     margin-top: 30px;
-    background-color: transparent !important; 
-    background-image: url('../img/jogar.png'); 
+    background-color: transparent !important;
+    background-image: url('../img/jogar.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    border: none !important; 
-    outline: none !important; /* Remove bordas de clique nativas do navegador */
-    -webkit-appearance: none; /* Remove o estilo padrão de botões em celulares */
-    color: transparent !important; 
+    border: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    color: transparent !important;
     text-shadow: none !important;
-    
-    width: 220px; 
-    height: 100px; 
-    
+
+    width: 220px;
+    height: 100px;
+
     padding: 0;
     cursor: pointer;
-    
-    /* A MÁGICA AQUI: O drop-shadow faz a sombra seguir o contorno EXATO da sua arte */
-    filter: drop-shadow(0px 8px 15px rgba(0, 0, 0, 0.7)); 
+
+    filter: drop-shadow(0px 8px 15px rgba(0, 0, 0, 0.7));
     transition: all 0.2s ease;
 }
 
-/* Efeito tátil e visual ao clicar */
 #btnJogar:active, #startButton:active {
-    transform: scale(0.95); 
-    /* Junta o flash de luz com uma sombra menor para dar a sensação de afundar */
-    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.9)) brightness(1.2); 
+    transform: scale(0.95);
+    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.9)) brightness(1.2);
 }
 
 /* =========================================
-   BOTÕES DA ESTANTE (Com a SUA imagem da fita)
+   BOTÕES DA ESTANTE
    ========================================= */
 #btnEstante, #btnEstanteErro {
-    background-color: transparent; 
-    color: #d1d1d1; /* Cinza prateado claro e elegante */
-    border: 2px solid #666666; 
+    background-color: transparent;
+    color: #d1d1d1;
+    border: 2px solid #666666;
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Press Start 2P', monospace;
     transition: all 0.3s ease;
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px; 
+    gap: 12px;
 }
 
-/* Botão da tela principal (Abaixo do JOGAR) */
+/* Botão da tela principal (abaixo do JOGAR) */
 #btnEstante {
-    margin-top: 20px; 
-    padding: 14px 30px; 
+    margin-top: 20px;
+    padding: 14px 30px;
     font-size: 10px;
 }
 
-/* Botão da tela de erro (Flutuante e chamativo) */
+/* Botão da tela de erro (flutuante e chamativo) */
 #btnEstanteErro {
     position: absolute;
-    bottom: 18%; 
+    bottom: 18%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.85); 
-    border: 3px solid #E60012; 
-    padding: 18px 35px; 
-    font-size: 12px; 
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #ffffff;
+    border: 3px solid #E60012;
+    padding: 18px 35px;
+    font-size: 12px;
     white-space: nowrap;
-    box-shadow: 0 6px 20px rgba(230, 0, 18, 0.5); 
+    box-shadow: 0 6px 20px rgba(230, 0, 18, 0.5);
 }
 
 #btnEstante:active {
@@ -150,16 +148,48 @@ body {
     transform: translateX(-50%) scale(0.95);
 }
 
-/* Puxa a sua imagem "fita.png" salva na pasta img */
+/* Ícone da fita (fita.png) */
 #btnEstante::before, #btnEstanteErro::before {
     content: "";
     display: block;
-    width: 22px; /* Tamanho da fita (pode aumentar ou diminuir aqui) */
+    width: 22px;
     height: 18px;
     background-image: url('../img/fita.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+/* =========================================
+   ESTADO DE CARREGAMENTO DOS BOTÕES DA ESTANTE
+   ========================================= */
+#btnEstante.carregando,
+#btnEstanteErro.carregando {
+    pointer-events: none;
+    color: #22D3EE;
+    border-color: #22D3EE;
+    background-color: rgba(34, 211, 238, 0.08);
+    animation: pulsoCarregando 1.1s ease-in-out infinite;
+}
+
+#btnEstante.carregando::before,
+#btnEstanteErro.carregando::before {
+    width: 16px;
+    height: 16px;
+    background-image: none;
+    border: 2px solid rgba(34, 211, 238, 0.25);
+    border-top-color: #22D3EE;
+    border-radius: 50%;
+    animation: girarSpinner 0.7s linear infinite;
+}
+
+@keyframes girarSpinner {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulsoCarregando {
+    0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0); }
+    50%      { box-shadow: 0 0 18px rgba(34, 211, 238, 0.45); }
 }
 
 /* =========================================
@@ -182,11 +212,11 @@ body {
 #bootScreen::before {
     content: "";
     position: absolute;
-    top: -15px; left: -15px; right: -15px; bottom: -15px; 
+    top: -15px; left: -15px; right: -15px; bottom: -15px;
     background: url('../img/retronfc.png') center/100% no-repeat;
-    opacity: 0.30; 
+    opacity: 0.30;
     filter: blur(4px);
-    z-index: -1; 
+    z-index: -1;
     animation: fadeInBackground 2.5s ease-in-out forwards;
 }
 
@@ -197,11 +227,10 @@ body {
 
 .header { text-align: center; margin-bottom: 30px; }
 
-/* AJUSTE: Letras bem maiores e mais grossas (Negrito artificial com text-shadow) */
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
-    font-size: 36px; 
-    color: #E60012; 
+    font-size: 36px;
+    color: #E60012;
     line-height: 1.2;
     margin-bottom: 8px;
     letter-spacing: 2px;
@@ -210,16 +239,15 @@ body {
 
 .bootConsole {
     font-family: 'Pretendo', sans-serif;
-    font-size: 18px; 
-    color: #ffffff; 
+    font-size: 18px;
+    color: #ffffff;
     letter-spacing: 2px;
     text-shadow: 1px 1px 0px #ffffff, -1px 0px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
 }
 
-/* AJUSTE: Redução do min-height de 220px para 130px para subir a barra de progresso */
 .bootTerminal {
     width: 100%;
-    text-align: center; 
+    text-align: center;
     min-height: 130px;
     display: flex;
     flex-direction: column;
@@ -229,25 +257,64 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.bootLine { font-size: 12px; color: #5CFF8A; line-height: 1.4; }
+.bootLine {
+    font-size: 11px;
+    color: #9FB3C8;
+    line-height: 1.5;
+    letter-spacing: .5px;
+    transition: color .3s ease;
+}
 
-/* NOVA BARRA DE CARREGAMENTO FLIPERAMA/8-BIT */
+.bootLine:last-child {
+    color: #22D3EE;
+    text-shadow: 0 0 12px rgba(34, 211, 238, .45);
+}
+
+/* BARRA DE CARREGAMENTO — pílula arredondada nas cores da marca */
 .progress-container {
-    width: 240px;
-    height: 24px;
-    border: 3px solid #ffffff;
-    background-color: transparent;
-    margin-top: 10px;
-    padding: 2px;
-    box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+    width: 260px;
+    height: 26px;
+    border: 2px solid rgba(230, 0, 18, .55);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .04);
+    margin-top: 14px;
+    padding: 3px;
+    box-shadow:
+        0 0 22px rgba(230, 0, 18, .22),
+        inset 0 2px 6px rgba(0, 0, 0, .70);
+    overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
     width: 0%;
-    background-color: #5CFF8A; 
-    box-shadow: 0 0 15px rgba(92, 255, 138, 0.4); 
-    transition: width 0.4s ease-out; 
+    border-radius: 999px;
+    background: linear-gradient(90deg, #B3000E 0%, #E60012 45%, #FF4D5A 100%);
+    box-shadow:
+        0 0 14px rgba(230, 0, 18, .75),
+        inset 0 1px 0 rgba(255, 255, 255, .35);
+    transition: width .4s cubic-bezier(.3, .9, .3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, .45) 50%, transparent 80%);
+    transform: translateX(-100%);
+    animation: brilhoBarra 1.4s linear infinite;
+}
+
+@keyframes brilhoBarra {
+    to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .progress-fill::after { animation: none; }
+    #btnEstante.carregando,
+    #btnEstanteErro.carregando { animation: none; }
 }
 
 /* =========================================
@@ -263,34 +330,6 @@ body {
     z-index: 9999999 !important;
 }
 
-/* =========================================
-   BOTÃO DA ESTANTE (TELA DE ERRO)
-   ========================================= */
-#btnEstanteErro {
-    position: absolute;
-    bottom: 18%; 
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.85); 
-    color: #ffffff; 
-    border: 3px solid #E60012; /* Borda mais grossa */
-    padding: 18px 35px; /* Botão mais "gordo" e fácil de clicar */
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 12px; /* Letra maior */
-    text-transform: uppercase;
-    font-family: 'Press Start 2P', monospace;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    box-shadow: 0 6px 20px rgba(230, 0, 18, 0.5); /* Brilho vermelho mais forte */
-}
-
-#btnEstanteErro:active {
-    background-color: #E60012;
-    color: #ffffff;
-    transform: translateX(-50%) scale(0.95);
-}
-
 #splashScreen {
     position: fixed;
     top: 0; left: 0;
@@ -300,11 +339,11 @@ body {
     display: flex; justify-content: center; align-items: center;
 }
 
-#splashScreen img { 
+#splashScreen img {
     content: url('../img/retronfc.png');
     width: 100vw; height: 100dvh;
-    object-fit: cover; opacity: 0; 
-    animation: fadeLogo 15s ease-in-out forwards; 
+    object-fit: cover; opacity: 0;
+    animation: fadeLogo 15s ease-in-out forwards;
 }
 
 @media (max-width: 768px) {
@@ -319,7 +358,7 @@ body {
     100% { opacity: 0; }
 }
 
-/* Efeito TV de Tubo de saída no botão JOGAR */
+/* Efeito TV de tubo de saída no botão JOGAR */
 .crt-shutdown {
     animation: crtShutdown 0.4s ease-out forwards !important;
 }

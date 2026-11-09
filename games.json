@@ -29,7 +29,7 @@
     {
       "key": "934f475a-ec4d-406c-b1cf-704a45ad0ed7",
       "title": "Donkey Kong Country",
-      "subtitle": "Tropical Freeze",
+      "subtitle": "Rare Platformer",
       "year": "1994",
       "players": "1-2",
       "developer": "Rare",
@@ -141,7 +141,7 @@
       "title": "Sunset Riders",
       "subtitle": "Wild West Action",
       "year": "1993",
-      "players": "1-4",
+      "players": "1-2",
       "developer": "Konami",
       "cover": "assets/capas/sr.png",
       "core": "snes",
@@ -169,7 +169,7 @@
       "core": "snes",
       "romUrl": "assets/roms/fzero.sfc"
     },
-      {
+    {
       "key": "44feabc1-854f-4556-aa3b-4439330bf877",
       "title": "Goof Troop",
       "subtitle": "Goofy and Max Goof",
@@ -180,10 +180,10 @@
       "core": "snes",
       "romUrl": "assets/roms/goof.sfc"
     },
-{
+    {
       "key": "c7e5a1b3-4f9d-4211-a8b2-3c1d9f8e4a55",
       "title": "Rock N' Roll Racing",
-      "subtitle": "",
+      "subtitle": "Racing Combat",
       "year": "1993",
       "players": "1-2",
       "developer": "Silicon & Synapse",
@@ -194,9 +194,9 @@
     {
       "key": "d8f6b2c4-5e0c-4322-b9c3-4d2e0a9f5b66",
       "title": "Top Gear 3000",
-      "subtitle": "",
+      "subtitle": "Futuristic Racing",
       "year": "1995",
-      "players": "1-4",
+      "players": "1-2",
       "developer": "Gremlin Interactive",
       "cover": "assets/capas/tg3000.png",
       "core": "snes",
@@ -227,9 +227,9 @@
     {
       "key": "a1c9e5f7-8b3f-4655-e2f6-7a5b3d2c8e99",
       "title": "Super Bomberman 3",
-      "subtitle": "",
+      "subtitle": "Multiplayer Battle",
       "year": "1995",
-      "players": "1-5",
+      "players": "1-2",
       "developer": "Hudson Soft",
       "cover": "assets/capas/bomberman3.png",
       "core": "snes",
@@ -238,9 +238,9 @@
     {
       "key": "e62f4c7d-a1c8-4b2e-9d3f-5c0b8e713a99",
       "title": "Super Bomberman 5",
-      "subtitle": "",
+      "subtitle": "Multiplayer Battle",
       "year": "1997",
-      "players": "1-5",
+      "players": "1-2",
       "developer": "Hudson Soft",
       "cover": "assets/capas/bomberman5.png",
       "core": "snes",
@@ -249,7 +249,7 @@
     {
       "key": "c3eb0719-ad51-4877-0418-9c7d5f4e0a11",
       "title": "Mighty Morphin Power Rangers",
-      "subtitle": "",
+      "subtitle": "Beat 'em Up",
       "year": "1994",
       "players": "1-2",
       "developer": "Natsume",
@@ -260,7 +260,7 @@
     {
       "key": "d4fc182a-be62-4988-1529-ad8e605f1b22",
       "title": "Star Fox",
-      "subtitle": "",
+      "subtitle": "Space Shooter",
       "year": "1993",
       "players": "1",
       "developer": "Nintendo EAD",
@@ -271,7 +271,7 @@
     {
       "key": "e50d293b-cf73-4a99-263a-be9f71602c33",
       "title": "Mortal Kombat 3 Ultimate",
-      "subtitle": "",
+      "subtitle": "Fighting Game",
       "year": "1995",
       "players": "1-2",
       "developer": "Midway",
@@ -282,7 +282,7 @@
     {
       "key": "f61e3a4c-d084-4baa-374b-cf0a82713d44",
       "title": "Killer Instinct",
-      "subtitle": "",
+      "subtitle": "Fighting Game",
       "year": "1995",
       "players": "1-2",
       "developer": "Rare",
@@ -304,7 +304,7 @@
     {
       "key": "a2b3c4d5-e6f7-48a9-b0c1-d2e3f4a5b6c7",
       "title": "Nosferatu",
-      "subtitle": "",
+      "subtitle": "Action Platformer",
       "year": "1994",
       "players": "1",
       "developer": "SETA Corporation",
@@ -315,7 +315,7 @@
     {
       "key": "b3c4d5e6-f7a8-49b0-c1d2-e3f4a5b6c7d8",
       "title": "Blackthorne",
-      "subtitle": "",
+      "subtitle": "Cinematic Platformer",
       "year": "1994",
       "players": "1",
       "developer": "Blizzard Entertainment",
@@ -326,7 +326,7 @@
     {
       "key": "c4d5e6f7-a8b9-40c1-d2e3-f4a5b6c7d8e9",
       "title": "Final Fantasy VI",
-      "subtitle": "",
+      "subtitle": "Classic RPG",
       "year": "1994",
       "players": "1",
       "developer": "Square",
@@ -345,6 +345,5 @@
       "core": "snes",
       "romUrl": "assets/roms/tmnt.sfc"
     }
-      ]
+  ]
 }
-

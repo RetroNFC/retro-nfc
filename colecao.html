@@ -683,7 +683,7 @@
         const musica = new Audio();
         musica.loop = true;
         musica.preload = 'none';
-        musica.volume = 0.10;
+        musica.volume = 0.06;
 
         let paginaAtiva = true;
         let iniciandoMusica = false;
@@ -827,7 +827,7 @@
         }
 
         function ajustarVolumeMusica() {
-            musica.volume = celebrando ? 0.03 : 0.10;
+            musica.volume = celebrando ? 0.15 : 0.04;
         }
 
         function podeTocarMusica() {
@@ -1250,7 +1250,6 @@
 
                 if (somAtivo()) {
                     iniciarMusica();
-                    if (novo) tocarSomCelebracao();
                 } else {
                     pausarMusica();
                 }

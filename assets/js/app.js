@@ -1,32 +1,57 @@
 // =====================================================
-// RETRÔ NFC — app.js (versão segura)
+// RETRÔ NFC — app.js (v5)
 // Token do Telegram REMOVIDO do frontend.
 // Os dados vão para o Apps Script, que encaminha ao Telegram.
 // =====================================================
 
-// URL do seu Apps Script (proxy seguro)
-// Se você reimplantar o Apps Script, atualize esta URL.
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
-// Chave da estante no localStorage
+// Chaves do localStorage (todas padronizadas com o prefixo retronfc_)
 const CHAVE_COLECAO = 'retronfc_colecao';
+const CHAVE_JOGOS   = 'retronfc_games_cache';
+const CHAVE_NOME    = 'retronfc_nome';
+const CHAVE_ID      = 'retronfc_id_curto';
+const CHAVE_VISITAS = 'retronfc_visitas';
+
+// Identificador único desta sessão de jogo.
+// Serve para o backend editar a mesma mensagem do Telegram no final.
+const SESSAO_ID = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+// --- Cache do games.json: a coleção abre sem esperar rede ---
+function lerCacheJogos() {
+    try {
+        const bruto = localStorage.getItem(CHAVE_JOGOS);
+        if (!bruto) return null;
+        const dados = JSON.parse(bruto);
+        return (dados && Array.isArray(dados.games)) ? dados.games : null;
+    } catch (e) { return null; }
+}
+
+function salvarCacheJogos(games) {
+    try { localStorage.setItem(CHAVE_JOGOS, JSON.stringify({ games: games })); } catch (e) {}
+}
+
+async function obterJogos() {
+    const cache = lerCacheJogos();
+    if (cache) return cache;
+    const response = await fetch("games.json?ts=" + Date.now());
+    const data = await response.json();
+    if (data && Array.isArray(data.games)) salvarCacheJogos(data.games);
+    return (data && data.games) || [];
+}
 
 // --- Rastreamento do clique na estante ---
 async function rastrearCliqueColecao(origem) {
-    const b1 = document.getElementById('btnEstante');
-    const b2 = document.getElementById('btnEstanteErro');
-    if (b1) { b1.innerText = "CARREGANDO..."; b1.style.opacity = "0.5"; }
-    if (b2) { b2.innerText = "CARREGANDO..."; b2.style.opacity = "0.5"; }
+    marcarCarregandoEstante();
 
     let listaJogos = "Nenhum cartucho na estante ainda.";
 
     try {
         const colecaoSalva = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
         if (colecaoSalva.length > 0) {
-            const response = await fetch("games.json?ts=" + Date.now());
-            const data = await response.json();
+            const jogos = await obterJogos();
             listaJogos = colecaoSalva.map(chave => {
-                const jogoEncontrado = data.games.find(g => g.key === chave);
+                const jogoEncontrado = jogos.find(g => g.key === chave);
                 return jogoEncontrado ? `• ${jogoEncontrado.title}` : `• ID Desconhecido (${chave})`;
             }).join('\n');
         }
@@ -39,13 +64,15 @@ async function rastrearCliqueColecao(origem) {
         tipo: "Acesso",
         origem: origem,
         nome: obterNome(),
+        jogador: obterIdCurto(),
+        aparelho: obterAparelho(),
         jogos: listaJogos
     });
 
-    // keepalive mantém a requisição viva mesmo depois de a página navegar.
-    // Sem isso, o navegador cancela o POST no instante do redirecionamento.
+    // Dispara sem await: a navegação acontece na hora.
+    // keepalive mantém o POST vivo mesmo depois de a página sair.
     try {
-        await fetch(URL_BACKEND, {
+        fetch(URL_BACKEND, {
             method: 'POST',
             mode: 'no-cors',
             keepalive: true,
@@ -57,6 +84,16 @@ async function rastrearCliqueColecao(origem) {
     }
 
     window.location.href = 'colecao.html';
+}
+
+function marcarCarregandoEstante() {
+    ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.classList.add('carregando');
+        b.setAttribute('aria-busy', 'true');
+        b.innerText = 'CARREGANDO';
+    });
 }
 
 // --- Verificação de domínio ---
@@ -85,15 +122,20 @@ let tempoInicio   = 0;
 let sessaoEnviada = false; // Trava: garante que o encerramento é enviado só uma vez
 
 // --- Utilitários ---
-function obterIdEVisitas() {
-    let id = localStorage.getItem('retronfc_id_curto');
-    let visitas = parseInt(localStorage.getItem('retronfc_visitas') || "0");
+function obterIdCurto() {
+    let id = localStorage.getItem(CHAVE_ID);
     if (!id) {
         id = Math.random().toString(36).substring(2, 6).toUpperCase();
-        localStorage.setItem('retronfc_id_curto', id);
+        localStorage.setItem(CHAVE_ID, id);
     }
+    return id;
+}
+
+function obterIdEVisitas() {
+    const id = obterIdCurto();
+    let visitas = parseInt(localStorage.getItem(CHAVE_VISITAS) || "0");
     visitas++;
-    localStorage.setItem('retronfc_visitas', visitas);
+    localStorage.setItem(CHAVE_VISITAS, visitas);
     return `${id} (Acesso #${visitas})`;
 }
 
@@ -119,8 +161,6 @@ function formatarTempoDeJogo(ms) {
 function obterDataBonita() { return new Date().toLocaleString('pt-BR'); }
 
 // --- Nome do jogador (pedido apenas uma vez por aparelho) ---
-const CHAVE_NOME = 'retronfc_nome';
-
 function obterNome() {
     try { return (localStorage.getItem(CHAVE_NOME) || '').trim(); } catch (e) { return ''; }
 }
@@ -147,25 +187,34 @@ function pedirNome() {
 
         const overlay = document.createElement('div');
         overlay.id = 'nomeOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(4,7,12,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'background:#11151c;border:2px solid #E60012;border-radius:12px;padding:26px 20px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 25px rgba(230,0,18,.35);';
+        caixa.style.cssText = 'background:linear-gradient(160deg,#111a26,#0a0f16);border:2px solid #E60012;border-radius:14px;padding:28px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 30px rgba(230,0,18,.45),inset 0 0 40px rgba(230,0,18,.06);';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'RETRÔ NFC';
-        titulo.style.cssText = 'color:#E60012;font-size:14px;letter-spacing:1px;margin-bottom:16px;';
+        titulo.style.cssText = 'color:#E60012;font-size:14px;letter-spacing:2px;margin-bottom:16px;text-shadow:0 0 12px rgba(230,0,18,.8);';
 
         const texto = document.createElement('p');
         texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
-        texto.style.cssText = 'color:#fff;font-size:9px;line-height:1.9;margin:0 0 18px;';
+        texto.style.cssText = 'color:#e6edf5;font-size:9px;line-height:1.9;margin:0 0 18px;';
 
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = 20;
         input.autocomplete = 'nickname';
         input.placeholder = 'SEU NOME';
-        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0d1117;border:1px solid #555;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:12px;text-align:center;outline:none;';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#070b11;border:1px solid #2b3a4d;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
+
+        input.addEventListener('focus', function () {
+            input.style.borderColor = '#22D3EE';
+            input.style.boxShadow = '0 0 0 3px rgba(34,211,238,.15)';
+        });
+        input.addEventListener('blur', function () {
+            input.style.borderColor = '#2b3a4d';
+            input.style.boxShadow = 'none';
+        });
 
         const erro = document.createElement('div');
         erro.style.cssText = 'color:#ff6b6b;font-size:8px;line-height:1.6;min-height:14px;margin-top:10px;';
@@ -173,7 +222,10 @@ function pedirNome() {
         const botao = document.createElement('button');
         botao.type = 'button';
         botao.textContent = 'COMEÇAR';
-        botao.style.cssText = 'width:100%;margin-top:12px;background:#E60012;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:10px;padding:14px;cursor:pointer;';
+        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(180deg,#ff2233,#C4000F);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 6px 18px rgba(230,0,18,.45);transition:transform .15s,filter .15s;';
+
+        botao.addEventListener('pointerdown', function () { botao.style.transform = 'scale(.97)'; });
+        botao.addEventListener('pointerup', function () { botao.style.transform = 'scale(1)'; });
 
         caixa.appendChild(titulo);
         caixa.appendChild(texto);
@@ -223,7 +275,6 @@ function registrarLogAcessoImediato() {
 }
 
 function enviarInicioSessao(ipUser, provedor, localIP) {
-    // Monta o texto e envia para o Apps Script (sem token aqui!)
     const texto =
         `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
         `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
@@ -243,13 +294,13 @@ function enviarInicioSessao(ipUser, provedor, localIP) {
             origemRequisicao: "SiteRetroNFC",
             tipo: "TelegramSessao",
             acao: "inicio",
+            sessaoId: SESSAO_ID,
             texto: texto
         })
     });
 }
 
 function encerrarSessao() {
-    // Trava: só dispara uma vez por sessão, mesmo com múltiplos eventos de saída
     if (sessaoEnviada || tempoInicio === 0) return;
     sessaoEnviada = true;
 
@@ -257,21 +308,23 @@ function encerrarSessao() {
     const jogo = CURRENT_GAME ? CURRENT_GAME.title : "Desconhecido";
 
     const texto =
-        `🟢 <b>SESSÃO ENCERRADA</b>\n\n` +
+        `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
         `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
         `🕹️ <b>Jogo:</b> ${jogo}\n` +
-        `⏱️ <b>Tempo jogado:</b> ${tempoFormatado}`;
+        `🆔 <b>Jogador:</b> ${obterIdCurto()}\n` +
+        `📱 <b>Aparelho:</b> ${obterAparelho()}\n` +
+        `⏱️ <b>Tempo jogado:</b> ${tempoFormatado}\n\n` +
+        `✅ <b>Status:</b> 🟢 <i>Sessão encerrada</i>`;
 
-    // sendBeacon é mais confiável para enviar dados ao fechar/sair da página
     navigator.sendBeacon(URL_BACKEND, JSON.stringify({
         origemRequisicao: "SiteRetroNFC",
         tipo: "TelegramSessao",
         acao: "fim",
+        sessaoId: SESSAO_ID,
         texto: texto
     }));
 }
 
-// Escuta os eventos de saída da página
 window.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') encerrarSessao();
 });
@@ -282,10 +335,9 @@ async function loadGames() {
     try {
         if (!GAME_KEY) { mostrarTelaErro(); return; }
 
-        const response = await fetch("games.json?ts=" + Date.now());
-        const data = await response.json();
+        const jogos = await obterJogos();
 
-        CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
+        CURRENT_GAME = jogos.find(game => game.key === GAME_KEY);
         if (!CURRENT_GAME) { mostrarTelaErro(); return; }
         IS_VALID = true;
 
@@ -307,7 +359,6 @@ async function loadGames() {
             if (navigator.vibrate) { try { navigator.vibrate(100); } catch(e){} }
             clickSound.play().catch(() => {});
 
-            // Primeira vez neste aparelho: pede o nome antes de iniciar
             const nome = await pedirNome();
             if (!nome) return;
 
@@ -349,7 +400,6 @@ function iniciarEmulador() {
         window.EJS_gameUrl       = CURRENT_GAME.romUrl;
         window.EJS_startOnLoaded = true;
 
-        // ✅ Usando a versão ESTÁVEL do EmulatorJS (não mais @main, que pode quebrar sem aviso)
         window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
 
         const script = document.createElement('script');

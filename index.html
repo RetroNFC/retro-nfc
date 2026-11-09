@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrô NFC</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        (function () {
+            var host = window.location.hostname;
+            var params = new URLSearchParams(window.location.search);
+            var chave = params.get("k") || "";
+
+            // Domínio antigo (GitHub Pages): encaminha para o novo domínio levando a estante.
+            if (host === "retronfc.github.io") {
+                var colecao = [];
+                try { colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]'); } catch (e) { colecao = []; }
+                var url = "https://retro-nfc.pages.dev/play.html" + (chave ? "?k=" + encodeURIComponent(chave) : "");
+                if (colecao.length > 0) { url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao))); }
+                window.location.replace(url);
+                return;
+            }
+
+            // Domínio novo: segue o fluxo normal.
+            window.location.replace("play.html" + window.location.search);
+        })();
+    </script>
 </head>
 <body>
     <div id="splashScreen">
         <img src="assets/img/retronfc.png" alt="Logo Retrô NFC">
     </div>
-
-    <script>
-        (function () {
-            var destino = "play.html" + window.location.search;
-            window.location.replace(destino);
-        })();
-    </script>
 
     <noscript>
         <p style="color:#fff;font-family:monospace;text-align:center;padding:20px;">

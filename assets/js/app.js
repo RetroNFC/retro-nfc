@@ -252,8 +252,8 @@ window.addEventListener('pageshow', restaurarBotoesEstante);
         }, { keepalive: true });
     } catch (e) {}
 
-    window.location.href = 'colecao.html';
-}
+    window.location.href = 'colecao.html?musica=1';
+    
 
 function marcarCarregandoEstante() {
     ['btnEstante', 'btnEstanteErro'].forEach(function (id) {

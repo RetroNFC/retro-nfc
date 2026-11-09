@@ -1,5 +1,5 @@
 // =====================================================
-// RETRÔ NFC — Google Apps Script (Proxy Seguro) v5
+// RETRÔ NFC — Google Apps Script (Proxy Seguro) v6
 // =====================================================
 //
 // PROPRIEDADES DO SCRIPT (Projeto ⚙️ → Propriedades do projeto):
@@ -13,13 +13,16 @@
 var PROP = PropertiesService.getScriptProperties();
 
 // --- Freios de segurança ---
-var LIMITE_POR_MINUTO = 20;    // total de mensagens ao Telegram por minuto
-var LIMITE_SESSAO_MIN = 8;     // mensagens de sessão de jogo por minuto
-var MAX_CORPO         = 8000;  // tamanho máximo do corpo da requisição
-var MAX_TEXTO         = 3500;  // limite do Telegram é 4096
+var LIMITE_POR_MINUTO = 20;
+var LIMITE_SESSAO_MIN = 8;
+var MAX_CORPO         = 8000;
+var MAX_TEXTO         = 3500;
 var MAX_JOGOS         = 1500;
 var MAX_CAMPO         = 120;
-var TTL_SESSAO        = 21600; // 6h: tempo máximo para editar a mensagem da sessão
+var TTL_SESSAO        = 21600;
+
+// Separador visual das mensagens
+var SEP = "━━━━━━━━━━━━━━━";
 
 // =====================================================
 // RECEBIMENTO
@@ -27,15 +30,13 @@ var TTL_SESSAO        = 21600; // 6h: tempo máximo para editar a mensagem da se
 
 function doPost(e) {
 
-  // Guarda 1: execução manual pelo editor não traz e.postData
   if (!e || !e.postData || !e.postData.contents) {
-    Logger.log("doPost chamado sem corpo (execução manual no editor). Nada a fazer.");
+    Logger.log("doPost chamado sem corpo (execução manual no editor).");
     return resposta("sem-corpo");
   }
 
   var bruto = e.postData.contents;
 
-  // Guarda 2: corpo grande demais é descartado antes de qualquer parse
   if (bruto.length > MAX_CORPO) {
     Logger.log("Corpo acima do limite: " + bruto.length + " caracteres.");
     return resposta("corpo-grande");
@@ -49,7 +50,6 @@ function doPost(e) {
     return resposta("json-invalido");
   }
 
-  // Guarda 3: só aceita chamadas identificadas como vindas do site
   if (body.origemRequisicao !== "SiteRetroNFC") {
     Logger.log("Origem rejeitada: " + body.origemRequisicao);
     return resposta("origem-invalida");
@@ -58,36 +58,16 @@ function doPost(e) {
   try {
     switch (body.tipo) {
 
-      // --- Clique em "VER MEUS CARTUCHOS" ---
       case "Acesso":
         registrarLinha("Acesso", nomeLimpo(body.nome) + " — " + (body.jogos || ""), "");
-        enviarTelegram(
-          "🛒 <b>ESTANTE ABERTA</b>\n\n" +
-          "👤 <b>Nome:</b> " + esc(nomeLimpo(body.nome)) + "\n" +
-          "🆔 <b>Jogador:</b> " + esc(body.jogador || "não informado") + "\n" +
-          "📱 <b>Aparelho:</b> " + esc(body.aparelho || "não informado") + "\n" +
-          "📍 <b>Origem:</b> " + esc(body.origem || "não informada") + "\n" +
-          "📅 <b>Quando:</b> " + new Date().toLocaleString("pt-BR") + "\n\n" +
-          "🎮 <b>Cartuchos na estante:</b>\n" + esc(body.jogos || "Nenhum cartucho ainda."),
-          "acesso"
-        );
+        enviarTelegram(montarAcesso(body), "acesso");
         break;
 
-      // --- Clique em "COMPRAR" na coleção ---
       case "Compra":
         registrarLinha("Compra", nomeLimpo(body.nome) + " — " + (body.jogo || ""), "");
-        enviarTelegram(
-          "💰 <b>INTENÇÃO DE COMPRA</b>\n\n" +
-          "👤 <b>Nome:</b> " + esc(nomeLimpo(body.nome)) + "\n" +
-          "🆔 <b>Jogador:</b> " + esc(body.jogador || "não informado") + "\n" +
-          "📱 <b>Aparelho:</b> " + esc(body.aparelho || "não informado") + "\n" +
-          "🕹️ <b>Jogo:</b> " + esc(body.jogo || "não informado") + "\n" +
-          "📅 <b>Quando:</b> " + new Date().toLocaleString("pt-BR"),
-          "compra"
-        );
+        enviarTelegram(montarCompra(body), "compra");
         break;
 
-      // --- Sessão de jogo: uma mensagem só, editada no final ---
       case "TelegramSessao":
         tratarSessao(body);
         break;
@@ -106,6 +86,33 @@ function doPost(e) {
 }
 
 // =====================================================
+// MENSAGENS
+// =====================================================
+
+function montarAcesso(body) {
+  return "🛒 <b>ESTANTE ABERTA</b>\n" + SEP + "\n" +
+    "👤 <b>Jogador</b> · " + esc(nomeLimpo(body.nome)) + "\n" +
+    "🆔 <b>ID</b> · " + esc(body.jogador || "—") + "\n" +
+    "📱 <b>Aparelho</b> · " + esc(body.aparelho || "—") + "\n" +
+    "🏆 <b>Estante</b> · " + esc(body.cartuchos || "0") + " cartucho(s)\n" +
+    "🔁 <b>Visita</b> · " + esc(body.visitante || "—") + "\n" +
+    "📍 <b>Origem</b> · " + esc(body.origem || "—") + "\n" +
+    "🕒 <b>Quando</b> · " + agora() + "\n" + SEP + "\n" +
+    "🎮 <b>Cartuchos na estante</b>\n" + esc(body.jogos || "Nenhum cartucho ainda.");
+}
+
+function montarCompra(body) {
+  return "💰 <b>INTENÇÃO DE COMPRA</b>\n" + SEP + "\n" +
+    "🕹️ <b>Jogo</b> · " + esc(body.jogo || "—") + "\n" +
+    "👤 <b>Jogador</b> · " + esc(nomeLimpo(body.nome)) + "\n" +
+    "🆔 <b>ID</b> · " + esc(body.jogador || "—") + "\n" +
+    "📱 <b>Aparelho</b> · " + esc(body.aparelho || "—") + "\n" +
+    "🏆 <b>Estante</b> · " + esc(body.cartuchos || "0") + " cartucho(s)\n" +
+    "🔁 <b>Visita</b> · " + esc(body.visitante || "—") + "\n" +
+    "🕒 <b>Quando</b> · " + agora();
+}
+
+// =====================================================
 // SESSÃO DE JOGO (início + fim na mesma mensagem)
 // =====================================================
 
@@ -117,7 +124,6 @@ function tratarSessao(body) {
   var cache    = CacheService.getScriptCache();
   var chave    = sessaoId ? "msg_" + sessaoId : "";
 
-  // Fim de sessão: tenta editar a mensagem já enviada
   if (body.acao === "fim") {
     var guardado = chave ? cache.get(chave) : null;
 
@@ -131,7 +137,6 @@ function tratarSessao(body) {
     return;
   }
 
-  // Início de sessão: envia e guarda o message_id para a edição final
   var messageId = enviarTelegram(texto, "sessao");
 
   if (messageId && chave) {
@@ -145,8 +150,7 @@ function tratarSessao(body) {
 
 function registrarLinha(tipo, campo1, campo2) {
   var idPlanilha = PROP.getProperty("SPREADSHEET_ID");
-
-  if (!idPlanilha) return; // sem planilha configurada: sai sem erro
+  if (!idPlanilha) return;
 
   var lock = LockService.getScriptLock();
   var travado = false;
@@ -162,10 +166,7 @@ function registrarLinha(tipo, campo1, campo2) {
     var planilha = SpreadsheetApp.openById(idPlanilha);
     var aba = planilha.getSheetByName("Registros");
 
-    if (!aba) {
-      aba = planilha.insertSheet("Registros");
-    }
-
+    if (!aba) aba = planilha.insertSheet("Registros");
     if (aba.getLastRow() === 0) {
       aba.appendRow(["Data/Hora", "Tipo", "Campo 1", "Campo 2"]);
     }
@@ -179,7 +180,6 @@ function registrarLinha(tipo, campo1, campo2) {
   }
 }
 
-// Neutraliza injeção de fórmula e limita o tamanho da célula
 function celula(valor) {
   var s = String(valor === null || valor === undefined ? "" : valor).substring(0, MAX_JOGOS);
   if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
@@ -190,7 +190,6 @@ function celula(valor) {
 // TELEGRAM
 // =====================================================
 
-// Envia mensagem e devolve o message_id (ou null em caso de falha)
 function enviarTelegram(texto, bucket) {
   var token  = PROP.getProperty("TELEGRAM_TOKEN");
   var chatId = PROP.getProperty("TELEGRAM_CHAT_ID");
@@ -238,7 +237,6 @@ function enviarTelegram(texto, bucket) {
   }
 }
 
-// Reescreve uma mensagem já enviada. Devolve true se deu certo.
 function editarTelegram(messageId, texto, bucket) {
   var token  = PROP.getProperty("TELEGRAM_TOKEN");
   var chatId = PROP.getProperty("TELEGRAM_CHAT_ID");
@@ -269,12 +267,9 @@ function editarTelegram(messageId, texto, bucket) {
       }
     );
 
-    var codigo = resp.getResponseCode();
+    if (resp.getResponseCode() === 200) return true;
 
-    // 400 "message is not modified" acontece quando o texto é idêntico: não é erro real
-    if (codigo === 200) return true;
-
-    Logger.log("Telegram (edição) respondeu " + codigo + ": " + resp.getContentText());
+    Logger.log("Telegram (edição) respondeu " + resp.getResponseCode() + ": " + resp.getContentText());
     return false;
 
   } catch (err) {
@@ -283,7 +278,6 @@ function editarTelegram(messageId, texto, bucket) {
   }
 }
 
-// Freio contra flood, com cota separada para sessões de jogo
 function podeEnviar(bucket) {
   var cache  = CacheService.getScriptCache();
   var minuto = Math.floor(Date.now() / 60000);
@@ -309,7 +303,14 @@ function podeEnviar(bucket) {
   return true;
 }
 
-// Escapa caracteres que quebrariam o parse_mode HTML do Telegram
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
+
+function agora() {
+  return Utilities.formatDate(new Date(), "America/Sao_Paulo", "dd/MM/yyyy 'às' HH:mm");
+}
+
 function esc(txt) {
   return String(txt === null || txt === undefined ? "" : txt)
     .substring(0, MAX_JOGOS)
@@ -318,7 +319,6 @@ function esc(txt) {
     .replace(/>/g, "&gt;");
 }
 
-// Nome/apelido vindo do site: remove tags, colapsa espaços e limita o tamanho
 function nomeLimpo(valor) {
   var s = String(valor === null || valor === undefined ? "" : valor)
     .replace(/[<>&]/g, "")
@@ -328,8 +328,7 @@ function nomeLimpo(valor) {
   return s || "não informado";
 }
 
-// Aceita apenas as tags de formatação que o site realmente usa.
-// Todo o resto é escapado, então não há como injetar link ou tag arbitrária.
+// Aceita apenas as tags que o site usa. O resto é escapado.
 function sanitizarHtml(txt) {
   var s = String(txt === null || txt === undefined ? "" : txt).substring(0, MAX_TEXTO);
   var permitidas = ["b", "i", "u", "s", "code", "pre"];
@@ -341,7 +340,7 @@ function sanitizarHtml(txt) {
   });
 
   s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  s = s.replace(/\u0001([\s\S]*?)\u0002/g, "\$1");
+  s = s.replace(/\u0001([\s\S]*?)\u0002/g, "$1");
 
   return s;
 }
@@ -351,7 +350,7 @@ function sanitizarHtml(txt) {
 // =====================================================
 
 function doGet(e) {
-  return resposta("Retrô NFC Backend — OK");
+  return resposta("Retrô NFC Backend v6 — OK");
 }
 
 function resposta(txt) {

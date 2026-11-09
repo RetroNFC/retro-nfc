@@ -622,7 +622,7 @@
             <button class="chip" type="button" data-filtro="meus">MEUS</button>
             <button class="chip" type="button" data-filtro="faltam">FALTAM</button>
             <button class="chip chip-som" type="button" id="btnSom" aria-pressed="false"
-                    aria-label="Som da celebração">🔇 SOM</button>
+                    aria-label="Ativar ou desativar a música e os efeitos sonoros">🔇 SOM</button>
         </div>
     </div>
 
@@ -652,7 +652,47 @@
 
         const estado = { games: [], filtro: 'todos', busca: '', celebrou: false, primeiraPintura: true };
 
+        /*
+         * Música exclusiva desta página.
+         *
+         * O botão VER MEUS CARTUCHOS deve abrir:
+         * colecao.html?musica=1
+         *
+         * A autorização vale somente para este documento.
+         * Não é gravada no localStorage nem no sessionStorage.
+         */
+        const entradaMusical = (function () {
+            const url = new URL(window.location.href);
+            const liberada = url.searchParams.get('musica') === '1';
+
+            if (url.searchParams.has('musica')) {
+                url.searchParams.delete('musica');
+
+                try {
+                    window.history.replaceState(
+                        window.history.state,
+                        '',
+                        url.pathname + url.search + url.hash
+                    );
+                } catch (e) {}
+            }
+
+            return liberada;
+        })();
+
+        const musica = new Audio();
+        musica.loop = true;
+        musica.preload = 'none';
+        musica.volume = 0.10;
+
+        let paginaAtiva = true;
+        let iniciandoMusica = false;
+        let celebrando = false;
+
         function voltar() {
+            paginaAtiva = false;
+            pausarMusica();
+
             if (history.length > 1) history.back();
             else window.location.href = 'index.html';
         }
@@ -774,7 +814,7 @@
             '<circle cx="17" cy="19" r="1.6" fill="currentColor"/>' +
             '</svg>';
 
-        /* ---------- Som (opcional) ---------- */
+        /* ---------- Som e música da coleção ---------- */
         function somAtivo() {
             try { return localStorage.getItem(CHAVE_SOM) !== '0'; } catch (e) { return true; }
         }
@@ -786,6 +826,101 @@
             b.textContent = on ? '🔊 SOM' : '🔇 SOM';
         }
 
+        function ajustarVolumeMusica() {
+            musica.volume = celebrando ? 0.03 : 0.10;
+        }
+
+        function podeTocarMusica() {
+            return entradaMusical &&
+                somAtivo() &&
+                paginaAtiva &&
+                !document.hidden;
+        }
+
+        function pausarMusica() {
+            try { musica.pause(); } catch (e) {}
+        }
+
+        function iniciarMusica() {
+            if (!podeTocarMusica() || iniciandoMusica || !musica.paused) return;
+
+            iniciandoMusica = true;
+
+            try {
+                if (!musica.getAttribute('src')) {
+                    musica.src = 'assets/audio/tg.mp3';
+                }
+
+                ajustarVolumeMusica();
+
+                const tentativa = musica.play();
+
+                if (tentativa && typeof tentativa.then === 'function') {
+                    tentativa.then(function () {
+                        iniciandoMusica = false;
+
+                        // Evita reprodução tardia após sair ou desligar o som.
+                        if (!podeTocarMusica()) pausarMusica();
+                    }).catch(function () {
+                        iniciandoMusica = false;
+
+                        // Se o navegador bloquear o autoplay,
+                        // uma interação na coleção tentará novamente.
+                    });
+                } else {
+                    iniciandoMusica = false;
+                    if (!podeTocarMusica()) pausarMusica();
+                }
+            } catch (e) {
+                iniciandoMusica = false;
+            }
+        }
+
+        function tentarMusicaNaInteracao(e) {
+            const alvo = e.target;
+
+            // Não inicia música enquanto a pessoa está saindo
+            // ou antes de o botão de som processar o clique.
+            if (alvo && typeof alvo.closest === 'function') {
+                if (alvo.closest('.btn-voltar, #btnSom')) return;
+            }
+
+            if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+
+            iniciarMusica();
+        }
+
+        function inicializarMusica() {
+            if (!entradaMusical) return;
+
+            document.addEventListener('click', tentarMusicaNaInteracao, true);
+            document.addEventListener('touchend', tentarMusicaNaInteracao, {
+                capture: true,
+                passive: true
+            });
+            document.addEventListener('keydown', tentarMusicaNaInteracao, true);
+
+            iniciarMusica();
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                pausarMusica();
+            } else {
+                iniciarMusica();
+            }
+        });
+
+        window.addEventListener('pagehide', function () {
+            paginaAtiva = false;
+            pausarMusica();
+        });
+
+        window.addEventListener('pageshow', function () {
+            paginaAtiva = true;
+            iniciarMusica();
+        });
+
         function tocarSomCelebracao() {
             try {
                 const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -794,6 +929,11 @@
                 const notas = [523.25, 659.25, 783.99, 1046.5];
 
                 function agendar() {
+                    if (!somAtivo() || !paginaAtiva || document.hidden) {
+                        try { ctx.close(); } catch (e) {}
+                        return;
+                    }
+
                     notas.forEach(function (freq, i) {
                         const osc = ctx.createOscillator();
                         const gan = ctx.createGain();
@@ -812,7 +952,10 @@
                 }
 
                 if (ctx.state === 'suspended') {
-                    try { ctx.resume(); } catch (e) {}
+                    try {
+                        const retomada = ctx.resume();
+                        if (retomada && retomada.catch) retomada.catch(function () {});
+                    } catch (e) {}
                 }
 
                 setTimeout(function () {
@@ -820,7 +963,8 @@
                         agendar();
                         return;
                     }
-                    // Navegador bloqueou: toca no primeiro toque da pessoa
+
+                    // Navegador bloqueou: tenta no primeiro toque da pessoa.
                     let tocou = false;
                     const liberar = function () {
                         if (tocou) return;
@@ -905,7 +1049,7 @@
             const pct = total > 0 ? Math.round((tenho / total) * 100) : 0;
             txt.innerHTML = '<b>' + tenho + '</b> DE <b>' + total + '</b> CARTUCHOS · ' + pct + '%';
 
-            // as cores vão surgindo conforme a barra enche
+            // As cores vão surgindo conforme a barra enche.
             fill.style.backgroundSize = pct > 0 ? (10000 / pct) + '% 100%' : '100% 100%';
             if (estado.primeiraPintura) {
                 fill.style.width = '0';
@@ -934,7 +1078,7 @@
 
             atualizarProgresso(meus.length, games.length);
 
-            // a busca só vale para cartuchos já colecionados (os outros são surpresa)
+            // A busca só vale para cartuchos já colecionados.
             const meusVisiveis = busca
                 ? meus.filter(function (g) { return normalizar(g.title).indexOf(busca) !== -1; })
                 : meus;
@@ -984,7 +1128,11 @@
         function fecharCelebracao() {
             document.getElementById('celebra').classList.remove('aberta');
             document.removeEventListener('keydown', teclaCelebracao);
-            // remove o destaque dos cartões novos
+
+            celebrando = false;
+            ajustarVolumeMusica();
+
+            // Remove o destaque dos cartões novos.
             estado.novosKeys = [];
             desenharColecao();
         }
@@ -1000,6 +1148,9 @@
             document.getElementById('celebraExtra').textContent =
                 extras > 0 ? ('+ ' + extras + (extras === 1 ? ' OUTRO CARTUCHO NOVO NA ESTANTE' : ' OUTROS CARTUCHOS NOVOS NA ESTANTE')) : 'ELE JÁ ESTÁ NA SUA ESTANTE!';
 
+            celebrando = true;
+            ajustarVolumeMusica();
+
             const el = document.getElementById('celebra');
             el.classList.add('aberta');
             document.addEventListener('keydown', teclaCelebracao);
@@ -1009,7 +1160,8 @@
             if (somAtivo()) tocarSomCelebracao();
         }
 
-        // Celebra só o que ainda não foi visto. Um cartucho nunca é celebrado duas vezes.
+        // Celebra só o que ainda não foi visto.
+        // Um cartucho nunca é celebrado duas vezes.
         function verificarNovos() {
             if (estado.celebrou || estado.games.length === 0) return;
             estado.celebrou = true;
@@ -1073,6 +1225,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             atualizarBotaoSom();
+            inicializarMusica();
 
             document.getElementById('campoBusca').addEventListener('input', function (e) {
                 estado.busca = e.target.value;
@@ -1081,7 +1234,9 @@
 
             document.querySelectorAll('.chip[data-filtro]').forEach(function (chip) {
                 chip.addEventListener('click', function () {
-                    document.querySelectorAll('.chip[data-filtro]').forEach(function (c) { c.classList.remove('ativo'); });
+                    document.querySelectorAll('.chip[data-filtro]').forEach(function (c) {
+                        c.classList.remove('ativo');
+                    });
                     chip.classList.add('ativo');
                     estado.filtro = chip.getAttribute('data-filtro');
                     if (estado.games.length) desenharColecao();
@@ -1092,7 +1247,13 @@
                 const novo = !somAtivo();
                 try { localStorage.setItem(CHAVE_SOM, novo ? '1' : '0'); } catch (e) {}
                 atualizarBotaoSom();
-                if (novo) tocarSomCelebracao();
+
+                if (somAtivo()) {
+                    iniciarMusica();
+                    if (novo) tocarSomCelebracao();
+                } else {
+                    pausarMusica();
+                }
             });
 
             document.getElementById('celebraFechar').addEventListener('click', fecharCelebracao);

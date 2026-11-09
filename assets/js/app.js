@@ -77,6 +77,42 @@ let CURRENT_GAME = null;
 let IS_VALID     = false;
 const clickSound = new Audio('assets/life.mp3');
 
+// --- Migração da coleção vinda do domínio antigo (GitHub Pages) ---
+// Uso: https://retro-nfc.pages.dev/play.html?k=CHAVE#c=BASE64
+(function migrarColecaoAntiga() {
+    try {
+        const hash = window.location.hash;
+        if (!hash || hash.indexOf("#c=") !== 0) return;
+        const bruto = decodeURIComponent(hash.substring(3));
+        const vindos = JSON.parse(atob(bruto));
+        if (!Array.isArray(vindos) || vindos.length === 0) return;
+        const atuais = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+        vindos.forEach(function (k) { if (atuais.indexOf(k) === -1) atuais.push(k); });
+        localStorage.setItem('imortalize_colecao', JSON.stringify(atuais));
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    } catch (e) {
+        console.error("Falha ao migrar coleção:", e);
+    }
+})();
+
+// --- Gera o link de migração a partir da coleção local ---
+// Usado na página do domínio antigo para levar a estante ao novo domínio.
+function gerarLinkMigracao(urlDestino) {
+    const destino = urlDestino || "https://retro-nfc.pages.dev/play.html";
+    const chave   = GAME_KEY || "";
+    let colecao   = [];
+    try {
+        colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+    } catch (e) {
+        colecao = [];
+    }
+    let url = destino + (chave ? "?k=" + encodeURIComponent(chave) : "");
+    if (colecao.length > 0) {
+        url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao)));
+    }
+    return url;
+}
+
 let tempoInicio   = 0;
 let sessaoEnviada = false; // Trava: garante que o encerramento é enviado só uma vez
 
@@ -162,117 +198,4 @@ function encerrarSessao() {
     if (sessaoEnviada || tempoInicio === 0) return;
     sessaoEnviada = true;
 
-    const tempoFormatado = formatarTempoDeJogo(Date.now() - tempoInicio);
-    const jogo = CURRENT_GAME ? CURRENT_GAME.title : "Desconhecido";
-
-    const texto =
-        `🟢 <b>SESSÃO ENCERRADA</b>\n\n` +
-        `🕹️ <b>Jogo:</b> ${jogo}\n` +
-        `⏱️ <b>Tempo jogado:</b> ${tempoFormatado}`;
-
-    // sendBeacon é mais confiável para enviar dados ao fechar/sair da página
-    navigator.sendBeacon(URL_BACKEND, JSON.stringify({
-        origemRequisicao: "SiteRetroNFC",
-        tipo: "TelegramSessao",
-        acao: "fim",
-        texto: texto
-    }));
-}
-
-// Escuta os eventos de saída da página
-window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') encerrarSessao();
-});
-window.addEventListener('pagehide', encerrarSessao);
-
-// --- Carregamento do jogo ---
-async function loadGames() {
-    try {
-        if (!GAME_KEY) { mostrarTelaErro(); return; }
-
-        const response = await fetch("games.json?ts=" + Date.now());
-        const data = await response.json();
-
-        CURRENT_GAME = data.games.find(game => game.key === GAME_KEY);
-        if (!CURRENT_GAME) { mostrarTelaErro(); return; }
-        IS_VALID = true;
-
-        let colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-        if (!colecao.includes(CURRENT_GAME.key)) {
-            colecao.push(CURRENT_GAME.key);
-            localStorage.setItem('imortalize_colecao', JSON.stringify(colecao));
-        }
-
-        document.getElementById("gameCover").src      = CURRENT_GAME.cover;
-        document.getElementById("title").innerText    = CURRENT_GAME.title;
-        document.getElementById("subtitle").innerText = CURRENT_GAME.subtitle;
-        document.getElementById("year").innerText     = CURRENT_GAME.year;
-        document.getElementById("players").innerText  = CURRENT_GAME.players;
-        document.getElementById("developer").innerText = CURRENT_GAME.developer;
-
-        const btn = document.getElementById("btnJogar");
-        btn.onclick = () => {
-            if (navigator.vibrate) { try { navigator.vibrate(100); } catch(e){} }
-            clickSound.play().catch(() => {});
-            registrarLogAcessoImediato();
-
-            const gameScreen = document.getElementById("gameScreen");
-            gameScreen.classList.add("crt-shutdown");
-            setTimeout(() => iniciarEmulador(), 400);
-        };
-    } catch (error) {
-        mostrarTelaErro();
-    }
-}
-
-function iniciarEmulador() {
-    document.getElementById("gameScreen").style.display = "none";
-    const emulatorScreen = document.getElementById("emulatorScreen");
-    emulatorScreen.style.display = "block";
-
-    document.body.style.padding = "0";
-    document.body.style.backgroundColor = "#000000";
-
-    const docElement = document.documentElement;
-    const requestFS = docElement.requestFullscreen
-                   || docElement.webkitRequestFullscreen
-                   || docElement.msRequestFullscreen;
-
-    if (requestFS) {
-        requestFS.call(docElement).then(() => {
-            if (screen.orientation?.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-            }
-        }).catch(() => {});
-    }
-
-    if (typeof CURRENT_GAME !== 'undefined') {
-        window.EJS_player        = '#game';
-        window.EJS_core          = CURRENT_GAME.core;
-        window.EJS_gameUrl       = CURRENT_GAME.romUrl;
-        window.EJS_startOnLoaded = true;
-
-        // ✅ Usando a versão ESTÁVEL do EmulatorJS (não mais @main, que pode quebrar sem aviso)
-        window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
-
-        const script = document.createElement('script');
-        script.src   = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-        document.body.appendChild(script);
-    }
-}
-
-function mostrarTelaErro() {
-    IS_VALID = false;
-    document.getElementById("splashScreen").style.display = "none";
-    document.getElementById("gameScreen").style.display   = "none";
-    document.getElementById("bootScreen").style.display   = "none";
-    document.getElementById("invalidScreen").style.display = "block";
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("gameScreen").style.display  = "none";
-    document.getElementById("bootScreen").style.display  = "none";
-    document.getElementById("splashScreen").style.display = "flex";
-    loadGames();
-    setTimeout(() => { if (IS_VALID && typeof startBoot === "function") startBoot(); }, 4000);
-});
+    const tempoFormatado =

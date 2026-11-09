@@ -86,14 +86,14 @@ let sessaoEnviada = false; // Trava: garante que o encerramento é enviado só u
 
 // --- Utilitários ---
 function obterIdEVisitas() {
-    let id = localStorage.getItem('imortalize_id_curto');
-    let visitas = parseInt(localStorage.getItem('imortalize_visitas') || "0");
+    let id = localStorage.getItem('retronfc_id_curto');
+    let visitas = parseInt(localStorage.getItem('retronfc_visitas') || "0");
     if (!id) {
         id = Math.random().toString(36).substring(2, 6).toUpperCase();
-        localStorage.setItem('imortalize_id_curto', id);
+        localStorage.setItem('retronfc_id_curto', id);
     }
     visitas++;
-    localStorage.setItem('imortalize_visitas', visitas);
+    localStorage.setItem('retronfc_visitas', visitas);
     return `${id} (Acesso #${visitas})`;
 }
 

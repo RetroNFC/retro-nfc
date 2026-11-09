@@ -359,6 +359,8 @@
         const CHAVE_JOGOS   = 'retronfc_games_cache';
         const CHAVE_NOME    = 'retronfc_nome';
         const CHAVE_ID      = 'retronfc_id_curto';
+        const CHAVE_VISITAS = 'retronfc_visitas';
+        const APP_VERSAO   = "7.0";
 
         function obterNome() {
             try { return (localStorage.getItem(CHAVE_NOME) || '').trim(); } catch (e) { return ''; }
@@ -384,6 +386,20 @@
             return "Outro";
         }
 
+        function contarCartuchos() {
+            try {
+                const colecao = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
+                return Array.isArray(colecao) ? colecao.length : 0;
+            } catch (e) { return 0; }
+        }
+
+        function classificarVisita() {
+            try {
+                const visitas = parseInt(localStorage.getItem(CHAVE_VISITAS) || "0", 10);
+                return visitas <= 1 ? "Primeira visita" : "Recorrente";
+            } catch (e) { return "—"; }
+        }
+
         function rastrearCompra(nomeJogo, urlZap) {
             const payload = JSON.stringify({
                 origemRequisicao: "SiteRetroNFC",
@@ -391,7 +407,10 @@
                 jogo: nomeJogo,
                 nome: obterNome(),
                 jogador: obterIdCurto(),
-                aparelho: obterAparelho()
+                aparelho: obterAparelho(),
+                cartuchos: contarCartuchos(),
+                visitante: classificarVisita(),
+                versao: APP_VERSAO
             });
 
             try {

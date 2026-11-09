@@ -1,15 +1,15 @@
 // =====================================================
-// RETRÔ NFC — Google Apps Script (Proxy Seguro) v7
+// RETRÔ NFC — Google Apps Script (Proxy Seguro) v8
 // =====================================================
 //
 // PROPRIEDADES DO SCRIPT (Projeto ⚙️ → Propriedades do projeto):
 //   TELEGRAM_TOKEN    (obrigatória)
 //   TELEGRAM_CHAT_ID  (obrigatória)
-//   SPREADSHEET_ID    (opcional — grava Acesso/Compra em planilha)
+//   SPREADSHEET_ID    (opcional — grava na aba Registros)
 //
-// O texto das mensagens é montado AQUI. O frontend envia apenas
-// campos estruturados, nunca HTML. Assim não existe mais risco de
-// tag crua aparecer no Telegram.
+// v8: responde JSON (confirmação de recebimento), ignora eventos
+// repetidos (eventoId), registra "Partida" na planilha e permite
+// retomar a sessão no Telegram.
 // =====================================================
 
 var PROP = PropertiesService.getScriptProperties();
@@ -17,7 +17,6 @@ var PROP = PropertiesService.getScriptProperties();
 var LIMITE_POR_MINUTO = 20;
 var LIMITE_SESSAO_MIN = 8;
 var MAX_CORPO         = 8000;
-var MAX_TEXTO         = 3500;
 var MAX_JOGOS         = 1500;
 var TTL_SESSAO        = 21600;
 
@@ -49,39 +48,57 @@ function doPost(e) {
     return resposta("json-invalido");
   }
 
-  if (body.origemRequisicao !== "SiteRetroNFC") {
-    Logger.log("Origem rejeitada: " + body.origemRequisicao);
+  if (!body || body.origemRequisicao !== "SiteRetroNFC") {
+    Logger.log("Origem rejeitada.");
     return resposta("origem-invalida");
   }
 
   try {
+    var id = body.eventoId
+      ? String(body.eventoId).replace(/[^A-Za-z0-9_-]/g, "").substring(0, 40)
+      : "";
+
     switch (body.tipo) {
 
       case "Acesso":
-        registrarLinha("Acesso", nomeLimpo(body.nome) + " — " + (body.jogos || ""), "");
-        enviarTelegram(montarAcesso(body), "acesso");
-        break;
+        if (jaProcessado(id)) return resposta("duplicado");
+        var plAcesso = registrarLinha("Acesso", nomeLimpo(body.nome) + " — " + (body.jogos || ""), "");
+        var tgAcesso = enviarTelegram(montarAcesso(body), "acesso");
+        return resposta("ok", { planilha: plAcesso, telegram: !!tgAcesso });
 
       case "Compra":
-        registrarLinha("Compra", nomeLimpo(body.nome) + " — " + (body.jogo || ""), "");
-        enviarTelegram(montarCompra(body), "compra");
-        break;
+        if (jaProcessado(id)) return resposta("duplicado");
+        var plCompra = registrarLinha("Compra", nomeLimpo(body.nome) + " — " + (body.jogo || ""), "");
+        var tgCompra = enviarTelegram(montarCompra(body), "compra");
+        return resposta("ok", { planilha: plCompra, telegram: !!tgCompra });
 
       case "TelegramSessao":
-        tratarSessao(body);
-        break;
+        if (body.acao === "inicio") {
+          if (jaProcessado(id)) return resposta("duplicado");
+          registrarLinha("Partida", nomeLimpo(body.nome) + " — " + (body.jogo || ""), "");
+        }
+        var tgSessao = tratarSessao(body);
+        return resposta("ok", { telegram: !!tgSessao });
 
       default:
         Logger.log("Tipo desconhecido: " + body.tipo);
         return resposta("tipo-invalido");
     }
 
-    return resposta("ok");
-
   } catch (err) {
     Logger.log("Erro no doPost: " + err.message);
     return resposta("error");
   }
+}
+
+// Evita processar duas vezes o mesmo evento (reenvios do site)
+function jaProcessado(id) {
+  if (!id) return false;
+  var cache = CacheService.getScriptCache();
+  var chave = "ev_" + id;
+  if (cache.get(chave)) return true;
+  cache.put(chave, "1", 3600);
+  return false;
 }
 
 // =====================================================
@@ -96,7 +113,7 @@ function montarAcesso(body) {
     "🏆 <b>Estante</b> · " + esc(body.cartuchos || "0") + " cartucho(s)\n" +
     "🔁 <b>Visita</b> · " + esc(body.visitante || "—") + "\n" +
     "📍 <b>Origem</b> · " + esc(body.origem || "—") + "\n" +
-    "🕒 <b>Quando</b> · " + agora() + "\n" + SEP + "\n" +
+    "🕒 <b>Quando</b> · " + (body.quando ? esc(body.quando) : agora()) + "\n" + SEP + "\n" +
     "🎮 <b>Cartuchos na estante</b>\n" + esc(body.jogos || "Nenhum cartucho ainda.");
 }
 
@@ -108,7 +125,7 @@ function montarCompra(body) {
     "📱 <b>Aparelho</b> · " + esc(body.aparelho || "—") + "\n" +
     "🏆 <b>Estante</b> · " + esc(body.cartuchos || "0") + " cartucho(s)\n" +
     "🔁 <b>Visita</b> · " + esc(body.visitante || "—") + "\n" +
-    "🕒 <b>Quando</b> · " + agora();
+    "🕒 <b>Quando</b> · " + (body.quando ? esc(body.quando) : agora());
 }
 
 // =====================================================
@@ -132,8 +149,8 @@ function montarSessao(body) {
 
   if (encerrada) {
     texto +=
-      "⏱️ <b>Tempo jogado</b> · " + esc(body.tempo || "—") + "\n" +
-      "✅ <b>Status</b> · 🟢 <i>Sessão encerrada</i>";
+      "⏱️ <b>Tempo jogado</b> · " + esc(body.tempo || "—") + " <i>(estimado)</i>\n" +
+      "✅ <b>Status</b> · 🟢 <i>Saiu do jogo</i>";
   } else {
     texto += "⏱️ <b>Status</b> · 🔵 <i>Jogando...</i>";
   }
@@ -141,42 +158,41 @@ function montarSessao(body) {
   return texto;
 }
 
+// Retorna true se a mensagem foi enviada/atualizada no Telegram
 function tratarSessao(body) {
+  if (!body.jogo) return false;
+
   var sessaoId = String(body.sessaoId || "").replace(/[^A-Za-z0-9_-]/g, "").substring(0, 40);
   var cache    = CacheService.getScriptCache();
   var chave    = sessaoId ? "msg_" + sessaoId : "";
+  var texto    = montarSessao(body);
+  var guardado = chave ? cache.get(chave) : null;
 
-  // Compatibilidade: se vier texto pronto, usa. Senão monta no servidor.
-  var texto = body.jogo ? montarSessao(body) : sanitizarHtml(body.texto || "");
-  if (!texto) return;
+  // Saída ou retorno: edita a mensagem da sessão (a chave fica no cache
+  // até expirar, para permitir várias saídas e retornos na mesma sessão)
+  if (body.acao === "fim" || body.acao === "retomada") {
+    if (guardado && editarTelegram(guardado, texto, "sessao")) return true;
 
-  if (body.acao === "fim") {
-    var guardado = chave ? cache.get(chave) : null;
+    if (body.acao === "retomada") return false; // sem mensagem para editar: ignora
 
-    if (guardado) {
-      if (editarTelegram(guardado, texto, "sessao")) {
-        cache.remove(chave);
-        return;
-      }
-      Logger.log("Edição falhou; enviando mensagem nova como reserva.");
-    }
-
-    enviarTelegram(texto, "sessao");
-    if (chave) cache.remove(chave);
-    return;
+    var novoId = enviarTelegram(texto, "sessao");
+    if (novoId && chave) cache.put(chave, String(novoId), TTL_SESSAO);
+    return !!novoId;
   }
 
+  // Início
   var messageId = enviarTelegram(texto, "sessao");
   if (messageId && chave) cache.put(chave, String(messageId), TTL_SESSAO);
+  return !!messageId;
 }
 
 // =====================================================
-// REGISTRO EM PLANILHA
+// REGISTRO EM PLANILHA  (true = gravou, false = falhou, null = não configurada)
 // =====================================================
 
 function registrarLinha(tipo, campo1, campo2) {
   var idPlanilha = PROP.getProperty("SPREADSHEET_ID");
-  if (!idPlanilha) return;
+  if (!idPlanilha) return null;
 
   var lock = LockService.getScriptLock();
   var travado = false;
@@ -186,7 +202,7 @@ function registrarLinha(tipo, campo1, campo2) {
 
     if (!travado) {
       Logger.log("Planilha ocupada: registro descartado.");
-      return;
+      return false;
     }
 
     var planilha = SpreadsheetApp.openById(idPlanilha);
@@ -198,9 +214,11 @@ function registrarLinha(tipo, campo1, campo2) {
     }
 
     aba.appendRow([new Date(), tipo, celula(campo1), celula(campo2)]);
+    return true;
 
   } catch (err) {
     Logger.log("Erro ao registrar na planilha: " + err.message);
+    return false;
   } finally {
     if (travado) lock.releaseLock();
   }
@@ -360,33 +378,20 @@ function nomeLimpo(valor) {
   return s || "não informado";
 }
 
-// Usado apenas no caminho de compatibilidade (texto pronto do frontend).
-function sanitizarHtml(txt) {
-  var s = String(txt === null || txt === undefined ? "" : txt).substring(0, MAX_TEXTO);
-  var permitidas = ["b", "i", "u", "s", "code", "pre"];
-
-  permitidas.forEach(function (tag) {
-    s = s.replace(new RegExp("<​\\/?" + tag + ">", "gi"), function (m) {
-      return "\u0001" + m + "\u0002";
-    });
-  });
-
-  s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  s = s.replace(/\u0001([\s\S]*?)\u0002/g, "$1");
-
-  return s;
-}
-
 // =====================================================
-// TESTE
+// RESPOSTAS
 // =====================================================
 
 function doGet(e) {
-  return resposta("Retrô NFC Backend v7 — OK");
+  return resposta("ok", { versao: "v8" });
 }
 
-function resposta(txt) {
+function resposta(status, extra) {
+  var obj = { ok: (status === "ok" || status === "duplicado"), status: status };
+  if (extra) {
+    for (var k in extra) obj[k] = extra[k];
+  }
   return ContentService
-    .createTextOutput(txt)
-    .setMimeType(ContentService.MimeType.TEXT);
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }

@@ -220,7 +220,7 @@ body {
     pointer-events: none;
     color: #00CFFF;
     background:
-        linear-gradient(rgba(0, 207, 255, .10), rgba(0, 207, 255, .10)) padding-box,
+        linear-gradient(#0A2430, #0A2430) padding-box,
         linear-gradient(#00CFFF, #00CFFF) border-box;
     animation: pulsoCarregando 1.1s ease-in-out infinite;
 }

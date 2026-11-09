@@ -4,215 +4,526 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Cartuchos - Retrô NFC</title>
+    <link rel="preload" href="games.json" as="fetch" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
-        
+
         @font-face {
             font-family: 'Pretendo';
             src: url('assets/fonts/Pretendo.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
-        
-        body { 
-            background-color: #0d1117; 
-            color: #fff; 
-            font-family: 'Press Start 2P', monospace; 
-            text-align: center; 
-            padding: 30px 20px; 
-            margin: 0; 
+
+        :root {
+            --bg:        #070b11;
+            --bg-2:      #0d141d;
+            --card:      #101a26;
+            --card-2:    #0b131c;
+            --linha:     #1d2b3b;
+            --texto:     #e6edf5;
+            --texto-dim: #8b9bb0;
+            --vermelho:  #E60012;
+            --verde:     #5CFF8A;
+            --ciano:     #22D3EE;
+            --dourado:   #FFC93C;
+        }
+
+        body {
+            background:
+                radial-gradient(900px 500px at 50% -10%, rgba(230,0,18,.16), transparent 70%),
+                radial-gradient(700px 400px at 90% 110%, rgba(34,211,238,.10), transparent 70%),
+                var(--bg);
+            color: var(--texto);
+            font-family: 'Press Start 2P', monospace;
+            text-align: center;
+            padding: 34px 18px 40px;
+            margin: 0;
             min-height: 100vh;
+            overflow-x: hidden;
         }
-        
-        h1 { 
-            font-family: 'Pretendo', sans-serif;
-            font-size: 26px; 
-            color: #E60012; 
-            margin-bottom: 15px; 
-            line-height: 1.5; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px; 
-            letter-spacing: 1px;
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255,255,255,.022) 0px,
+                rgba(255,255,255,.022) 1px,
+                transparent 1px,
+                transparent 3px
+            );
         }
-        
-        .icone-trofeu { 
-            font-family: 'Press Start 2P', monospace; 
-            font-size: 26px; 
+
+        h1 {
             position: relative;
-            top: -3px; 
-        } 
-        
-        p.sub { 
-            font-size: 12px; 
-            color: #ffffff; 
-            margin-bottom: 40px; 
-            line-height: 1.6; 
+            z-index: 1;
+            font-family: 'Pretendo', sans-serif;
+            font-size: 26px;
+            color: var(--vermelho);
+            margin: 0 0 14px;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 18px rgba(230,0,18,.55), 3px 3px 0 rgba(0,0,0,.8);
         }
-        
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
-            gap: 20px; 
-            max-width: 600px; 
-            margin: 0 auto; 
+
+        .icone-trofeu { font-size: 26px; position: relative; top: -3px; }
+
+        p.sub {
+            position: relative;
+            z-index: 1;
+            font-size: 11px;
+            color: var(--texto-dim);
+            margin: 0 auto 34px;
+            line-height: 1.9;
+            max-width: 420px;
         }
-        
-        .cartucho { 
-            position: relative; 
-            border-radius: 8px; 
-            background: #11151c; 
-            padding: 12px; 
-            border: 2px solid #333; 
+
+        .grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+            gap: 18px;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .cartucho {
+            position: relative;
+            border-radius: 10px;
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            padding: 12px;
+            border: 1px solid var(--linha);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+            animation: entrarCartucho .42s cubic-bezier(.2,.8,.3,1) backwards;
         }
-        
-        .cartucho img { 
-            width: 100%; 
-            border-radius: 4px; 
-            display: block; 
+
+        @keyframes entrarCartucho {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        /* Capa com selo no canto */
+        .capa {
+            position: relative;
             margin-bottom: 10px;
         }
-        
-        .cartucho h3 { font-size: 9px; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
-        
-        .bloqueado { opacity: 0.95; }
-        .bloqueado img { filter: grayscale(100%) brightness(0.7) contrast(1.1); }
-        .bloqueado::after { 
-            content: "🔒"; 
-            position: absolute; 
-            top: 35%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            font-size: 35px; 
+
+        .capa img {
+            width: 100%;
+            border-radius: 5px;
+            display: block;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #05080d;
         }
-        
-        .btn-comprar { 
-            background: rgba(255, 255, 255, 0.05); 
-            color: #ffffff; 
-            border: 1px solid #aaaaaa; 
-            padding: 8px; 
-            font-size: 8px; 
-            font-family: 'Press Start 2P'; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            width: 100%; 
+
+        .selo {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .selo svg { display: block; }
+
+        .selo-lock {
+            background: rgba(8,12,18,.74);
+            border: 1px solid rgba(255,201,60,.55);
+            color: var(--dourado);
+            box-shadow: 0 0 12px rgba(255,201,60,.28);
+        }
+
+        .selo-ok {
+            background: rgba(8,18,12,.74);
+            border: 1px solid rgba(92,255,138,.55);
+            color: var(--verde);
+            box-shadow: 0 0 12px rgba(92,255,138,.28);
+        }
+
+        .cartucho h3 {
+            font-size: 9px;
+            color: #b9c6d6;
+            line-height: 1.5;
+            margin: 0 0 10px;
+            min-height: 26px;
+        }
+
+        /* Título misterioso: legível, sem parecer erro de digitação */
+        .cartucho h3.misterio {
+            color: #5f7186;
+            font-size: 12px;
+            letter-spacing: 7px;
+            text-indent: 7px;
+            text-shadow: 0 0 10px rgba(34,211,238,.18);
+        }
+
+        .bloqueado img {
+            filter: grayscale(100%) brightness(.58) contrast(1.12);
+        }
+
+        .bloqueado .capa::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 5px;
+            background: linear-gradient(180deg, rgba(7,11,17,.10), rgba(7,11,17,.42));
+            pointer-events: none;
+        }
+
+        .bloqueado:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,201,60,.45);
+            box-shadow: 0 10px 26px rgba(255,201,60,.14);
+        }
+
+        .btn-comprar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: rgba(255,255,255,.04);
+            color: #dfe8f2;
+            border: 1px solid #33465c;
+            padding: 10px;
+            font-size: 8px;
+            font-family: 'Press Start 2P', monospace;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
             text-transform: uppercase;
+            letter-spacing: .5px;
+            transition: background .2s, border-color .2s, color .2s, transform .12s;
         }
-        
-        .desbloqueado { 
-            border-color: #5CFF8A; 
-            box-shadow: 0 0 15px rgba(92, 255, 138, 0.15); 
+
+        .btn-comprar svg { flex: 0 0 auto; }
+
+        .btn-comprar:hover {
+            background: rgba(230,0,18,.14);
+            border-color: var(--vermelho);
+            color: #fff;
         }
-        .desbloqueado h3 { color: #5CFF8A; }
-        
+
+        .btn-comprar:active { transform: scale(.96); }
+
+        .desbloqueado {
+            border-color: rgba(92,255,138,.55);
+            box-shadow: 0 0 18px rgba(92,255,138,.14), inset 0 0 22px rgba(92,255,138,.05);
+        }
+
+        .desbloqueado h3 { color: var(--verde); }
+
+        .desbloqueado:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 26px rgba(92,255,138,.22), inset 0 0 22px rgba(92,255,138,.06);
+        }
+
         .etiqueta-ok {
-            background: #5CFF8A;
-            color: #000;
-            font-size: 7px; 
-            padding: 8px 4px; 
+            background: linear-gradient(180deg, #7CFFA6, #35E070);
+            color: #04220f;
+            font-size: 7px;
+            padding: 9px 4px;
             border-radius: 10px;
             width: 100%;
             text-align: center;
+            letter-spacing: .5px;
+            box-shadow: 0 0 14px rgba(92,255,138,.35);
         }
-        
-        .btn-voltar { 
-            margin-top: 50px; 
-            background: #333; 
-            color: #fff; 
-            border: none; 
-            padding: 15px 30px; 
-            font-size: 12px; 
-            font-family: 'Press Start 2P'; 
-            border-radius: 50px; 
-            cursor: pointer; 
+
+        /* --- Esqueleto de carregamento --- */
+        .esqueleto {
+            border-radius: 10px;
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border: 1px solid var(--linha);
+            padding: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .esqueleto .bloco {
+            background: #16202c;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .esqueleto .bloco.capa { aspect-ratio: 1 / 1; width: 100%; }
+        .esqueleto .bloco.linha { height: 10px; width: 80%; margin-left: auto; margin-right: auto; }
+        .esqueleto .bloco.linha.curta { width: 55%; }
+
+        .esqueleto::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.07) 50%, transparent 80%);
+            transform: translateX(-100%);
+            animation: brilho 1.3s infinite;
+        }
+
+        @keyframes brilho { to { transform: translateX(100%); } }
+
+        /* --- Botão voltar --- */
+        .btn-voltar {
+            position: relative;
+            z-index: 1;
+            margin-top: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255,255,255,.03);
+            color: #cfdae7;
+            border: 1px solid #2b3a4d;
+            padding: 15px 28px;
+            font-size: 10px;
+            font-family: 'Press Start 2P', monospace;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: background .2s, border-color .2s, color .2s, transform .12s, box-shadow .2s;
+        }
+
+        .btn-voltar svg {
+            display: block;
+            transition: transform .22s ease;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(34,211,238,.10);
+            border-color: var(--ciano);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(34,211,238,.22);
+        }
+
+        .btn-voltar:hover svg { transform: translateX(-4px); }
+
+        .btn-voltar:active { transform: scale(.96); }
+
+        .btn-voltar:focus-visible,
+        .btn-comprar:focus-visible {
+            outline: 2px solid var(--ciano);
+            outline-offset: 3px;
+        }
+
+        .aviso-erro {
+            position: relative;
+            z-index: 1;
+            color: #ff8080;
+            font-size: 9px;
+            line-height: 1.9;
+            margin-top: 24px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cartucho, .esqueleto::after { animation: none; }
+            .btn-voltar svg { transition: none; }
         }
     </style>
 </head>
 <body>
     <h1><span class="icone-trofeu">🏆</span> MEUS CARTUCHOS</h1>
     <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC</p>
-    
-    <div class="grid" id="gridColecao"></div>
 
-    <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
+    <div class="grid" id="gridColecao"></div>
+    <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
+
+    <button class="btn-voltar" onclick="history.back()" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M20 12H5M11 5l-7 7 7 7" fill="none" stroke="currentColor"
+                  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        VOLTAR
+    </button>
 
     <script>
-       function rastrearCompra(nomeJogo, urlZap) {
-    const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
+        const URL_BACKEND   = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
+        const CHAVE_COLECAO = 'retronfc_colecao';
+        const CHAVE_JOGOS   = 'retronfc_games_cache';
+        const CHAVE_NOME    = 'retronfc_nome';
+        const CHAVE_ID      = 'retronfc_id_curto';
 
-    const payload = JSON.stringify({
-        origemRequisicao: "SiteRetroNFC",
-        tipo: "Compra",
-        jogo: nomeJogo
-    });
+        function obterNome() {
+            try { return (localStorage.getItem(CHAVE_NOME) || '').trim(); } catch (e) { return ''; }
+        }
 
-    // keepalive: no celular, o window.open costuma trocar a página atual
-    // pelo WhatsApp e cancelaria o POST sem essa opção.
-    try {
-        fetch(URL_BACKEND, {
-            method: 'POST',
-            mode: 'no-cors',
-            keepalive: true,
-            headers: { 'Content-Type': 'text/plain' },
-            body: payload
-        });
-    } catch (e) {
-        console.error("Erro ao registrar compra:", e);
-    }
+        function obterIdCurto() {
+            try {
+                let id = localStorage.getItem(CHAVE_ID);
+                if (!id) {
+                    id = Math.random().toString(36).substring(2, 6).toUpperCase();
+                    localStorage.setItem(CHAVE_ID, id);
+                }
+                return id;
+            } catch (e) { return ''; }
+        }
 
-    window.open(urlZap, '_blank');
-}
+        function obterAparelho() {
+            const ua = navigator.userAgent;
+            if (/android/i.test(ua))         return "Android";
+            if (/iPhone|iPad|iPod/i.test(ua)) return "iOS (Apple)";
+            if (/windows/i.test(ua))         return "Windows PC";
+            if (/macintosh/i.test(ua))       return "Mac OS";
+            return "Outro";
+        }
+
+        function rastrearCompra(nomeJogo, urlZap) {
+            const payload = JSON.stringify({
+                origemRequisicao: "SiteRetroNFC",
+                tipo: "Compra",
+                jogo: nomeJogo,
+                nome: obterNome(),
+                jogador: obterIdCurto(),
+                aparelho: obterAparelho()
+            });
+
+            try {
+                fetch(URL_BACKEND, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    keepalive: true,
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: payload
+                });
+            } catch (e) {
+                console.error("Erro ao registrar compra:", e);
+            }
+
+            window.open(urlZap, '_blank');
+        }
+
+        function mostrarEsqueleto() {
+            const grid = document.getElementById('gridColecao');
+            grid.innerHTML = "";
+            for (let i = 0; i < 6; i++) {
+                const sk = document.createElement('div');
+                sk.className = 'esqueleto';
+                sk.innerHTML = '<div class="bloco capa"></div><div class="bloco linha"></div><div class="bloco linha curta"></div>';
+                grid.appendChild(sk);
+            }
+        }
+
+        function lerCacheJogos() {
+            try {
+                const bruto = localStorage.getItem(CHAVE_JOGOS);
+                if (!bruto) return null;
+                const dados = JSON.parse(bruto);
+                return (dados && Array.isArray(dados.games)) ? dados.games : null;
+            } catch (e) { return null; }
+        }
+
+        function salvarCacheJogos(games) {
+            try { localStorage.setItem(CHAVE_JOGOS, JSON.stringify({ games: games })); } catch (e) {}
+        }
+
+        const SELO_LOCK = '<span class="selo selo-lock" aria-hidden="true">' +
+            '<svg viewBox="0 0 24 24" width="13" height="13">' +
+            '<rect x="4.5" y="10.5" width="15" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="2"/>' +
+            '<path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+            '</svg></span>';
+
+        const SELO_OK = '<span class="selo selo-ok" aria-hidden="true">' +
+            '<svg viewBox="0 0 24 24" width="13" height="13">' +
+            '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '</svg></span>';
+
+        const ICONE_CARRINHO = '<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true">' +
+            '<path d="M3 4h2.2l2.4 10.2h9.6L19 7H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<circle cx="9.5" cy="19" r="1.6" fill="currentColor"/>' +
+            '<circle cx="17" cy="19" r="1.6" fill="currentColor"/>' +
+            '</svg>';
+
+        function desenharColecao(games) {
+            const colecaoSalva = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
+            const grid = document.getElementById('gridColecao');
+            const numeroWhatsApp = "5519992087429";
+
+            grid.innerHTML = "";
+
+            games.forEach((game, indice) => {
+                const temCartucho = colecaoSalva.includes(game.key);
+                const card = document.createElement('div');
+                card.style.animationDelay = (indice * 45) + 'ms';
+
+                if (temCartucho) {
+                    card.className = "cartucho desbloqueado";
+                    card.innerHTML = `
+                        <div class="capa">
+                            <img src="${game.cover}" alt="${game.title}" loading="lazy" decoding="async">
+                            ${SELO_OK}
+                        </div>
+                        <h3>${game.title}</h3>
+                        <div class="etiqueta-ok">COLECIONADO</div>
+                    `;
+                } else {
+                    const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
+                    const urlCompletaZap = `https://wa.me/${numeroWhatsApp}?text=${textoZap}`;
+
+                    card.className = "cartucho bloqueado";
+                    card.innerHTML = `
+                        <div class="capa">
+                            <img src="${game.cover}" alt="Cartucho bloqueado" loading="lazy" decoding="async">
+                            ${SELO_LOCK}
+                        </div>
+                        <h3 class="misterio">???</h3>
+                        <button class="btn-comprar">${ICONE_CARRINHO} COMPRAR</button>
+                    `;
+
+                    card.querySelector('.btn-comprar').addEventListener('click', () => {
+                        rastrearCompra(game.title, urlCompletaZap);
+                    });
+                }
+
+                grid.appendChild(card);
+            });
+        }
 
         async function carregarColecao() {
+            const cache = lerCacheJogos();
+
+            // 1) Renderiza na hora com o que já está no aparelho
+            if (cache) {
+                desenharColecao(cache);
+            } else {
+                mostrarEsqueleto();
+            }
+
+            // 2) Atualiza em segundo plano
             try {
                 const response = await fetch("games.json?ts=" + Date.now());
                 const data = await response.json();
-                
-                const colecaoSalva = JSON.parse(localStorage.getItem('retronfc_colecao') || '[]');
-                const grid = document.getElementById('gridColecao');
-                grid.innerHTML = ""; 
-                
-                const numeroWhatsApp = "5519992087429"; 
-
-                data.games.forEach(game => {
-                    const temCartucho = colecaoSalva.includes(game.key);
-                    const card = document.createElement('div');
-                    
-                    if (temCartucho) {
-                        card.className = "cartucho desbloqueado";
-                        card.innerHTML = `
-                            <img src="${game.cover}" alt="${game.title}">
-                            <h3>${game.title}</h3>
-                            <div class="etiqueta-ok">COLECIONADO</div>
-                        `;
-                    } else {
-                        const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
-                        const urlCompletaZap = `https://wa.me/${numeroWhatsApp}?text=${textoZap}`;
-                        
-                        card.className = "cartucho bloqueado";
-                        card.innerHTML = `
-                            <img src="${game.cover}" alt="${game.title}">
-                            <h3>???</h3>
-                            <button class="btn-comprar">COMPRAR</button>
-                        `;
-
-                        const btnComprar = card.querySelector('.btn-comprar');
-                        btnComprar.addEventListener('click', () => {
-                            rastrearCompra(game.title, urlCompletaZap);
-                        });
-                    }
-                    grid.appendChild(card);
-                });
+                if (data && Array.isArray(data.games)) {
+                    salvarCacheJogos(data.games);
+                    desenharColecao(data.games);
+                }
             } catch (e) {
                 console.error("Erro ao carregar a coleção", e);
+                if (!cache) {
+                    document.getElementById('gridColecao').innerHTML = "";
+                    const aviso = document.getElementById('avisoErro');
+                    aviso.style.display = "block";
+                    aviso.textContent = "Não foi possível carregar a estante. Verifique sua conexão e tente novamente.";
+                }
             }
         }
-        
+
         document.addEventListener("DOMContentLoaded", function () {
             carregarColecao();
         });

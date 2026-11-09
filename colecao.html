@@ -131,20 +131,6 @@
             border-radius: 50px; 
             cursor: pointer; 
         }
-
-        .btn-migrar {
-            margin-top: 40px;
-            background: #E60012;
-            color: #fff;
-            border: none;
-            padding: 15px 25px;
-            font-size: 10px;
-            font-family: 'Press Start 2P';
-            border-radius: 50px;
-            cursor: pointer;
-            display: none;
-            line-height: 1.6;
-        }
     </style>
 </head>
 <body>
@@ -152,8 +138,6 @@
     <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC</p>
     
     <div class="grid" id="gridColecao"></div>
-
-    <button class="btn-migrar" id="btnMigrar">MIGRAR MINHA ESTANTE</button>
 
     <button class="btn-voltar" onclick="history.back()">← VOLTAR</button>
 
@@ -184,44 +168,12 @@
     window.open(urlZap, '_blank');
 }
 
-        // --- Recebe a estante vinda do domínio antigo (#c=BASE64) ---
-        (function migrarColecaoAntiga() {
-            try {
-                const hash = window.location.hash;
-                if (!hash || hash.indexOf("#c=") !== 0) return;
-                const bruto = decodeURIComponent(hash.substring(3));
-                const vindos = JSON.parse(atob(bruto));
-                if (!Array.isArray(vindos) || vindos.length === 0) return;
-                const atuais = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-                vindos.forEach(function (k) { if (atuais.indexOf(k) === -1) atuais.push(k); });
-                localStorage.setItem('imortalize_colecao', JSON.stringify(atuais));
-                history.replaceState(null, '', window.location.pathname + window.location.search);
-            } catch (e) {
-                console.error("Falha ao migrar coleção:", e);
-            }
-        })();
-
-        // --- Botão de migração (só aparece no domínio antigo) ---
-        function configurarBotaoMigracao() {
-            if (window.location.hostname !== "retronfc.github.io") return;
-            const btn = document.getElementById('btnMigrar');
-            if (!btn) return;
-            btn.style.display = "inline-block";
-            btn.addEventListener('click', function () {
-                let colecao = [];
-                try { colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]'); } catch (e) { colecao = []; }
-                let url = "https://retro-nfc.pages.dev/colecao.html";
-                if (colecao.length > 0) { url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao))); }
-                window.location.href = url;
-            });
-        }
-
         async function carregarColecao() {
             try {
                 const response = await fetch("games.json?ts=" + Date.now());
                 const data = await response.json();
                 
-                const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+                const colecaoSalva = JSON.parse(localStorage.getItem('retronfc_colecao') || '[]');
                 const grid = document.getElementById('gridColecao');
                 grid.innerHTML = ""; 
                 
@@ -263,7 +215,6 @@
         
         document.addEventListener("DOMContentLoaded", function () {
             carregarColecao();
-            configurarBotaoMigracao();
         });
     </script>
 </body>

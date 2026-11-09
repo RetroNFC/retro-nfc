@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrô NFC</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        (function () {
+            // Só redireciona no domínio antigo (GitHub Pages). No pages.dev segue normal.
+            if (window.location.hostname !== "retronfc.github.io") return;
+
+            var params = new URLSearchParams(window.location.search);
+            var chave = params.get("k") || "";
+            var colecao = [];
+            try { colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]'); } catch (e) { colecao = []; }
+
+            var url = "https://retro-nfc.pages.dev/play.html" + (chave ? "?k=" + encodeURIComponent(chave) : "");
+            if (colecao.length > 0) { url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao))); }
+            window.location.replace(url);
+        })();
+    </script>
 </head>
 <body>
     <div id="splashScreen">

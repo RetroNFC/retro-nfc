@@ -212,8 +212,7 @@ function enviarLeve(obj) {
 }
 
 // --- Rastreamento do clique na estante ---
-async function rastrearCliqueColecao(origem) {
-   function marcarCarregandoEstante() {
+function marcarCarregandoEstante() {
     ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
         const b = document.getElementById(id);
         if (!b) return;
@@ -236,7 +235,22 @@ function restaurarBotoesEstante() {
 }
 window.addEventListener('pageshow', restaurarBotoesEstante);
 
+function rastrearCliqueColecao(origem) {
+    try { marcarCarregandoEstante(); } catch (e) {}
+
     try {
+        const colecaoSalva = lerColecao();
+        let listaJogos = "Nenhum";
+
+        try {
+            const catalogo = _jogosMemoria || lerCacheJogos() || [];
+            const nomes = colecaoSalva.map(function (k) {
+                const g = catalogo.find(function (x) { return x.key === k; });
+                return g ? g.title : k;
+            });
+            if (nomes.length) listaJogos = nomes.join(", ");
+        } catch (e) {}
+
         enviarComConfirmacao({
             origemRequisicao: "SiteRetroNFC",
             tipo: "Acesso",
@@ -253,16 +267,6 @@ window.addEventListener('pageshow', restaurarBotoesEstante);
     } catch (e) {}
 
     window.location.href = 'colecao.html?musica=1';
-    
-
-function marcarCarregandoEstante() {
-    ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
-        const b = document.getElementById(id);
-        if (!b) return;
-        b.classList.add('carregando');
-        b.setAttribute('aria-busy', 'true');
-        b.innerText = 'CARREGANDO';
-    });
 }
 
 // --- Verificação de domínio ---

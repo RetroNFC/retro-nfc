@@ -8,8 +8,8 @@ async function startBoot() {
 
     // Visitante recorrente: sequência mais curta
     const rapido     = window.RETRONFC_RAPIDO === true;
-    const tempoPasso = rapido ? 250 : 450;
-    const tempoFinal = rapido ? 350 : 700;
+    const tempoPasso = rapido ? 800 : 1200;
+    const tempoFinal = rapido ? 700 : 1100;
 
     const som = document.getElementById("bootSound");
     if (som) {

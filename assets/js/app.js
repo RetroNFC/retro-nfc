@@ -8,6 +8,9 @@
 // Se você reimplantar o Apps Script, atualize esta URL.
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
+// Chave da estante no localStorage
+const CHAVE_COLECAO = 'retronfc_colecao';
+
 // --- Rastreamento do clique na estante ---
 async function rastrearCliqueColecao(origem) {
     const b1 = document.getElementById('btnEstante');
@@ -18,7 +21,7 @@ async function rastrearCliqueColecao(origem) {
     let listaJogos = "Nenhum cartucho na estante ainda.";
 
     try {
-        const colecaoSalva = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+        const colecaoSalva = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
         if (colecaoSalva.length > 0) {
             const response = await fetch("games.json?ts=" + Date.now());
             const data = await response.json();
@@ -35,6 +38,7 @@ async function rastrearCliqueColecao(origem) {
         origemRequisicao: "SiteRetroNFC",
         tipo: "Acesso",
         origem: origem,
+        nome: obterNome(),
         jogos: listaJogos
     });
 
@@ -77,42 +81,6 @@ let CURRENT_GAME = null;
 let IS_VALID     = false;
 const clickSound = new Audio('assets/life.mp3');
 
-// --- Migração da coleção vinda do domínio antigo (GitHub Pages) ---
-// Uso: https://retro-nfc.pages.dev/play.html?k=CHAVE#c=BASE64
-(function migrarColecaoAntiga() {
-    try {
-        const hash = window.location.hash;
-        if (!hash || hash.indexOf("#c=") !== 0) return;
-        const bruto = decodeURIComponent(hash.substring(3));
-        const vindos = JSON.parse(atob(bruto));
-        if (!Array.isArray(vindos) || vindos.length === 0) return;
-        const atuais = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-        vindos.forEach(function (k) { if (atuais.indexOf(k) === -1) atuais.push(k); });
-        localStorage.setItem('imortalize_colecao', JSON.stringify(atuais));
-        history.replaceState(null, '', window.location.pathname + window.location.search);
-    } catch (e) {
-        console.error("Falha ao migrar coleção:", e);
-    }
-})();
-
-// --- Gera o link de migração a partir da coleção local ---
-// Usado na página do domínio antigo para levar a estante ao novo domínio.
-function gerarLinkMigracao(urlDestino) {
-    const destino = urlDestino || "https://retro-nfc.pages.dev/play.html";
-    const chave   = GAME_KEY || "";
-    let colecao   = [];
-    try {
-        colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
-    } catch (e) {
-        colecao = [];
-    }
-    let url = destino + (chave ? "?k=" + encodeURIComponent(chave) : "");
-    if (colecao.length > 0) {
-        url += "#c=" + encodeURIComponent(btoa(JSON.stringify(colecao)));
-    }
-    return url;
-}
-
 let tempoInicio   = 0;
 let sessaoEnviada = false; // Trava: garante que o encerramento é enviado só uma vez
 
@@ -150,6 +118,92 @@ function formatarTempoDeJogo(ms) {
 
 function obterDataBonita() { return new Date().toLocaleString('pt-BR'); }
 
+// --- Nome do jogador (pedido apenas uma vez por aparelho) ---
+const CHAVE_NOME = 'retronfc_nome';
+
+function obterNome() {
+    try { return (localStorage.getItem(CHAVE_NOME) || '').trim(); } catch (e) { return ''; }
+}
+
+function salvarNome(nome) {
+    try { localStorage.setItem(CHAVE_NOME, nome); } catch (e) {}
+}
+
+function limparNome(txt) {
+    let s = String(txt || '');
+    try {
+        s = s.replace(/[^\p{L}\p{N} ._-]/gu, '');
+    } catch (e) {
+        s = s.replace(/[^A-Za-zÀ-ÿ0-9 ._-]/g, '');
+    }
+    return s.replace(/\s+/g, ' ').trim().substring(0, 20);
+}
+
+// Modal criado por JS: não exige alteração em play.html nem em style.css
+function pedirNome() {
+    return new Promise(function (resolve) {
+        const jaTem = obterNome();
+        if (jaTem) { resolve(jaTem); return; }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'nomeOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+
+        const caixa = document.createElement('div');
+        caixa.style.cssText = 'background:#11151c;border:2px solid #E60012;border-radius:12px;padding:26px 20px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 25px rgba(230,0,18,.35);';
+
+        const titulo = document.createElement('div');
+        titulo.textContent = 'RETRÔ NFC';
+        titulo.style.cssText = 'color:#E60012;font-size:14px;letter-spacing:1px;margin-bottom:16px;';
+
+        const texto = document.createElement('p');
+        texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
+        texto.style.cssText = 'color:#fff;font-size:9px;line-height:1.9;margin:0 0 18px;';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 20;
+        input.autocomplete = 'nickname';
+        input.placeholder = 'SEU NOME';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0d1117;border:1px solid #555;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:12px;text-align:center;outline:none;';
+
+        const erro = document.createElement('div');
+        erro.style.cssText = 'color:#ff6b6b;font-size:8px;line-height:1.6;min-height:14px;margin-top:10px;';
+
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.textContent = 'COMEÇAR';
+        botao.style.cssText = 'width:100%;margin-top:12px;background:#E60012;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:10px;padding:14px;cursor:pointer;';
+
+        caixa.appendChild(titulo);
+        caixa.appendChild(texto);
+        caixa.appendChild(input);
+        caixa.appendChild(erro);
+        caixa.appendChild(botao);
+        overlay.appendChild(caixa);
+        document.body.appendChild(overlay);
+
+        setTimeout(function () { input.focus(); }, 100);
+
+        function confirmar() {
+            const nome = limparNome(input.value);
+            if (nome.length < 2) {
+                erro.textContent = 'Digite pelo menos 2 caracteres.';
+                input.focus();
+                return;
+            }
+            salvarNome(nome);
+            overlay.remove();
+            resolve(nome);
+        }
+
+        botao.addEventListener('click', confirmar);
+        input.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Enter') { ev.preventDefault(); confirmar(); }
+        });
+    });
+}
+
 // --- Notificações de sessão (via Apps Script → Telegram) ---
 
 function registrarLogAcessoImediato() {
@@ -172,6 +226,7 @@ function enviarInicioSessao(ipUser, provedor, localIP) {
     // Monta o texto e envia para o Apps Script (sem token aqui!)
     const texto =
         `🎮 <b>SESSÃO RETRÔ NFC</b>\n\n` +
+        `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
         `🕹️ <b>Jogo:</b> ${CURRENT_GAME.title}\n` +
         `🆔 <b>Jogador:</b> ${obterIdEVisitas()}\n` +
         `📱 <b>Aparelho:</b> ${obterAparelho()}\n` +
@@ -203,6 +258,7 @@ function encerrarSessao() {
 
     const texto =
         `🟢 <b>SESSÃO ENCERRADA</b>\n\n` +
+        `👤 <b>Nome:</b> ${obterNome() || "não informado"}\n` +
         `🕹️ <b>Jogo:</b> ${jogo}\n` +
         `⏱️ <b>Tempo jogado:</b> ${tempoFormatado}`;
 
@@ -233,10 +289,10 @@ async function loadGames() {
         if (!CURRENT_GAME) { mostrarTelaErro(); return; }
         IS_VALID = true;
 
-        let colecao = JSON.parse(localStorage.getItem('imortalize_colecao') || '[]');
+        let colecao = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
         if (!colecao.includes(CURRENT_GAME.key)) {
             colecao.push(CURRENT_GAME.key);
-            localStorage.setItem('imortalize_colecao', JSON.stringify(colecao));
+            localStorage.setItem(CHAVE_COLECAO, JSON.stringify(colecao));
         }
 
         document.getElementById("gameCover").src      = CURRENT_GAME.cover;
@@ -247,9 +303,14 @@ async function loadGames() {
         document.getElementById("developer").innerText = CURRENT_GAME.developer;
 
         const btn = document.getElementById("btnJogar");
-        btn.onclick = () => {
+        btn.onclick = async () => {
             if (navigator.vibrate) { try { navigator.vibrate(100); } catch(e){} }
             clickSound.play().catch(() => {});
+
+            // Primeira vez neste aparelho: pede o nome antes de iniciar
+            const nome = await pedirNome();
+            if (!nome) return;
+
             registrarLogAcessoImediato();
 
             const gameScreen = document.getElementById("gameScreen");

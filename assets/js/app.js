@@ -213,22 +213,28 @@ function enviarLeve(obj) {
 
 // --- Rastreamento do clique na estante ---
 async function rastrearCliqueColecao(origem) {
-    marcarCarregandoEstante();
+   function marcarCarregandoEstante() {
+    ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (!b) return;
+        if (!b.dataset.textoOriginal) b.dataset.textoOriginal = b.innerText;
+        b.classList.add('carregando');
+        b.setAttribute('aria-busy', 'true');
+        b.innerText = 'CARREGANDO';
+    });
+}
 
-    const colecaoSalva = lerColecao();
-    let listaJogos = "Nenhum cartucho na estante ainda.";
-
-    try {
-        if (colecaoSalva.length > 0) {
-            const jogos = await obterJogos(colecaoSalva, false);
-            listaJogos = colecaoSalva.map(chave => {
-                const j = jogos.find(g => g.key === chave);
-                return j ? `• ${j.title}` : `• ID Desconhecido (${chave})`;
-            }).join('\n');
-        }
-    } catch (e) {
-        listaJogos = `${colecaoSalva.length} cartucho(s) — lista indisponível`;
-    }
+// Ao voltar da estante, devolve os botões ao estado normal
+function restaurarBotoesEstante() {
+    ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.classList.remove('carregando');
+        b.removeAttribute('aria-busy');
+        if (b.dataset.textoOriginal) b.innerText = b.dataset.textoOriginal;
+    });
+}
+window.addEventListener('pageshow', restaurarBotoesEstante);
 
     try {
         enviarComConfirmacao({

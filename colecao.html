@@ -17,28 +17,28 @@
         }
 
         :root {
-            --bg:        #070b11;
-            --bg-2:      #0d141d;
-            --card:      #101a26;
-            --card-2:    #0b131c;
-            --linha:     #1d2b3b;
-            --texto:     #e6edf5;
-            --texto-dim: #8b9bb0;
-            --vermelho:  #E60012;
-            --verde:     #5CFF8A;
-            --ciano:     #22D3EE;
-            --dourado:   #FFC93C;
+            --bg:        #0B0714;
+            --card:      #151026;
+            --card-2:    #0F0A1C;
+            --linha:     #2a2142;
+            --texto:     #ece8f7;
+            --texto-dim: #9a90b5;
+            --azul:      #00CFFF;
+            --roxo:      #A020F0;
+            --laranja:   #FF8C00;
+            --amarelo:   #FFD700;
+            --marca:     linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
         }
 
         body {
             background:
-                radial-gradient(900px 500px at 50% -10%, rgba(230,0,18,.16), transparent 70%),
-                radial-gradient(700px 400px at 90% 110%, rgba(34,211,238,.10), transparent 70%),
+                radial-gradient(900px 500px at 50% -10%, rgba(160,32,240,.22), transparent 70%),
+                radial-gradient(700px 400px at 90% 110%, rgba(0,207,255,.12), transparent 70%),
                 var(--bg);
             color: var(--texto);
             font-family: 'Press Start 2P', monospace;
             text-align: center;
-            padding: 84px 18px 40px;
+            padding: 84px 18px 48px;
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
@@ -52,8 +52,8 @@
             z-index: 0;
             background: repeating-linear-gradient(
                 to bottom,
-                rgba(255,255,255,.022) 0px,
-                rgba(255,255,255,.022) 1px,
+                rgba(255,255,255,.02) 0px,
+                rgba(255,255,255,.02) 1px,
                 transparent 1px,
                 transparent 3px
             );
@@ -64,7 +64,6 @@
             z-index: 1;
             font-family: 'Pretendo', sans-serif;
             font-size: 26px;
-            color: var(--vermelho);
             margin: 0 0 14px;
             line-height: 1.5;
             display: flex;
@@ -72,7 +71,15 @@
             justify-content: center;
             gap: 12px;
             letter-spacing: 1px;
-            text-shadow: 0 0 18px rgba(230,0,18,.55), 3px 3px 0 rgba(0,0,0,.8);
+        }
+
+        h1 .titulo {
+            background: var(--marca);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 14px rgba(160,32,240,.5));
         }
 
         .icone-trofeu { font-size: 26px; position: relative; top: -3px; }
@@ -80,12 +87,138 @@
         p.sub {
             position: relative;
             z-index: 1;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--texto-dim);
-            margin: 0 auto 34px;
+            margin: 0 auto 22px;
             line-height: 1.9;
             max-width: 420px;
         }
+
+        /* --- Progresso --- */
+        .progresso {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            margin: 0 auto 22px;
+        }
+
+        .progresso-texto {
+            font-size: 9px;
+            color: var(--texto);
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .progresso-texto b { color: var(--amarelo); font-weight: normal; }
+
+        .barra {
+            height: 12px;
+            border-radius: 99px;
+            background: #1b1430;
+            border: 1px solid var(--linha);
+            overflow: hidden;
+        }
+
+        .barra-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 99px;
+            background-image: linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
+            background-repeat: no-repeat;
+            transition: width .8s cubic-bezier(.2,.8,.3,1);
+        }
+
+        /* --- Ferramentas: busca, filtros, som --- */
+        .ferramentas {
+            position: relative;
+            z-index: 1;
+            max-width: 620px;
+            margin: 0 auto 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .busca {
+            width: 100%;
+            padding: 13px 16px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: var(--texto);
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--linha);
+            border-radius: 50px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .busca::placeholder { color: #6f6590; }
+
+        .busca:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 16px rgba(0,207,255,.25);
+        }
+
+        .linha-filtros {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .chip {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            letter-spacing: .5px;
+            color: #cfc7e6;
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--linha);
+            border-radius: 50px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s, color .2s, transform .12s;
+        }
+
+        .chip:hover { border-color: var(--roxo); color: #fff; }
+        .chip:active { transform: scale(.95); }
+
+        .chip.ativo {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #00CFFF, #A020F0);
+            box-shadow: 0 0 14px rgba(160,32,240,.35);
+        }
+
+        .chip-som[aria-pressed="true"] {
+            border-color: var(--amarelo);
+            color: var(--amarelo);
+        }
+
+        /* --- Seções --- */
+        .secao-titulo {
+            position: relative;
+            z-index: 1;
+            max-width: 620px;
+            margin: 6px auto 16px;
+            text-align: left;
+            font-size: 10px;
+            color: var(--texto);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .secao-titulo::after {
+            content: "";
+            flex: 1;
+            height: 2px;
+            border-radius: 2px;
+            background: var(--marca);
+            opacity: .55;
+        }
+
+        .secao-titulo span { color: var(--amarelo); }
 
         .grid {
             position: relative;
@@ -94,12 +227,25 @@
             grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
             gap: 18px;
             max-width: 620px;
-            margin: 0 auto;
+            margin: 0 auto 30px;
+        }
+
+        .vazio {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            margin: 0 auto 30px;
+            font-size: 9px;
+            line-height: 2;
+            color: var(--texto-dim);
+            padding: 22px 16px;
+            border: 1px dashed var(--linha);
+            border-radius: 12px;
         }
 
         .cartucho {
             position: relative;
-            border-radius: 10px;
+            border-radius: 12px;
             background: linear-gradient(165deg, var(--card), var(--card-2));
             padding: 12px;
             border: 1px solid var(--linha);
@@ -115,19 +261,15 @@
             to   { opacity: 1; transform: none; }
         }
 
-        /* Capa com selo no canto */
-        .capa {
-            position: relative;
-            margin-bottom: 10px;
-        }
+        .capa { position: relative; margin-bottom: 10px; }
 
         .capa img {
             width: 100%;
-            border-radius: 5px;
+            border-radius: 6px;
             display: block;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            background: #05080d;
+            background: #07040f;
         }
 
         .selo {
@@ -147,53 +289,50 @@
         .selo svg { display: block; }
 
         .selo-lock {
-            background: rgba(8,12,18,.74);
-            border: 1px solid rgba(255,201,60,.55);
-            color: var(--dourado);
-            box-shadow: 0 0 12px rgba(255,201,60,.28);
+            background: rgba(11,7,20,.76);
+            border: 1px solid rgba(255,215,0,.55);
+            color: var(--amarelo);
+            box-shadow: 0 0 12px rgba(255,215,0,.25);
         }
 
         .selo-ok {
-            background: rgba(8,18,12,.74);
-            border: 1px solid rgba(92,255,138,.55);
-            color: var(--verde);
-            box-shadow: 0 0 12px rgba(92,255,138,.28);
+            background: rgba(11,7,20,.76);
+            border: 1px solid rgba(0,207,255,.7);
+            color: var(--azul);
+            box-shadow: 0 0 12px rgba(0,207,255,.35);
         }
 
         .cartucho h3 {
             font-size: 9px;
-            color: #b9c6d6;
+            color: #c9c1e0;
             line-height: 1.5;
             margin: 0 0 10px;
             min-height: 26px;
         }
 
-        /* Título misterioso: legível, sem parecer erro de digitação */
         .cartucho h3.misterio {
-            color: #5f7186;
+            color: #6f6590;
             font-size: 12px;
             letter-spacing: 7px;
             text-indent: 7px;
-            text-shadow: 0 0 10px rgba(34,211,238,.18);
+            text-shadow: 0 0 10px rgba(160,32,240,.3);
         }
 
-        .bloqueado img {
-            filter: grayscale(100%) brightness(.58) contrast(1.12);
-        }
+        .bloqueado img { filter: grayscale(100%) brightness(.55) contrast(1.1); }
 
         .bloqueado .capa::after {
             content: "";
             position: absolute;
             inset: 0;
-            border-radius: 5px;
-            background: linear-gradient(180deg, rgba(7,11,17,.10), rgba(7,11,17,.42));
+            border-radius: 6px;
+            background: linear-gradient(180deg, rgba(11,7,20,.10), rgba(11,7,20,.45));
             pointer-events: none;
         }
 
         .bloqueado:hover {
             transform: translateY(-3px);
-            border-color: rgba(255,201,60,.45);
-            box-shadow: 0 10px 26px rgba(255,201,60,.14);
+            border-color: rgba(255,215,0,.45);
+            box-shadow: 0 10px 26px rgba(255,215,0,.12);
         }
 
         .btn-comprar {
@@ -202,8 +341,8 @@
             justify-content: center;
             gap: 7px;
             background: rgba(255,255,255,.04);
-            color: #dfe8f2;
-            border: 1px solid #33465c;
+            color: #e6dff5;
+            border: 1px solid #3a2f58;
             padding: 10px;
             font-size: 8px;
             font-family: 'Press Start 2P', monospace;
@@ -218,40 +357,45 @@
         .btn-comprar svg { flex: 0 0 auto; }
 
         .btn-comprar:hover {
-            background: rgba(230,0,18,.14);
-            border-color: var(--vermelho);
+            background: rgba(255,140,0,.15);
+            border-color: var(--laranja);
             color: #fff;
         }
 
         .btn-comprar:active { transform: scale(.96); }
 
         .desbloqueado {
-            border-color: rgba(92,255,138,.55);
-            box-shadow: 0 0 18px rgba(92,255,138,.14), inset 0 0 22px rgba(92,255,138,.05);
+            border-color: rgba(0,207,255,.5);
+            box-shadow: 0 0 18px rgba(0,207,255,.12), inset 0 0 22px rgba(160,32,240,.07);
         }
 
-        .desbloqueado h3 { color: var(--verde); }
+        .desbloqueado h3 { color: #fff; }
 
         .desbloqueado:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 26px rgba(92,255,138,.22), inset 0 0 22px rgba(92,255,138,.06);
+            box-shadow: 0 10px 26px rgba(160,32,240,.25), inset 0 0 22px rgba(0,207,255,.06);
+        }
+
+        .desbloqueado.novo {
+            border-color: var(--amarelo);
+            box-shadow: 0 0 22px rgba(255,215,0,.35);
         }
 
         .etiqueta-ok {
-            background: linear-gradient(180deg, #7CFFA6, #35E070);
-            color: #04220f;
+            background: linear-gradient(135deg, #00CFFF, #A020F0);
+            color: #fff;
             font-size: 7px;
             padding: 9px 4px;
             border-radius: 10px;
             width: 100%;
             text-align: center;
             letter-spacing: .5px;
-            box-shadow: 0 0 14px rgba(92,255,138,.35);
+            box-shadow: 0 0 14px rgba(160,32,240,.35);
         }
 
-        /* --- Esqueleto de carregamento --- */
+        /* --- Esqueleto --- */
         .esqueleto {
-            border-radius: 10px;
+            border-radius: 12px;
             background: linear-gradient(165deg, var(--card), var(--card-2));
             border: 1px solid var(--linha);
             padding: 12px;
@@ -259,12 +403,7 @@
             position: relative;
         }
 
-        .esqueleto .bloco {
-            background: #16202c;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
+        .esqueleto .bloco { background: #1c1532; border-radius: 6px; margin-bottom: 10px; }
         .esqueleto .bloco.capa { aspect-ratio: 1 / 1; width: 100%; }
         .esqueleto .bloco.linha { height: 10px; width: 80%; margin-left: auto; margin-right: auto; }
         .esqueleto .bloco.linha.curta { width: 55%; }
@@ -314,33 +453,145 @@
             background: linear-gradient(135deg, #00CFFF, #A020F0);
         }
 
-        .btn-voltar .seta svg {
-            display: block;
-            transition: transform .2s ease;
-        }
-
+        .btn-voltar .seta svg { display: block; transition: transform .2s ease; }
         .btn-voltar:hover { box-shadow: 0 6px 20px rgba(0,0,0,.6), 0 0 22px rgba(0,207,255,.45); }
         .btn-voltar:hover .seta svg { transform: translateX(-2px); }
         .btn-voltar:active { transform: scale(.95); }
 
         .btn-voltar:focus-visible,
-        .btn-comprar:focus-visible {
-            outline: 2px solid var(--ciano);
+        .btn-comprar:focus-visible,
+        .chip:focus-visible,
+        .btn-celebra:focus-visible {
+            outline: 2px solid var(--azul);
             outline-offset: 3px;
         }
 
         .aviso-erro {
             position: relative;
             z-index: 1;
-            color: #ff8080;
+            color: #ff9a9a;
             font-size: 9px;
             line-height: 1.9;
             margin-top: 24px;
         }
 
+        /* --- Celebração de novo cartucho --- */
+        .celebra {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(7,4,15,.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .celebra.aberta { display: flex; animation: aparecer .3s ease; }
+
+        @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+
+        .celebra-caixa {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            padding: 26px 20px 22px;
+            border-radius: 18px;
+            background: linear-gradient(165deg, #1a1230, #0F0A1C);
+            border: 2px solid transparent;
+            background:
+                linear-gradient(165deg, #1a1230, #0F0A1C) padding-box,
+                linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700) border-box;
+            box-shadow: 0 0 40px rgba(160,32,240,.45);
+            animation: subir .55s cubic-bezier(.2,.9,.3,1.2);
+        }
+
+        @keyframes subir {
+            from { opacity: 0; transform: translateY(40px) scale(.9); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .celebra-titulo {
+            font-size: 11px;
+            line-height: 1.7;
+            margin: 0 0 18px;
+            background: var(--marca);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .celebra-capa {
+            width: 62%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto 16px;
+            box-shadow: 0 0 30px rgba(0,207,255,.45);
+            animation: entrarNaEstante .9s cubic-bezier(.2,.9,.3,1.1) .15s backwards;
+        }
+
+        @keyframes entrarNaEstante {
+            from { opacity: 0; transform: translateY(-60px) rotate(-8deg) scale(.6); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        .celebra-nome {
+            font-size: 10px;
+            color: #fff;
+            line-height: 1.7;
+            margin: 0 0 8px;
+        }
+
+        .celebra-extra {
+            font-size: 8px;
+            color: var(--texto-dim);
+            line-height: 1.8;
+            margin: 0 0 18px;
+        }
+
+        .btn-celebra {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #fff;
+            padding: 13px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00CFFF, #A020F0);
+            box-shadow: 0 0 18px rgba(160,32,240,.5);
+            transition: transform .12s;
+        }
+
+        .btn-celebra:active { transform: scale(.95); }
+
+        .confete {
+            position: fixed;
+            top: -14px;
+            width: 9px;
+            height: 14px;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            animation: cair linear forwards;
+        }
+
+        @keyframes cair {
+            0%   { opacity: 1; transform: translateY(0) rotate(0); }
+            100% { opacity: 1; transform: translateY(105vh) rotate(720deg); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            .cartucho, .esqueleto::after { animation: none; }
-            .btn-voltar .seta svg { transition: none; }
+            .cartucho, .esqueleto::after, .celebra.aberta,
+            .celebra-caixa, .celebra-capa { animation: none; }
+            .btn-voltar .seta svg, .barra-fill { transition: none; }
+            .confete { display: none; }
         }
     </style>
 </head>
@@ -355,11 +606,38 @@
         VOLTAR
     </button>
 
-    <h1><span class="icone-trofeu">🏆</span> MEUS CARTUCHOS</h1>
+    <h1><span class="icone-trofeu">🏆</span> <span class="titulo">MEUS CARTUCHOS</span></h1>
     <p class="sub">Complete sua estante escaneando novos cartuchos Retrô NFC</p>
 
-    <div class="grid" id="gridColecao"></div>
+    <div class="progresso" id="progresso" style="display:none;">
+        <div class="progresso-texto" id="progressoTexto"></div>
+        <div class="barra"><div class="barra-fill" id="barraFill"></div></div>
+    </div>
+
+    <div class="ferramentas" id="ferramentas" style="display:none;">
+        <input class="busca" id="campoBusca" type="search" autocomplete="off"
+               placeholder="BUSCAR NA MINHA ESTANTE" aria-label="Buscar na minha estante">
+        <div class="linha-filtros">
+            <button class="chip ativo" type="button" data-filtro="todos">TODOS</button>
+            <button class="chip" type="button" data-filtro="meus">MEUS</button>
+            <button class="chip" type="button" data-filtro="faltam">FALTAM</button>
+            <button class="chip chip-som" type="button" id="btnSom" aria-pressed="false"
+                    aria-label="Som da celebração">🔇 SOM</button>
+        </div>
+    </div>
+
+    <div id="conteudo"></div>
     <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
+
+    <div class="celebra" id="celebra" role="dialog" aria-modal="true" aria-labelledby="celebraTitulo">
+        <div class="celebra-caixa">
+            <p class="celebra-titulo" id="celebraTitulo">NOVO CARTUCHO NA SUA COLEÇÃO!</p>
+            <img class="celebra-capa" id="celebraCapa" src="" alt="">
+            <p class="celebra-nome" id="celebraNome"></p>
+            <p class="celebra-extra" id="celebraExtra"></p>
+            <button class="btn-celebra" id="celebraFechar" type="button">BORA!</button>
+        </div>
+    </div>
 
     <script>
         const URL_BACKEND   = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
@@ -368,11 +646,32 @@
         const CHAVE_NOME    = 'retronfc_nome';
         const CHAVE_ID      = 'retronfc_id_curto';
         const CHAVE_VISITAS = 'retronfc_visitas';
-        const APP_VERSAO   = "7.0";
+        const CHAVE_VISTOS  = 'retronfc_vistos';
+        const CHAVE_SOM     = 'retronfc_som';
+        const APP_VERSAO    = "7.0";
+
+        const estado = { games: [], filtro: 'todos', busca: '', celebrou: false, primeiraPintura: true };
 
         function voltar() {
             if (history.length > 1) history.back();
             else window.location.href = 'index.html';
+        }
+
+        function esc(t) {
+            return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function normalizar(t) {
+            return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function lerLista(chave) {
+            try {
+                const v = JSON.parse(localStorage.getItem(chave) || '[]');
+                return Array.isArray(v) ? v : [];
+            } catch (e) { return []; }
         }
 
         function obterNome() {
@@ -399,12 +698,7 @@
             return "Outro";
         }
 
-        function contarCartuchos() {
-            try {
-                const colecao = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
-                return Array.isArray(colecao) ? colecao.length : 0;
-            } catch (e) { return 0; }
-        }
+        function contarCartuchos() { return lerLista(CHAVE_COLECAO).length; }
 
         function classificarVisita() {
             try {
@@ -442,14 +736,12 @@
         }
 
         function mostrarEsqueleto() {
-            const grid = document.getElementById('gridColecao');
-            grid.innerHTML = "";
+            const c = document.getElementById('conteudo');
+            let html = '<div class="grid">';
             for (let i = 0; i < 6; i++) {
-                const sk = document.createElement('div');
-                sk.className = 'esqueleto';
-                sk.innerHTML = '<div class="bloco capa"></div><div class="bloco linha"></div><div class="bloco linha curta"></div>';
-                grid.appendChild(sk);
+                html += '<div class="esqueleto"><div class="bloco capa"></div><div class="bloco linha"></div><div class="bloco linha curta"></div></div>';
             }
+            c.innerHTML = html + '</div>';
         }
 
         function lerCacheJogos() {
@@ -482,73 +774,269 @@
             '<circle cx="17" cy="19" r="1.6" fill="currentColor"/>' +
             '</svg>';
 
-        function desenharColecao(games) {
-            const colecaoSalva = JSON.parse(localStorage.getItem(CHAVE_COLECAO) || '[]');
-            const grid = document.getElementById('gridColecao');
+        /* ---------- Som (opcional) ---------- */
+        function somAtivo() {
+            try { return localStorage.getItem(CHAVE_SOM) === '1'; } catch (e) { return false; }
+        }
+
+        function atualizarBotaoSom() {
+            const b = document.getElementById('btnSom');
+            const on = somAtivo();
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            b.textContent = on ? '🔊 SOM' : '🔇 SOM';
+        }
+
+        function tocarSomCelebracao() {
+            try {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                const ctx = new Ctx();
+                const notas = [523.25, 659.25, 783.99, 1046.5];
+                notas.forEach(function (freq, i) {
+                    const osc = ctx.createOscillator();
+                    const gan = ctx.createGain();
+                    const t = ctx.currentTime + i * 0.11;
+                    osc.type = 'square';
+                    osc.frequency.value = freq;
+                    gan.gain.setValueAtTime(0.0001, t);
+                    gan.gain.exponentialRampToValueAtTime(0.07, t + 0.02);
+                    gan.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+                    osc.connect(gan);
+                    gan.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.22);
+                });
+                setTimeout(function () { try { ctx.close(); } catch (e) {} }, 1200);
+            } catch (e) {}
+        }
+
+        /* ---------- Desenho da estante ---------- */
+        function cartaoColecionado(game, indice, ehNovo) {
+            const card = document.createElement('div');
+            card.className = "cartucho desbloqueado" + (ehNovo ? " novo" : "");
+            card.style.animationDelay = (indice * 45) + 'ms';
+            card.innerHTML =
+                '<div class="capa">' +
+                    '<img src="' + esc(game.cover) + '" alt="' + esc(game.title) + '" loading="lazy" decoding="async">' +
+                    SELO_OK +
+                '</div>' +
+                '<h3>' + esc(game.title) + '</h3>' +
+                '<div class="etiqueta-ok">COLECIONADO</div>';
+            return card;
+        }
+
+        function cartaoBloqueado(game, indice) {
             const numeroWhatsApp = "5519992087429";
+            const textoZap = encodeURIComponent("Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *" + game.title + "*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀");
+            const urlZap = "https://wa.me/" + numeroWhatsApp + "?text=" + textoZap;
 
-            grid.innerHTML = "";
+            const card = document.createElement('div');
+            card.className = "cartucho bloqueado";
+            card.style.animationDelay = (indice * 45) + 'ms';
+            card.innerHTML =
+                '<div class="capa">' +
+                    '<img src="' + esc(game.cover) + '" alt="Cartucho bloqueado" loading="lazy" decoding="async">' +
+                    SELO_LOCK +
+                '</div>' +
+                '<h3 class="misterio">???</h3>' +
+                '<button class="btn-comprar" type="button">' + ICONE_CARRINHO + ' COMPRAR</button>';
 
-            games.forEach((game, indice) => {
-                const temCartucho = colecaoSalva.includes(game.key);
-                const card = document.createElement('div');
-                card.style.animationDelay = (indice * 45) + 'ms';
-
-                if (temCartucho) {
-                    card.className = "cartucho desbloqueado";
-                    card.innerHTML = `
-                        <div class="capa">
-                            <img src="${game.cover}" alt="${game.title}" loading="lazy" decoding="async">
-                            ${SELO_OK}
-                        </div>
-                        <h3>${game.title}</h3>
-                        <div class="etiqueta-ok">COLECIONADO</div>
-                    `;
-                } else {
-                    const textoZap = encodeURIComponent(`Fala, Retrô NFC! 🎮✨\nVi na minha Estante Digital que ainda falta este clássico:\n\n🔥 *${game.title}*\n\nQuero completar minha coleção. Como finalizamos a compra? 🚀`);
-                    const urlCompletaZap = `https://wa.me/${numeroWhatsApp}?text=${textoZap}`;
-
-                    card.className = "cartucho bloqueado";
-                    card.innerHTML = `
-                        <div class="capa">
-                            <img src="${game.cover}" alt="Cartucho bloqueado" loading="lazy" decoding="async">
-                            ${SELO_LOCK}
-                        </div>
-                        <h3 class="misterio">???</h3>
-                        <button class="btn-comprar">${ICONE_CARRINHO} COMPRAR</button>
-                    `;
-
-                    card.querySelector('.btn-comprar').addEventListener('click', () => {
-                        rastrearCompra(game.title, urlCompletaZap);
-                    });
-                }
-
-                grid.appendChild(card);
+            card.querySelector('.btn-comprar').addEventListener('click', function () {
+                rastrearCompra(game.title, urlZap);
             });
+            return card;
+        }
+
+        function criarSecao(titulo, qtd, cards, mensagemVazia) {
+            const frag = document.createDocumentFragment();
+
+            const h = document.createElement('div');
+            h.className = 'secao-titulo';
+            h.innerHTML = esc(titulo) + ' <span>' + qtd + '</span>';
+            frag.appendChild(h);
+
+            if (cards.length === 0) {
+                const v = document.createElement('div');
+                v.className = 'vazio';
+                v.textContent = mensagemVazia;
+                frag.appendChild(v);
+            } else {
+                const g = document.createElement('div');
+                g.className = 'grid';
+                cards.forEach(function (c) { g.appendChild(c); });
+                frag.appendChild(g);
+            }
+            return frag;
+        }
+
+        function atualizarProgresso(tenho, total) {
+            const box = document.getElementById('progresso');
+            const txt = document.getElementById('progressoTexto');
+            const fill = document.getElementById('barraFill');
+            box.style.display = 'block';
+
+            const pct = total > 0 ? Math.round((tenho / total) * 100) : 0;
+            txt.innerHTML = '<b>' + tenho + '</b> DE <b>' + total + '</b> CARTUCHOS · ' + pct + '%';
+
+            // as cores vão surgindo conforme a barra enche
+            fill.style.backgroundSize = pct > 0 ? (10000 / pct) + '% 100%' : '100% 100%';
+            if (estado.primeiraPintura) {
+                fill.style.width = '0';
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () { fill.style.width = pct + '%'; });
+                });
+            } else {
+                fill.style.width = pct + '%';
+            }
+        }
+
+        function desenharColecao() {
+            const games = estado.games;
+            const salva = lerLista(CHAVE_COLECAO);
+            const vistos = lerLista(CHAVE_VISTOS);
+            const conteudo = document.getElementById('conteudo');
+            const busca = normalizar(estado.busca.trim());
+
+            document.getElementById('ferramentas').style.display = 'flex';
+
+            const meus = games
+                .filter(function (g) { return salva.indexOf(g.key) !== -1; })
+                .sort(function (a, b) { return salva.indexOf(b.key) - salva.indexOf(a.key); });
+
+            const faltam = games.filter(function (g) { return salva.indexOf(g.key) === -1; });
+
+            atualizarProgresso(meus.length, games.length);
+
+            // a busca só vale para cartuchos já colecionados (os outros são surpresa)
+            const meusVisiveis = busca
+                ? meus.filter(function (g) { return normalizar(g.title).indexOf(busca) !== -1; })
+                : meus;
+
+            const mostrarMeus = estado.filtro !== 'faltam';
+            const mostrarFaltam = estado.filtro !== 'meus' && !busca;
+
+            conteudo.innerHTML = '';
+
+            if (mostrarMeus) {
+                const cards = meusVisiveis.map(function (g, i) {
+                    const ehNovo = estado.novosKeys && estado.novosKeys.indexOf(g.key) !== -1;
+                    return cartaoColecionado(g, i, ehNovo);
+                });
+                const vazioMsg = busca
+                    ? 'NENHUM CARTUCHO ENCONTRADO COM ESSE NOME.'
+                    : 'SUA ESTANTE ESTÁ VAZIA. ESCANEIE UM CARTUCHO RETRÔ NFC PARA COMEÇAR!';
+                conteudo.appendChild(criarSecao('SUA ESTANTE', meusVisiveis.length, cards, vazioMsg));
+            }
+
+            if (mostrarFaltam) {
+                const cards = faltam.map(function (g, i) { return cartaoBloqueado(g, i); });
+                conteudo.appendChild(criarSecao('PARA DESCOBRIR', faltam.length, cards,
+                    'PARABÉNS! VOCÊ TEM TODOS OS CARTUCHOS DISPONÍVEIS. 🏆'));
+            }
+
+            estado.primeiraPintura = false;
+        }
+
+        /* ---------- Celebração ---------- */
+        function lancarConfete() {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const cores = ['#00CFFF', '#A020F0', '#FF8C00', '#FFD700'];
+            for (let i = 0; i < 42; i++) {
+                const p = document.createElement('i');
+                p.className = 'confete';
+                p.style.left = (Math.random() * 100) + 'vw';
+                p.style.background = cores[i % cores.length];
+                p.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
+                p.style.animationDelay = (Math.random() * 0.8) + 's';
+                p.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+                document.body.appendChild(p);
+                setTimeout(function () { p.remove(); }, 6000);
+            }
+        }
+
+        function fecharCelebracao() {
+            document.getElementById('celebra').classList.remove('aberta');
+            document.removeEventListener('keydown', teclaCelebracao);
+            // remove o destaque dos cartões novos
+            estado.novosKeys = [];
+            desenharColecao();
+        }
+
+        function teclaCelebracao(e) {
+            if (e.key === 'Escape') fecharCelebracao();
+        }
+
+        function abrirCelebracao(game, extras) {
+            document.getElementById('celebraCapa').src = game.cover;
+            document.getElementById('celebraCapa').alt = game.title;
+            document.getElementById('celebraNome').textContent = game.title;
+            document.getElementById('celebraExtra').textContent =
+                extras > 0 ? ('+ ' + extras + (extras === 1 ? ' OUTRO CARTUCHO NOVO NA ESTANTE' : ' OUTROS CARTUCHOS NOVOS NA ESTANTE')) : 'ELE JÁ ESTÁ NA SUA ESTANTE!';
+
+            const el = document.getElementById('celebra');
+            el.classList.add('aberta');
+            document.addEventListener('keydown', teclaCelebracao);
+            document.getElementById('celebraFechar').focus();
+
+            lancarConfete();
+            if (somAtivo()) tocarSomCelebracao();
+        }
+
+        // Celebra só o que ainda não foi visto. Um cartucho nunca é celebrado duas vezes.
+        function verificarNovos() {
+            if (estado.celebrou || estado.games.length === 0) return;
+            estado.celebrou = true;
+
+            const salva = lerLista(CHAVE_COLECAO);
+            const vistos = lerLista(CHAVE_VISTOS);
+            const catalogo = estado.games.map(function (g) { return g.key; });
+
+            const novos = salva.filter(function (k) {
+                return vistos.indexOf(k) === -1 && catalogo.indexOf(k) !== -1;
+            });
+
+            try { localStorage.setItem(CHAVE_VISTOS, JSON.stringify(salva)); } catch (e) {}
+
+            if (novos.length === 0) return;
+
+            estado.novosKeys = novos;
+            const ultimaKey = novos[novos.length - 1];
+            const game = estado.games.find(function (g) { return g.key === ultimaKey; });
+            if (!game) return;
+
+            desenharColecao();
+            abrirCelebracao(game, novos.length - 1);
+        }
+
+        /* ---------- Carregamento ---------- */
+        function aplicarJogos(games) {
+            estado.games = games;
+            desenharColecao();
+            verificarNovos();
         }
 
         async function carregarColecao() {
             const cache = lerCacheJogos();
 
-            // 1) Renderiza na hora com o que já está no aparelho
             if (cache) {
-                desenharColecao(cache);
+                aplicarJogos(cache);
             } else {
                 mostrarEsqueleto();
             }
 
-            // 2) Atualiza em segundo plano
             try {
                 const response = await fetch("games.json?ts=" + Date.now());
                 const data = await response.json();
                 if (data && Array.isArray(data.games)) {
                     salvarCacheJogos(data.games);
-                    desenharColecao(data.games);
+                    estado.games = data.games;
+                    desenharColecao();
+                    verificarNovos();
                 }
             } catch (e) {
                 console.error("Erro ao carregar a coleção", e);
                 if (!cache) {
-                    document.getElementById('gridColecao').innerHTML = "";
+                    document.getElementById('conteudo').innerHTML = "";
                     const aviso = document.getElementById('avisoErro');
                     aviso.style.display = "block";
                     aviso.textContent = "Não foi possível carregar a estante. Verifique sua conexão e tente novamente.";
@@ -557,6 +1045,31 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+            atualizarBotaoSom();
+
+            document.getElementById('campoBusca').addEventListener('input', function (e) {
+                estado.busca = e.target.value;
+                if (estado.games.length) desenharColecao();
+            });
+
+            document.querySelectorAll('.chip[data-filtro]').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    document.querySelectorAll('.chip[data-filtro]').forEach(function (c) { c.classList.remove('ativo'); });
+                    chip.classList.add('ativo');
+                    estado.filtro = chip.getAttribute('data-filtro');
+                    if (estado.games.length) desenharColecao();
+                });
+            });
+
+            document.getElementById('btnSom').addEventListener('click', function () {
+                const novo = !somAtivo();
+                try { localStorage.setItem(CHAVE_SOM, novo ? '1' : '0'); } catch (e) {}
+                atualizarBotaoSom();
+                if (novo) tocarSomCelebracao();
+            });
+
+            document.getElementById('celebraFechar').addEventListener('click', fecharCelebracao);
+
             carregarColecao();
         });
     </script>

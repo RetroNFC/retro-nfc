@@ -1,5 +1,5 @@
 // =====================================================
-// RETRÔ NFC — Google Apps Script (Proxy Seguro) v6
+// RETRÔ NFC — Google Apps Script (Proxy Seguro) v7
 // =====================================================
 //
 // PROPRIEDADES DO SCRIPT (Projeto ⚙️ → Propriedades do projeto):
@@ -7,21 +7,20 @@
 //   TELEGRAM_CHAT_ID  (obrigatória)
 //   SPREADSHEET_ID    (opcional — grava Acesso/Compra em planilha)
 //
-// NUNCA coloque o token no código nem no GitHub.
+// O texto das mensagens é montado AQUI. O frontend envia apenas
+// campos estruturados, nunca HTML. Assim não existe mais risco de
+// tag crua aparecer no Telegram.
 // =====================================================
 
 var PROP = PropertiesService.getScriptProperties();
 
-// --- Freios de segurança ---
 var LIMITE_POR_MINUTO = 20;
 var LIMITE_SESSAO_MIN = 8;
 var MAX_CORPO         = 8000;
 var MAX_TEXTO         = 3500;
 var MAX_JOGOS         = 1500;
-var MAX_CAMPO         = 120;
 var TTL_SESSAO        = 21600;
 
-// Separador visual das mensagens
 var SEP = "━━━━━━━━━━━━━━━";
 
 // =====================================================
@@ -31,14 +30,14 @@ var SEP = "━━━━━━━━━━━━━━━";
 function doPost(e) {
 
   if (!e || !e.postData || !e.postData.contents) {
-    Logger.log("doPost chamado sem corpo (execução manual no editor).");
+    Logger.log("doPost sem corpo (execução manual no editor).");
     return resposta("sem-corpo");
   }
 
   var bruto = e.postData.contents;
 
   if (bruto.length > MAX_CORPO) {
-    Logger.log("Corpo acima do limite: " + bruto.length + " caracteres.");
+    Logger.log("Corpo acima do limite: " + bruto.length);
     return resposta("corpo-grande");
   }
 
@@ -86,7 +85,7 @@ function doPost(e) {
 }
 
 // =====================================================
-// MENSAGENS
+// MENSAGENS — ACESSO E COMPRA
 // =====================================================
 
 function montarAcesso(body) {
@@ -113,22 +112,52 @@ function montarCompra(body) {
 }
 
 // =====================================================
-// SESSÃO DE JOGO (início + fim na mesma mensagem)
+// SESSÃO DE JOGO — TEXTO MONTADO NO SERVIDOR
 // =====================================================
 
-function tratarSessao(body) {
-  var texto = sanitizarHtml(body.texto || "");
-  if (!texto) return;
+function montarSessao(body) {
+  var encerrada = body.acao === "fim";
 
+  var texto =
+    "🎮 <b>SESSÃO RETRÔ NFC</b>\n" + SEP + "\n" +
+    "🕹️ <b>Jogo</b> · " + esc(body.jogo || "—") + "\n" +
+    "👤 <b>Jogador</b> · " + esc(nomeLimpo(body.nome)) + "\n" +
+    "🆔 <b>ID</b> · " + esc(body.jogador || "—") + "\n" +
+    "📱 <b>Aparelho</b> · " + esc(body.aparelho || "—") + "\n" +
+    "🏆 <b>Estante</b> · " + esc(body.cartuchos || "0") + " cartucho(s)\n" +
+    "🔁 <b>Visita</b> · " + esc(body.visitante || "—") + "\n" + SEP + "\n" +
+    "📍 <b>Local</b> · " + esc(body.local || "—") + "\n" +
+    "🌐 <b>Rede</b> · " + esc(body.ip || "—") + " · " + esc(body.rede || "—") + "\n" +
+    "🕒 <b>Início</b> · " + esc(body.inicio || agora()) + "\n" + SEP + "\n";
+
+  if (encerrada) {
+    texto +=
+      "⏱️ <b>Tempo jogado</b> · " + esc(body.tempo || "—") + "\n" +
+      "✅ <b>Status</b> · 🟢 <i>Sessão encerrada</i>";
+  } else {
+    texto += "⏱️ <b>Status</b> · 🔵 <i>Jogando...</i>";
+  }
+
+  return texto;
+}
+
+function tratarSessao(body) {
   var sessaoId = String(body.sessaoId || "").replace(/[^A-Za-z0-9_-]/g, "").substring(0, 40);
   var cache    = CacheService.getScriptCache();
   var chave    = sessaoId ? "msg_" + sessaoId : "";
+
+  // Compatibilidade: se vier texto pronto, usa. Senão monta no servidor.
+  var texto = body.jogo ? montarSessao(body) : sanitizarHtml(body.texto || "");
+  if (!texto) return;
 
   if (body.acao === "fim") {
     var guardado = chave ? cache.get(chave) : null;
 
     if (guardado) {
-      if (editarTelegram(guardado, texto, "sessao")) return;
+      if (editarTelegram(guardado, texto, "sessao")) {
+        cache.remove(chave);
+        return;
+      }
       Logger.log("Edição falhou; enviando mensagem nova como reserva.");
     }
 
@@ -138,10 +167,7 @@ function tratarSessao(body) {
   }
 
   var messageId = enviarTelegram(texto, "sessao");
-
-  if (messageId && chave) {
-    cache.put(chave, String(messageId), TTL_SESSAO);
-  }
+  if (messageId && chave) cache.put(chave, String(messageId), TTL_SESSAO);
 }
 
 // =====================================================
@@ -267,9 +293,15 @@ function editarTelegram(messageId, texto, bucket) {
       }
     );
 
-    if (resp.getResponseCode() === 200) return true;
+    var codigo = resp.getResponseCode();
+    if (codigo === 200) return true;
 
-    Logger.log("Telegram (edição) respondeu " + resp.getResponseCode() + ": " + resp.getContentText());
+    var corpo = resp.getContentText();
+
+    // Texto idêntico: o Telegram recusa, mas o resultado desejado já está na tela.
+    if (corpo.indexOf("message is not modified") !== -1) return true;
+
+    Logger.log("Telegram (edição) respondeu " + codigo + ": " + corpo);
     return false;
 
   } catch (err) {
@@ -328,7 +360,7 @@ function nomeLimpo(valor) {
   return s || "não informado";
 }
 
-// Aceita apenas as tags que o site usa. O resto é escapado.
+// Usado apenas no caminho de compatibilidade (texto pronto do frontend).
 function sanitizarHtml(txt) {
   var s = String(txt === null || txt === undefined ? "" : txt).substring(0, MAX_TEXTO);
   var permitidas = ["b", "i", "u", "s", "code", "pre"];
@@ -350,7 +382,7 @@ function sanitizarHtml(txt) {
 // =====================================================
 
 function doGet(e) {
-  return resposta("Retrô NFC Backend v6 — OK");
+  return resposta("Retrô NFC Backend v7 — OK");
 }
 
 function resposta(txt) {

@@ -433,3 +433,61 @@ body {
     50% { transform: scale(1, 0.005); filter: brightness(5); opacity: 1; }
     100% { transform: scale(0, 0); filter: brightness(10); opacity: 0; }
 }
+
+/* =========================================
+   CELULAR NA HORIZONTAL
+   ========================================= */
+
+/* Os botões nunca encolhem, em nenhuma orientação */
+#gameCover,
+#btnJogar, #startButton,
+#btnEstante {
+    flex-shrink: 0;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+
+    /* Capa à esquerda; título, pílulas e botões à direita */
+    #gameScreen:not([style*="display: none"]) {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: repeat(5, auto);
+        align-content: center;
+        justify-items: center;
+        column-gap: 28px;
+        height: 100dvh;
+        padding: 10px 24px;
+    }
+
+    #gameCover {
+        grid-column: 1;
+        grid-row: 1 / span 5;
+        align-self: center;
+        justify-self: end;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 78dvh;
+        object-fit: contain;
+        margin: 0;
+    }
+
+    #title, #subtitle, .info, #btnJogar, #btnEstante {
+        grid-column: 2;
+    }
+
+    #title    { font-size: 14px; margin-bottom: 6px; }
+    #subtitle { font-size: 10px; margin-bottom: 10px; }
+    .info     { max-width: 100%; }
+
+    #btnJogar, #startButton {
+        width: 200px;
+        height: 90px;
+        margin-top: 10px;
+    }
+
+    #btnEstante {
+        margin-top: 8px;
+        padding: 12px 22px;
+    }
+}

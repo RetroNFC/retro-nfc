@@ -243,6 +243,65 @@
             border-radius: 12px;
         }
 
+        /* --- Jogados recentemente --- */
+        .recentes {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 14px;
+            max-width: 620px;
+            margin: 0 auto 30px;
+            padding: 4px 4px 12px;
+            overflow-x: auto;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #3a2f58 transparent;
+        }
+
+        .recente {
+            flex: 0 0 104px;
+            scroll-snap-align: start;
+            cursor: default;
+            color: #fff;
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border: 1px solid rgba(255,215,0,.45);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 0 14px rgba(255,215,0,.10);
+            animation: entrarCartucho .42s cubic-bezier(.2,.8,.3,1) backwards;
+        }
+
+        .dica-recentes {
+            position: relative;
+            z-index: 1;
+            max-width: 620px;
+            margin: -6px auto 12px;
+            text-align: left;
+            font-size: 7px;
+            line-height: 1.9;
+            color: var(--texto-dim);
+        }
+
+        .recente img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+            background: #07040f;
+            margin-bottom: 8px;
+        }
+
+        .recente span {
+            display: block;
+            font-size: 7px;
+            line-height: 1.6;
+            color: #e6dff5;
+            min-height: 22px;
+            overflow: hidden;
+        }
+
         .cartucho {
             position: relative;
             border-radius: 12px;
@@ -260,6 +319,9 @@
             from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: none; }
         }
+
+        .sem-anim .cartucho,
+        .sem-anim .recente { animation: none; }
 
         .capa { position: relative; margin-bottom: 10px; }
 
@@ -301,6 +363,47 @@
             color: var(--azul);
             box-shadow: 0 0 12px rgba(0,207,255,.35);
         }
+
+        /* --- Estrela de favorito --- */
+        .btn-fav {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #cfc7e6;
+            background: rgba(11,7,20,.76);
+            border: 1px solid rgba(255,255,255,.28);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: transform .15s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .btn-fav svg {
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linejoin: round;
+            transition: fill .2s ease;
+        }
+
+        .btn-fav:hover { color: #fff; border-color: var(--amarelo); }
+        .btn-fav:active { transform: scale(.88); }
+
+        .btn-fav.ativo {
+            color: var(--amarelo);
+            border-color: rgba(255,215,0,.8);
+            box-shadow: 0 0 12px rgba(255,215,0,.45);
+        }
+
+        .btn-fav.ativo svg { fill: currentColor; }
 
         .cartucho h3 {
             font-size: 9px;
@@ -460,6 +563,8 @@
 
         .btn-voltar:focus-visible,
         .btn-comprar:focus-visible,
+        .btn-fav:focus-visible,
+        .recente:focus-visible,
         .chip:focus-visible,
         .btn-celebra:focus-visible {
             outline: 2px solid var(--azul);
@@ -588,9 +693,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .cartucho, .esqueleto::after, .celebra.aberta,
+            .cartucho, .recente, .esqueleto::after, .celebra.aberta,
             .celebra-caixa, .celebra-capa { animation: none; }
-            .btn-voltar .seta svg, .barra-fill { transition: none; }
+            .btn-voltar .seta svg, .barra-fill, .btn-fav, .recente { transition: none; }
             .confete { display: none; }
         }
     </style>
@@ -620,6 +725,7 @@
         <div class="linha-filtros">
             <button class="chip ativo" type="button" data-filtro="todos">TODOS</button>
             <button class="chip" type="button" data-filtro="meus">MEUS</button>
+            <button class="chip" type="button" data-filtro="favoritos">★ FAVORITOS</button>
             <button class="chip" type="button" data-filtro="faltam">FALTAM</button>
             <button class="chip chip-som" type="button" id="btnSom" aria-pressed="false"
                     aria-label="Ativar ou desativar a música e os efeitos sonoros">🔇 SOM</button>
@@ -640,17 +746,25 @@
     </div>
 
     <script>
-        const URL_BACKEND   = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
-        const CHAVE_COLECAO = 'retronfc_colecao';
-        const CHAVE_JOGOS   = 'retronfc_games_cache';
-        const CHAVE_NOME    = 'retronfc_nome';
-        const CHAVE_ID      = 'retronfc_id_curto';
-        const CHAVE_VISITAS = 'retronfc_visitas';
-        const CHAVE_VISTOS  = 'retronfc_vistos';
-        const CHAVE_SOM     = 'retronfc_som';
-        const APP_VERSAO    = "7.0";
+        const URL_BACKEND    = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
+        const CHAVE_COLECAO  = 'retronfc_colecao';
+        const CHAVE_JOGOS    = 'retronfc_games_cache';
+        const CHAVE_NOME     = 'retronfc_nome';
+        const CHAVE_ID       = 'retronfc_id_curto';
+        const CHAVE_VISITAS  = 'retronfc_visitas';
+        const CHAVE_VISTOS   = 'retronfc_vistos';
+        const CHAVE_SOM      = 'retronfc_som';
+        const CHAVE_FAVS     = 'retronfc_favoritos';
+        const CHAVE_RECENTES = 'retronfc_recentes';
+        const APP_VERSAO     = "9.0";
 
-        const estado = { games: [], filtro: 'todos', busca: '', celebrou: false, primeiraPintura: true };
+        const VOLUME_NORMAL     = 0.04;   // 4%
+        const VOLUME_CELEBRACAO = 0.015;  // 1,5%
+
+        const estado = {
+            games: [], filtro: 'todos', busca: '',
+            celebrou: false, primeiraPintura: true, semAnimacao: false
+        };
 
         /*
          * Música exclusiva desta página.
@@ -683,7 +797,7 @@
         const musica = new Audio();
         musica.loop = true;
         musica.preload = 'none';
-        musica.volume = 0.06;
+        musica.volume = VOLUME_NORMAL;
 
         let paginaAtiva = true;
         let iniciandoMusica = false;
@@ -712,6 +826,10 @@
                 const v = JSON.parse(localStorage.getItem(chave) || '[]');
                 return Array.isArray(v) ? v : [];
             } catch (e) { return []; }
+        }
+
+        function salvarLista(chave, lista) {
+            try { localStorage.setItem(chave, JSON.stringify(lista)); } catch (e) {}
         }
 
         function obterNome() {
@@ -814,6 +932,38 @@
             '<circle cx="17" cy="19" r="1.6" fill="currentColor"/>' +
             '</svg>';
 
+        const ICONE_ESTRELA = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">' +
+            '<polygon points="12,2.8 14.9,8.9 21.5,9.7 16.6,14.3 17.9,20.9 12,17.6 6.1,20.9 7.4,14.3 2.5,9.7 9.1,8.9"/>' +
+            '</svg>';
+
+        /* ---------- Favoritos ---------- */
+        function ehFavorito(key) {
+            return lerLista(CHAVE_FAVS).indexOf(key) !== -1;
+        }
+
+        function alternarFavorito(key) {
+            const lista = lerLista(CHAVE_FAVS);
+            const pos = lista.indexOf(key);
+            if (pos === -1) lista.push(key);
+            else lista.splice(pos, 1);
+            salvarLista(CHAVE_FAVS, lista);
+
+            const ativo = pos === -1;
+
+            // Atualiza todas as estrelas desse jogo sem redesenhar a tela.
+            document.querySelectorAll('.btn-fav').forEach(function (b) {
+                if (b.getAttribute('data-key') !== key) return;
+                b.classList.toggle('ativo', ativo);
+                b.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+            });
+
+            // No filtro FAVORITOS o cartucho precisa sair da lista.
+            if (estado.filtro === 'favoritos' && estado.games.length) {
+                estado.semAnimacao = true;
+                desenharColecao();
+            }
+        }
+
         /* ---------- Som e música da coleção ---------- */
         function somAtivo() {
             try { return localStorage.getItem(CHAVE_SOM) !== '0'; } catch (e) { return true; }
@@ -827,7 +977,7 @@
         }
 
         function ajustarVolumeMusica() {
-            musica.volume = celebrando ? 0.15 : 0.04;
+            musica.volume = celebrando ? VOLUME_CELEBRACAO : VOLUME_NORMAL;
         }
 
         function podeTocarMusica() {
@@ -916,11 +1066,18 @@
             pausarMusica();
         });
 
-        window.addEventListener('pageshow', function () {
+        window.addEventListener('pageshow', function (ev) {
             paginaAtiva = true;
             iniciarMusica();
+
+            // Voltando de um jogo: atualiza "jogados recentemente".
+            if (ev && ev.persisted && estado.games.length) {
+                estado.semAnimacao = true;
+                desenharColecao();
+            }
         });
 
+        // Som retrô: toca apenas quando um cartucho novo é desbloqueado.
         function tocarSomCelebracao() {
             try {
                 const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -983,16 +1140,25 @@
 
         /* ---------- Desenho da estante ---------- */
         function cartaoColecionado(game, indice, ehNovo) {
+            const fav = ehFavorito(game.key);
             const card = document.createElement('div');
             card.className = "cartucho desbloqueado" + (ehNovo ? " novo" : "");
             card.style.animationDelay = (indice * 45) + 'ms';
             card.innerHTML =
                 '<div class="capa">' +
                     '<img src="' + esc(game.cover) + '" alt="' + esc(game.title) + '" loading="lazy" decoding="async">' +
+                    '<button class="btn-fav' + (fav ? ' ativo' : '') + '" type="button"' +
+                        ' data-key="' + esc(game.key) + '"' +
+                        ' aria-pressed="' + (fav ? 'true' : 'false') + '"' +
+                        ' aria-label="Favoritar ' + esc(game.title) + '">' + ICONE_ESTRELA + '</button>' +
                     SELO_OK +
                 '</div>' +
                 '<h3>' + esc(game.title) + '</h3>' +
                 '<div class="etiqueta-ok">COLECIONADO</div>';
+
+            card.querySelector('.btn-fav').addEventListener('click', function () {
+                alternarFavorito(game.key);
+            });
             return card;
         }
 
@@ -1018,6 +1184,16 @@
             return card;
         }
 
+        function cartaoRecente(game, indice) {
+            const d = document.createElement('div');
+            d.className = 'recente';
+            d.style.animationDelay = (indice * 45) + 'ms';
+            d.innerHTML =
+                '<img src="' + esc(game.cover) + '" alt="' + esc(game.title) + '" loading="lazy" decoding="async">' +
+                '<span>' + esc(game.title) + '</span>';
+            return d;
+        }
+
         function criarSecao(titulo, qtd, cards, mensagemVazia) {
             const frag = document.createDocumentFragment();
 
@@ -1037,6 +1213,26 @@
                 cards.forEach(function (c) { g.appendChild(c); });
                 frag.appendChild(g);
             }
+            return frag;
+        }
+
+        function criarSecaoRecentes(jogos) {
+            const frag = document.createDocumentFragment();
+
+            const h = document.createElement('div');
+            h.className = 'secao-titulo';
+            h.innerHTML = 'JOGADOS RECENTEMENTE <span>' + jogos.length + '</span>';
+            frag.appendChild(h);
+
+            const dica = document.createElement('div');
+            dica.className = 'dica-recentes';
+            dica.textContent = 'PARA JOGAR DE NOVO, ENCOSTE A TAG DO CARTUCHO NO CELULAR.';
+            frag.appendChild(dica);
+
+            const faixa = document.createElement('div');
+            faixa.className = 'recentes';
+            jogos.forEach(function (g, i) { faixa.appendChild(cartaoRecente(g, i)); });
+            frag.appendChild(faixa);
             return frag;
         }
 
@@ -1064,11 +1260,12 @@
         function desenharColecao() {
             const games = estado.games;
             const salva = lerLista(CHAVE_COLECAO);
-            const vistos = lerLista(CHAVE_VISTOS);
+            const favs = lerLista(CHAVE_FAVS);
             const conteudo = document.getElementById('conteudo');
             const busca = normalizar(estado.busca.trim());
 
             document.getElementById('ferramentas').style.display = 'flex';
+            conteudo.classList.toggle('sem-anim', !!estado.semAnimacao);
 
             const meus = games
                 .filter(function (g) { return salva.indexOf(g.key) !== -1; })
@@ -1076,27 +1273,51 @@
 
             const faltam = games.filter(function (g) { return salva.indexOf(g.key) === -1; });
 
+            // Últimos jogados (mais recente primeiro), só os que existem no catálogo.
+            const recentes = lerLista(CHAVE_RECENTES)
+                .map(function (k) { return games.find(function (g) { return g.key === k; }); })
+                .filter(function (g) { return !!g; })
+                .slice(0, 8);
+
             atualizarProgresso(meus.length, games.length);
 
             // A busca só vale para cartuchos já colecionados.
-            const meusVisiveis = busca
+            let meusVisiveis = busca
                 ? meus.filter(function (g) { return normalizar(g.title).indexOf(busca) !== -1; })
                 : meus;
 
+            if (estado.filtro === 'favoritos') {
+                meusVisiveis = meusVisiveis.filter(function (g) { return favs.indexOf(g.key) !== -1; });
+            }
+
+            const mostrarRecentes = (estado.filtro === 'todos' || estado.filtro === 'meus') &&
+                !busca && recentes.length > 0;
             const mostrarMeus = estado.filtro !== 'faltam';
-            const mostrarFaltam = estado.filtro !== 'meus' && !busca;
+            const mostrarFaltam = estado.filtro !== 'meus' && estado.filtro !== 'favoritos' && !busca;
 
             conteudo.innerHTML = '';
+
+            if (mostrarRecentes) {
+                conteudo.appendChild(criarSecaoRecentes(recentes));
+            }
 
             if (mostrarMeus) {
                 const cards = meusVisiveis.map(function (g, i) {
                     const ehNovo = estado.novosKeys && estado.novosKeys.indexOf(g.key) !== -1;
                     return cartaoColecionado(g, i, ehNovo);
                 });
-                const vazioMsg = busca
-                    ? 'NENHUM CARTUCHO ENCONTRADO COM ESSE NOME.'
-                    : 'SUA ESTANTE ESTÁ VAZIA. ESCANEIE UM CARTUCHO RETRÔ NFC PARA COMEÇAR!';
-                conteudo.appendChild(criarSecao('SUA ESTANTE', meusVisiveis.length, cards, vazioMsg));
+
+                let vazioMsg;
+                if (busca) {
+                    vazioMsg = 'NENHUM CARTUCHO ENCONTRADO COM ESSE NOME.';
+                } else if (estado.filtro === 'favoritos') {
+                    vazioMsg = 'NENHUM FAVORITO AINDA. TOQUE NA ESTRELA DE UM CARTUCHO PARA FAVORITAR!';
+                } else {
+                    vazioMsg = 'SUA ESTANTE ESTÁ VAZIA. ESCANEIE UM CARTUCHO RETRÔ NFC PARA COMEÇAR!';
+                }
+
+                const titulo = estado.filtro === 'favoritos' ? 'FAVORITOS' : 'SUA ESTANTE';
+                conteudo.appendChild(criarSecao(titulo, meusVisiveis.length, cards, vazioMsg));
             }
 
             if (mostrarFaltam) {
@@ -1106,6 +1327,7 @@
             }
 
             estado.primeiraPintura = false;
+            estado.semAnimacao = false;
         }
 
         /* ---------- Celebração ---------- */
@@ -1119,7 +1341,7 @@
                 p.style.background = cores[i % cores.length];
                 p.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
                 p.style.animationDelay = (Math.random() * 0.8) + 's';
-                p.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+                p.style.transform = 'rotate(' + (Math.random()  360) + 'deg)';
                 document.body.appendChild(p);
                 setTimeout(function () { p.remove(); }, 6000);
             }
@@ -1166,99 +1388,4 @@
             if (estado.celebrou || estado.games.length === 0) return;
             estado.celebrou = true;
 
-            const salva = lerLista(CHAVE_COLECAO);
-            const vistos = lerLista(CHAVE_VISTOS);
-            const catalogo = estado.games.map(function (g) { return g.key; });
-
-            const novos = salva.filter(function (k) {
-                return vistos.indexOf(k) === -1 && catalogo.indexOf(k) !== -1;
-            });
-
-            try { localStorage.setItem(CHAVE_VISTOS, JSON.stringify(salva)); } catch (e) {}
-
-            if (novos.length === 0) return;
-
-            estado.novosKeys = novos;
-            const ultimaKey = novos[novos.length - 1];
-            const game = estado.games.find(function (g) { return g.key === ultimaKey; });
-            if (!game) return;
-
-            desenharColecao();
-            abrirCelebracao(game, novos.length - 1);
-        }
-
-        /* ---------- Carregamento ---------- */
-        function aplicarJogos(games) {
-            estado.games = games;
-            desenharColecao();
-            verificarNovos();
-        }
-
-        async function carregarColecao() {
-            const cache = lerCacheJogos();
-
-            if (cache) {
-                aplicarJogos(cache);
-            } else {
-                mostrarEsqueleto();
-            }
-
-            try {
-                const response = await fetch("games.json?ts=" + Date.now());
-                const data = await response.json();
-                if (data && Array.isArray(data.games)) {
-                    salvarCacheJogos(data.games);
-                    estado.games = data.games;
-                    desenharColecao();
-                    verificarNovos();
-                }
-            } catch (e) {
-                console.error("Erro ao carregar a coleção", e);
-                if (!cache) {
-                    document.getElementById('conteudo').innerHTML = "";
-                    const aviso = document.getElementById('avisoErro');
-                    aviso.style.display = "block";
-                    aviso.textContent = "Não foi possível carregar a estante. Verifique sua conexão e tente novamente.";
-                }
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            atualizarBotaoSom();
-            inicializarMusica();
-
-            document.getElementById('campoBusca').addEventListener('input', function (e) {
-                estado.busca = e.target.value;
-                if (estado.games.length) desenharColecao();
-            });
-
-            document.querySelectorAll('.chip[data-filtro]').forEach(function (chip) {
-                chip.addEventListener('click', function () {
-                    document.querySelectorAll('.chip[data-filtro]').forEach(function (c) {
-                        c.classList.remove('ativo');
-                    });
-                    chip.classList.add('ativo');
-                    estado.filtro = chip.getAttribute('data-filtro');
-                    if (estado.games.length) desenharColecao();
-                });
-            });
-
-            document.getElementById('btnSom').addEventListener('click', function () {
-                const novo = !somAtivo();
-                try { localStorage.setItem(CHAVE_SOM, novo ? '1' : '0'); } catch (e) {}
-                atualizarBotaoSom();
-
-                if (somAtivo()) {
-                    iniciarMusica();
-                } else {
-                    pausarMusica();
-                }
-            });
-
-            document.getElementById('celebraFechar').addEventListener('click', fecharCelebracao);
-
-            carregarColecao();
-        });
-    </script>
-</body>
-</html>
+            const salva =

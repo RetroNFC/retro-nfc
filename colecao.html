@@ -1341,7 +1341,7 @@
                 p.style.background = cores[i % cores.length];
                 p.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
                 p.style.animationDelay = (Math.random() * 0.8) + 's';
-                p.style.transform = 'rotate(' + (Math.random()  360) + 'deg)';
+                p.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
                 document.body.appendChild(p);
                 setTimeout(function () { p.remove(); }, 6000);
             }

@@ -1,12 +1,12 @@
 // =====================================================
-// RETRÔ NFC — app.js (v8)
+// RETRÔ NFC — app.js (v9)
 // Frontend envia apenas campos estruturados; o Apps Script monta o texto.
 // Falha de armazenamento ou de telemetria nunca bloqueia o jogo.
 // =====================================================
 
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
-const APP_VERSAO = "8.0";
+const APP_VERSAO = "9.0";
 
 // Chaves do localStorage (todas com o prefixo retronfc_)
 const CHAVE_COLECAO   = 'retronfc_colecao';
@@ -15,6 +15,7 @@ const CHAVE_NOME      = 'retronfc_nome';
 const CHAVE_ID        = 'retronfc_id_curto';
 const CHAVE_VISITAS   = 'retronfc_visitas';
 const CHAVE_PENDENTES = 'retronfc_pendentes';
+const CHAVE_RECENTES  = 'retronfc_recentes';
 
 // Identificador único desta sessão de jogo (o backend edita a mesma mensagem)
 const SESSAO_ID = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -43,6 +44,17 @@ function lerColecao() {
 }
 
 function contarCartuchos() { return lerColecao().length; }
+
+// --- Jogados recentemente: o mais recente fica na frente (máx. 8) ---
+function registrarRecente(key) {
+    try {
+        let lista = JSON.parse(lsGet(CHAVE_RECENTES) || '[]');
+        if (!Array.isArray(lista)) lista = [];
+        lista = lista.filter(function (k) { return k !== key; });
+        lista.unshift(key);
+        lsSet(CHAVE_RECENTES, JSON.stringify(lista.slice(0, 8)));
+    } catch (e) {}
+}
 
 // --- Visita: conta UMA vez por sessão do navegador ---
 let VISITAS_ATUAIS = 0;
@@ -359,42 +371,42 @@ function pedirNome() {
 
         const overlay = document.createElement('div');
         overlay.id = 'nomeOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(4,7,12,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'background:linear-gradient(160deg,#111a26,#0a0f16);border:2px solid #E60012;border-radius:14px;padding:28px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 30px rgba(230,0,18,.45),inset 0 0 40px rgba(230,0,18,.06);';
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:28px 22px;max-width:340px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'RETRÔ NFC';
-        titulo.style.cssText = 'color:#E60012;font-size:14px;letter-spacing:2px;margin-bottom:16px;text-shadow:0 0 12px rgba(230,0,18,.8);';
+        titulo.style.cssText = 'font-size:14px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const texto = document.createElement('p');
         texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
-        texto.style.cssText = 'color:#e6edf5;font-size:9px;line-height:1.9;margin:0 0 18px;';
+        texto.style.cssText = 'color:#ece8f7;font-size:9px;line-height:1.9;margin:0 0 18px;';
 
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = 20;
         input.autocomplete = 'nickname';
         input.placeholder = 'SEU NOME';
-        input.style.cssText = 'width:100%;box-sizing:border-box;background:#070b11;border:1px solid #2b3a4d;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
 
         input.addEventListener('focus', function () {
-            input.style.borderColor = '#22D3EE';
-            input.style.boxShadow = '0 0 0 3px rgba(34,211,238,.15)';
+            input.style.borderColor = '#00CFFF';
+            input.style.boxShadow = '0 0 0 3px rgba(0,207,255,.18)';
         });
         input.addEventListener('blur', function () {
-            input.style.borderColor = '#2b3a4d';
+            input.style.borderColor = '#2a2142';
             input.style.boxShadow = 'none';
         });
 
         const erro = document.createElement('div');
-        erro.style.cssText = 'color:#ff6b6b;font-size:8px;line-height:1.6;min-height:14px;margin-top:10px;';
+        erro.style.cssText = 'color:#FFD700;font-size:8px;line-height:1.6;min-height:14px;margin-top:10px;';
 
         const botao = document.createElement('button');
         botao.type = 'button';
         botao.textContent = 'COMEÇAR';
-        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(180deg,#ff2233,#C4000F);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 6px 18px rgba(230,0,18,.45);transition:transform .15s,filter .15s;';
+        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);transition:transform .15s,filter .15s;';
 
         botao.addEventListener('pointerdown', function () { botao.style.transform = 'scale(.97)'; });
         botao.addEventListener('pointerup', function () { botao.style.transform = 'scale(1)'; });
@@ -616,6 +628,9 @@ async function loadGames() {
                 try {
                     const nome = await pedirNome();
                     if (!nome) { btn.dataset.ocupado = ''; return; }
+
+                    // Alimenta a seção "Jogados recentemente" da estante
+                    registrarRecente(CURRENT_GAME.key);
 
                     try { registrarLogAcessoImediato(); } catch (e) {}
 

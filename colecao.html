@@ -1388,4 +1388,230 @@
             if (estado.celebrou || estado.games.length === 0) return;
             estado.celebrou = true;
 
-            const salva =
+            const salva = lerLista(CHAVE_COLECAO);
+            const vistos = lerLista(CHAVE_VISTOS);
+
+            const novos = estado.games.filter(function (game) {
+                return salva.indexOf(game.key) !== -1 &&
+                    vistos.indexOf(game.key) === -1;
+            });
+
+            estado.novosKeys = novos.map(function (game) {
+                return game.key;
+            });
+
+            if (novos.length === 0) return;
+
+            const atualizados = vistos.slice();
+
+            novos.forEach(function (game) {
+                if (atualizados.indexOf(game.key) === -1) {
+                    atualizados.push(game.key);
+                }
+            });
+
+            salvarLista(CHAVE_VISTOS, atualizados);
+            desenharColecao();
+            abrirCelebracao(novos[0], novos.length - 1);
+        }
+
+        /* ---------- Carregamento do catálogo ---------- */
+        function mostrarErroColecao(erro) {
+            console.error('Erro ao carregar a coleção:', erro);
+
+            const aviso = document.getElementById('avisoErro');
+            aviso.textContent =
+                'NÃO FOI POSSÍVEL ATUALIZAR O CATÁLOGO. ' +
+                'VERIFIQUE SUA CONEXÃO E RECARREGUE A PÁGINA.';
+            aviso.style.display = 'block';
+
+            if (estado.games.length === 0) {
+                const vazio = document.createElement('div');
+                vazio.className = 'vazio';
+                vazio.textContent =
+                    'O CATÁLOGO NÃO CARREGOU. ' +
+                    'ISSO NÃO SIGNIFICA QUE SUA COLEÇÃO FOI APAGADA.';
+
+                const conteudo = document.getElementById('conteudo');
+                conteudo.replaceChildren(vazio);
+            }
+        }
+
+        function aplicarCatalogo(games) {
+            if (!Array.isArray(games) || games.length === 0) {
+                throw new Error('Catálogo vazio ou inválido.');
+            }
+
+            const valido = games.every(function (game) {
+                return game &&
+                    typeof game.key === 'string' &&
+                    typeof game.title === 'string' &&
+                    typeof game.cover === 'string';
+            });
+
+            if (!valido) {
+                throw new Error('Há jogos com dados inválidos no catálogo.');
+            }
+
+            estado.games = games;
+            desenharColecao();
+            verificarNovos();
+        }
+
+        async function carregarCatalogoColecao() {
+            mostrarEsqueleto();
+
+            const cache = lerCacheJogos();
+
+            if (cache && cache.length > 0) {
+                try {
+                    aplicarCatalogo(cache);
+                } catch (erro) {
+                    console.warn('Cache do catálogo inválido:', erro);
+                }
+            }
+
+            const controle = typeof AbortController !== 'undefined'
+                ? new AbortController()
+                : null;
+
+            const temporizador = controle
+                ? setTimeout(function () {
+                    controle.abort();
+                }, 10000)
+                : null;
+
+            try {
+                const opcoes = { cache: 'no-store' };
+
+                if (controle) {
+                    opcoes.signal = controle.signal;
+                }
+
+                const resposta = await fetch('games.json', opcoes);
+
+                if (!resposta.ok) {
+                    throw new Error('HTTP ' + resposta.status);
+                }
+
+                const dados = await resposta.json();
+
+                if (!dados || !Array.isArray(dados.games)) {
+                    throw new Error('games.json inválido.');
+                }
+
+                aplicarCatalogo(dados.games);
+                salvarCacheJogos(dados.games);
+
+                document.getElementById('avisoErro').style.display = 'none';
+            } catch (erro) {
+                mostrarErroColecao(erro);
+            } finally {
+                if (temporizador) {
+                    clearTimeout(temporizador);
+                }
+            }
+        }
+
+        /* ---------- Eventos da interface ---------- */
+        function inicializarColecao() {
+            document.querySelectorAll('[data-filtro]').forEach(function (botao) {
+                botao.addEventListener('click', function () {
+                    estado.filtro = botao.getAttribute('data-filtro');
+                    estado.semAnimacao = true;
+
+                    document.querySelectorAll('[data-filtro]').forEach(function (item) {
+                        const ativo =
+                            item.getAttribute('data-filtro') === estado.filtro;
+
+                        item.classList.toggle('ativo', ativo);
+                        item.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+                    });
+
+                    if (estado.games.length > 0) {
+                        desenharColecao();
+                    }
+                });
+            });
+
+            document.getElementById('campoBusca').addEventListener(
+                'input',
+                function (evento) {
+                    estado.busca = evento.target.value;
+                    estado.semAnimacao = true;
+
+                    if (estado.games.length > 0) {
+                        desenharColecao();
+                    }
+                }
+            );
+
+            document.getElementById('btnSom').addEventListener(
+                'click',
+                function () {
+                    const ativar = !somAtivo();
+
+                    try {
+                        localStorage.setItem(CHAVE_SOM, ativar ? '1' : '0');
+                    } catch (erro) {
+                        console.warn('Não foi possível salvar a preferência de som:', erro);
+                    }
+
+                    atualizarBotaoSom();
+
+                    if (somAtivo()) {
+                        iniciarMusica();
+                    } else {
+                        pausarMusica();
+                    }
+                }
+            );
+
+            document.getElementById('celebraFechar').addEventListener(
+                'click',
+                fecharCelebracao
+            );
+
+            atualizarBotaoSom();
+            inicializarMusica();
+            carregarCatalogoColecao();
+        }
+
+        window.addEventListener('storage', function (evento) {
+            const chaves = [
+                CHAVE_COLECAO,
+                CHAVE_FAVS,
+                CHAVE_RECENTES,
+                CHAVE_SOM
+            ];
+
+            if (evento.key !== null && chaves.indexOf(evento.key) === -1) {
+                return;
+            }
+
+            atualizarBotaoSom();
+
+            if (somAtivo()) {
+                iniciarMusica();
+            } else {
+                pausarMusica();
+            }
+
+            if (estado.games.length > 0) {
+                estado.semAnimacao = true;
+                desenharColecao();
+            }
+        });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener(
+                'DOMContentLoaded',
+                inicializarColecao,
+                { once: true }
+            );
+        } else {
+            inicializarColecao();
+        }
+    </script>
+</body>
+</html>

@@ -705,6 +705,93 @@
             100% { opacity: 1; transform: translateY(105vh) rotate(720deg); }
         }
 
+        /* --- Item 14: compartilhar estante --- */
+        .btn-compartilhar {
+            font-family: 'Jersey Retro', 'Press Start 2P', monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #fff;
+            cursor: pointer;
+            padding: 12px 18px;
+            border: 2px solid transparent;
+            border-radius: 999px;
+            background:
+                linear-gradient(#0D0818, #0D0818) padding-box,
+                linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700) border-box;
+            box-shadow: 0 0 16px rgba(160,32,240,.28);
+            transition: transform .12s ease, box-shadow .2s ease;
+        }
+
+        .btn-compartilhar:hover { box-shadow: 0 0 22px rgba(0,207,255,.45); }
+        .btn-compartilhar:active { transform: scale(.96); }
+        .btn-compartilhar:disabled { opacity: .55; cursor: progress; }
+        .btn-compartilhar:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+
+        .compartilhar-aviso {
+            font-size: 10px;
+            line-height: 1.8;
+            color: var(--texto-dim);
+            margin: 0;
+        }
+
+        .compartilhar-aviso:empty { display: none; }
+
+        .partilha-caixa { max-width: 340px; }
+
+        .partilha-img {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+            margin: 0 auto 16px;
+            background: #07040f;
+            box-shadow: 0 0 26px rgba(0,207,255,.35);
+        }
+
+        .partilha-acoes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-partilha {
+            flex: 1 1 0;
+            font-family: 'Jersey Retro', 'Press Start 2P', monospace;
+            font-size: 10px;
+            letter-spacing: .5px;
+            color: #fff;
+            padding: 12px 10px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00CFFF, #A020F0);
+            box-shadow: 0 0 16px rgba(160,32,240,.45);
+            transition: transform .12s;
+        }
+
+        .btn-partilha:active { transform: scale(.95); }
+
+        .btn-partilha.secundario {
+            background: rgba(255,255,255,.05);
+            border: 1px solid #3a2f58;
+            box-shadow: none;
+        }
+
+        .btn-partilha.fechar {
+            flex: none;
+            width: 100%;
+            background: none;
+            border: 1px solid #3a2f58;
+            color: var(--texto-dim);
+            box-shadow: none;
+        }
+
+        .btn-partilha:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .partilha-caixa { animation: none; }
+            .btn-partilha, .btn-compartilhar { transition: none; }
+        }
+        
         @media (prefers-reduced-motion: reduce) {
             .cartucho, .recente, .esqueleto::after, .celebra.aberta,
             .celebra-caixa, .celebra-capa { animation: none; }
@@ -736,18 +823,31 @@
         <input class="busca" id="campoBusca" type="search" autocomplete="off"
                placeholder="BUSCAR NA MINHA ESTANTE" aria-label="Buscar na minha estante">
         <div class="linha-filtros">
+            <button class="btn-compartilhar" id="btnCompartilhar" type="button">COMPARTILHAR ESTANTE</button>
+            <p class="compartilhar-aviso" id="compartilharAviso" role="status" aria-live="polite"></p>
             <button class="chip ativo" type="button" data-filtro="todos">TODOS</button>
             <button class="chip" type="button" data-filtro="meus">MEUS</button>
             <button class="chip" type="button" data-filtro="favoritos">★ FAVORITOS</button>
             <button class="chip" type="button" data-filtro="faltam">FALTAM</button>
             <button class="chip chip-som" type="button" id="btnSom" aria-pressed="false"
-                    aria-label="Ativar ou desativar a música e os efeitos sonoros">🔇 SOM</button>
+            aria-label="Ativar ou desativar a música e os efeitos sonoros">🔇 SOM</button>
         </div>
     </div>
 
     <div id="conteudo"></div>
     <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
 
+    <div class="celebra" id="partilha" role="dialog" aria-modal="true" aria-labelledby="partilhaTitulo">
+        <div class="celebra-caixa partilha-caixa">
+            <p class="celebra-titulo" id="partilhaTitulo">SUA ESTANTE EM UMA IMAGEM</p>
+            <img class="partilha-img" id="partilhaImg" alt="Previa do card da sua estante">
+            <div class="partilha-acoes">
+                <button class="btn-partilha" id="partilhaEnviar" type="button">COMPARTILHAR</button>
+                <button class="btn-partilha secundario" id="partilhaBaixar" type="button">BAIXAR</button>
+            </div>
+            <button class="btn-partilha fechar" id="partilhaFechar" type="button">FECHAR</button>
+        </div>
+    </div>
     <div class="celebra" id="celebra" role="dialog" aria-modal="true" aria-labelledby="celebraTitulo">
         <div class="celebra-caixa">
             <p class="celebra-titulo" id="celebraTitulo">NOVO CARTUCHO NA SUA ESTANTE!</p>
@@ -1525,6 +1625,363 @@
                 }
             }
         }
+
+        /* ---------- Item 14: card compartilhavel da estante ---------- */
+        const CARD_LARGURA = 1080;
+        const CARD_ALTURA  = 1350;
+        const CARD_FONTE   = '"Jersey Retro", "Press Start 2P", monospace';
+
+        let cardBlobAtual = null;
+        let cardUrlAtual  = null;
+
+        function carregarImagemCard(src) {
+            return new Promise(function (resolve) {
+                const img = new Image();
+                img.decoding = 'async';
+                img.onload = function () { resolve(img); };
+                img.onerror = function () { resolve(null); };
+                img.src = src;
+            });
+        }
+
+        function caminhoArredondado(ctx, x, y, w, h, r) {
+            const raio = Math.min(r, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + raio, y);
+            ctx.lineTo(x + w - raio, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + raio);
+            ctx.lineTo(x + w, y + h - raio);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - raio, y + h);
+            ctx.lineTo(x + raio, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - raio);
+            ctx.lineTo(x, y + raio);
+            ctx.quadraticCurveTo(x, y, x + raio, y);
+            ctx.closePath();
+        }
+
+        function ajustarFonteCard(ctx, texto, maxLargura, tamanho, peso) {
+            let t = tamanho;
+            do {
+                ctx.font = (peso || '400') + ' ' + t + 'px ' + CARD_FONTE;
+                if (ctx.measureText(texto).width <= maxLargura) break;
+                t -= 2;
+            } while (t > 10);
+            return t;
+        }
+
+        function meusCartuchosNaOrdem() {
+            const salva = lerLista(CHAVE_COLECAO);
+            return salva
+                .slice()
+                .reverse()
+                .map(function (k) {
+                    return estado.games.find(function (g) { return g.key === k; });
+                })
+                .filter(function (g) { return !!g; });
+        }
+
+        async function gerarCardEstante() {
+            if (document.fonts) {
+                try {
+                    await document.fonts.load('40px "Jersey Retro"');
+                    await document.fonts.ready;
+                } catch (e) {}
+            }
+
+            const meus = meusCartuchosNaOrdem();
+            const total = estado.games.length;
+            const tenho = meus.length;
+            const pct = total > 0 ? Math.round((tenho / total) * 100) : 0;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = CARD_LARGURA;
+            canvas.height = CARD_ALTURA;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#0B0714';
+            ctx.fillRect(0, 0, CARD_LARGURA, CARD_ALTURA);
+
+            const brilhoRoxo = ctx.createRadialGradient(540, -80, 0, 540, -80, 780);
+            brilhoRoxo.addColorStop(0, 'rgba(160,32,240,0.34)');
+            brilhoRoxo.addColorStop(1, 'rgba(160,32,240,0)');
+            ctx.fillStyle = brilhoRoxo;
+            ctx.fillRect(0, 0, CARD_LARGURA, CARD_ALTURA);
+
+            const brilhoAzul = ctx.createRadialGradient(980, 1240, 0, 980, 1240, 620);
+            brilhoAzul.addColorStop(0, 'rgba(0,207,255,0.20)');
+            brilhoAzul.addColorStop(1, 'rgba(0,207,255,0)');
+            ctx.fillStyle = brilhoAzul;
+            ctx.fillRect(0, 0, CARD_LARGURA, CARD_ALTURA);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.022)';
+            for (let y = 0; y < CARD_ALTURA; y += 4) {
+                ctx.fillRect(0, y, CARD_LARGURA, 1);
+            }
+
+            const moldura = ctx.createLinearGradient(0, 0, CARD_LARGURA, CARD_ALTURA);
+            moldura.addColorStop(0, '#00CFFF');
+            moldura.addColorStop(0.35, '#A020F0');
+            moldura.addColorStop(0.7, '#FF8C00');
+            moldura.addColorStop(1, '#FFD700');
+            ctx.strokeStyle = moldura;
+            ctx.lineWidth = 6;
+            caminhoArredondado(ctx, 26, 26, CARD_LARGURA - 52, CARD_ALTURA - 52, 34);
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+
+            const marca = ctx.createLinearGradient(300, 0, 780, 0);
+            marca.addColorStop(0, '#00CFFF');
+            marca.addColorStop(0.35, '#A020F0');
+            marca.addColorStop(0.7, '#FF8C00');
+            marca.addColorStop(1, '#FFD700');
+
+            ajustarFonteCard(ctx, 'RETRO NFC', 700, 44);
+            ctx.fillStyle = marca;
+            ctx.fillText('RETRO NFC', 540, 132);
+
+            ajustarFonteCard(ctx, 'MINHA ESTANTE', 900, 74);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('MINHA ESTANTE', 540, 268);
+
+            ajustarFonteCard(ctx, tenho + ' DE ' + total + ' CARTUCHOS', 900, 30);
+            ctx.fillStyle = '#9a90b5';
+            ctx.fillText(tenho + ' DE ' + total + ' CARTUCHOS  \u00b7  ' + pct + '%', 540, 320);
+
+            const barraX = 72;
+            const barraY = 352;
+            const barraW = CARD_LARGURA - 144;
+            const barraH = 22;
+
+            ctx.fillStyle = '#1b1430';
+            caminhoArredondado(ctx, barraX, barraY, barraW, barraH, barraH / 2);
+            ctx.fill();
+            ctx.strokeStyle = '#2a2142';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            if (pct > 0) {
+                ctx.save();
+                caminhoArredondado(ctx, barraX, barraY, barraW, barraH, barraH / 2);
+                ctx.clip();
+                const corBarra = ctx.createLinearGradient(barraX, 0, barraX + barraW, 0);
+                corBarra.addColorStop(0, '#00CFFF');
+                corBarra.addColorStop(0.34, '#A020F0');
+                corBarra.addColorStop(0.67, '#FF8C00');
+                corBarra.addColorStop(1, '#FFD700');
+                ctx.fillStyle = corBarra;
+                ctx.fillRect(barraX, barraY, barraW * (pct / 100), barraH);
+                ctx.restore();
+            }
+
+            const cols = 4;
+            const gap = 18;
+            const margem = 72;
+            const cw = (CARD_LARGURA - margem * 2 - gap * (cols - 1)) / cols;
+            const ch = cw * 490 / 690;
+            const y0 = 418;
+            const maxTiles = 16;
+            const mostrar = tenho > maxTiles ? maxTiles - 1 : tenho;
+
+            const imagens = await Promise.all(
+                meus.slice(0, mostrar).map(function (g) {
+                    return carregarImagemCard(g.cover);
+                })
+            );
+
+            for (let i = 0; i < mostrar; i++) {
+                const col = i % cols;
+                const lin = Math.floor(i / cols);
+                const x = margem + col * (cw + gap);
+                const y = y0 + lin * (ch + gap);
+
+                ctx.save();
+                caminhoArredondado(ctx, x, y, cw, ch, 10);
+                ctx.clip();
+                ctx.fillStyle = '#07040f';
+                ctx.fillRect(x, y, cw, ch);
+
+                const img = imagens[i];
+                if (img && img.width > 0 && img.height > 0) {
+                    const escala = Math.min(cw / img.width, ch / img.height);
+                    const dw = img.width * escala;
+                    const dh = img.height * escala;
+                    ctx.drawImage(img, x + (cw - dw) / 2, y + (ch - dh) / 2, dw, dh);
+                }
+                ctx.restore();
+
+                ctx.strokeStyle = 'rgba(0,207,255,0.35)';
+                ctx.lineWidth = 2;
+                caminhoArredondado(ctx, x + 1, y + 1, cw - 2, ch - 2, 10);
+                ctx.stroke();
+            }
+
+            if (tenho > maxTiles) {
+                const i = mostrar;
+                const col = i % cols;
+                const lin = Math.floor(i / cols);
+                const x = margem + col * (cw + gap);
+                const y = y0 + lin * (ch + gap);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.04)';
+                caminhoArredondado(ctx, x, y, cw, ch, 10);
+                ctx.fill();
+
+                ctx.strokeStyle = moldura;
+                ctx.lineWidth = 3;
+                caminhoArredondado(ctx, x + 1.5, y + 1.5, cw - 3, ch - 3, 10);
+                ctx.stroke();
+
+                const sobra = tenho - mostrar;
+                ajustarFonteCard(ctx, '+' + sobra, cw - 24, 54);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('+' + sobra, x + cw / 2, y + ch / 2 + 4);
+
+                ajustarFonteCard(ctx, 'MAIS', cw - 24, 18);
+                ctx.fillStyle = '#9a90b5';
+                ctx.fillText('MAIS', x + cw / 2, y + ch / 2 + 40);
+            }
+
+            const linhaY = 1156;
+            const linha = ctx.createLinearGradient(margem, 0, CARD_LARGURA - margem, 0);
+            linha.addColorStop(0, 'rgba(0,207,255,0.65)');
+            linha.addColorStop(0.5, 'rgba(160,32,240,0.65)');
+            linha.addColorStop(1, 'rgba(255,215,0,0.65)');
+            ctx.fillStyle = linha;
+            ctx.fillRect(margem, linhaY, CARD_LARGURA - margem * 2, 3);
+
+            ajustarFonteCard(ctx, 'RETRO-NFC.PAGES.DEV', 900, 34);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('RETRO-NFC.PAGES.DEV', 540, 1226);
+
+            ajustarFonteCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 900, 24);
+            ctx.fillStyle = '#9a90b5';
+            ctx.fillText('ENCOSTE A TAG PARA JOGAR', 540, 1276);
+
+            return canvas;
+        }
+
+        function arquivoDoCard() {
+            if (!cardBlobAtual) return null;
+            try {
+                return new File([cardBlobAtual], 'retro-nfc-estante.png', { type: 'image/png' });
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function podeCompartilharArquivo() {
+            const arquivo = arquivoDoCard();
+            return !!(arquivo && navigator.canShare && navigator.canShare({ files: [arquivo] }));
+        }
+
+        function configurarBotaoEnviar() {
+            const botao = document.getElementById('partilhaEnviar');
+            botao.style.display = podeCompartilharArquivo() ? '' : 'none';
+        }
+
+        function fecharPartilha() {
+            document.getElementById('partilha').classList.remove('aberta');
+            document.getElementById('partilhaImg').removeAttribute('src');
+
+            if (cardUrlAtual) {
+                URL.revokeObjectURL(cardUrlAtual);
+                cardUrlAtual = null;
+            }
+        }
+
+        async function abrirPartilha() {
+            const botao = document.getElementById('btnCompartilhar');
+            const aviso = document.getElementById('compartilharAviso');
+
+            if (botao.dataset.ocupado === '1') return;
+
+            botao.dataset.ocupado = '1';
+            botao.disabled = true;
+            aviso.textContent = 'MONTANDO SUA IMAGEM...';
+
+            try {
+                if (!estado.games.length) {
+                    throw new Error('catalogo indisponivel');
+                }
+
+                if (meusCartuchosNaOrdem().length === 0) {
+                    aviso.textContent = 'SUA ESTANTE AINDA ESTA VAZIA. ENCOSTE UM CARTUCHO RETRO NFC.';
+                    return;
+                }
+
+                const canvas = await gerarCardEstante();
+
+                const blob = await new Promise(function (resolve) {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+
+                if (!blob) throw new Error('falha ao gerar a imagem');
+
+                cardBlobAtual = blob;
+                cardUrlAtual = URL.createObjectURL(blob);
+
+                document.getElementById('partilhaImg').src = cardUrlAtual;
+                document.getElementById('partilha').classList.add('aberta');
+                configurarBotaoEnviar();
+
+                aviso.textContent = '';
+            } catch (e) {
+                aviso.textContent = 'NAO FOI POSSIVEL MONTAR A IMAGEM. TENTE DE NOVO.';
+            } finally {
+                botao.dataset.ocupado = '0';
+                botao.disabled = false;
+            }
+        }
+
+        async function enviarCard() {
+            const arquivo = arquivoDoCard();
+            if (!arquivo) return;
+
+            try {
+                await navigator.share({
+                    files: [arquivo],
+                    title: 'Minha estante Retro NFC',
+                    text: 'Minha colecao de cartuchos Retro NFC'
+                });
+            } catch (e) {}
+        }
+
+        function baixarCard() {
+            if (!cardBlobAtual) return;
+
+            const url = URL.createObjectURL(cardBlobAtual);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'retro-nfc-estante.png';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        }
+
+        (function iniciarPartilha() {
+            const botao = document.getElementById('btnCompartilhar');
+            if (!botao) return;
+
+            botao.addEventListener('click', abrirPartilha);
+            document.getElementById('partilhaFechar').addEventListener('click', fecharPartilha);
+            document.getElementById('partilhaEnviar').addEventListener('click', enviarCard);
+            document.getElementById('partilhaBaixar').addEventListener('click', baixarCard);
+
+            document.getElementById('partilha').addEventListener('click', function (evento) {
+                if (evento.target === this) fecharPartilha();
+            });
+
+            document.addEventListener('keydown', function (evento) {
+                if (evento.key !== 'Escape') return;
+                if (document.getElementById('partilha').classList.contains('aberta')) {
+                    fecharPartilha();
+                }
+            });
+        })();
 
         /* ---------- Eventos da interface ---------- */
         function inicializarColecao() {

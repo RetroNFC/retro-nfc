@@ -705,33 +705,62 @@
             100% { opacity: 1; transform: translateY(105vh) rotate(720deg); }
         }
 
-        /* --- Item 14: compartilhar estante --- */
+        /* --- Item 14: compartilhar estante (flutuante) --- */
+        body { padding-bottom: 112px; }
+
         .btn-compartilhar {
+            position: fixed;
+            right: 16px;
+            bottom: calc(16px + env(safe-area-inset-bottom));
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
             font-family: 'Jersey Retro', 'Press Start 2P', monospace;
             font-size: 11px;
             letter-spacing: 1px;
             color: #fff;
             cursor: pointer;
-            padding: 12px 18px;
+            padding: 11px 18px 11px 12px;
             border: 2px solid transparent;
             border-radius: 999px;
             background:
                 linear-gradient(#0D0818, #0D0818) padding-box,
                 linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700) border-box;
-            box-shadow: 0 0 16px rgba(160,32,240,.28);
-            transition: transform .12s ease, box-shadow .2s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,.65), 0 0 18px rgba(160,32,240,.35);
+            transition: transform .15s ease, box-shadow .2s ease;
         }
 
-        .btn-compartilhar:hover { box-shadow: 0 0 22px rgba(0,207,255,.45); }
-        .btn-compartilhar:active { transform: scale(.96); }
-        .btn-compartilhar:disabled { opacity: .55; cursor: progress; }
+        .btn-compartilhar .icone {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #00CFFF, #A020F0);
+            flex: 0 0 auto;
+        }
+
+        .btn-compartilhar .icone svg { display: block; }
+
+        .btn-compartilhar:hover { box-shadow: 0 8px 24px rgba(0,0,0,.65), 0 0 24px rgba(0,207,255,.5); }
+        .btn-compartilhar:active { transform: scale(.95); }
+        .btn-compartilhar:disabled { opacity: .6; cursor: progress; }
         .btn-compartilhar:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
 
         .compartilhar-aviso {
+            position: fixed;
+            right: 16px;
+            bottom: calc(78px + env(safe-area-inset-bottom));
+            z-index: 60;
+            max-width: 250px;
+            text-align: right;
             font-size: 10px;
-            line-height: 1.8;
+            line-height: 1.7;
             color: var(--texto-dim);
             margin: 0;
+            pointer-events: none;
         }
 
         .compartilhar-aviso:empty { display: none; }
@@ -787,16 +816,23 @@
 
         .btn-partilha:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
 
+        /* --- Favoritos: cartuchos em destaque --- */
+        .grid.favoritos { gap: 10px; }
+
+        .grid.favoritos .cartucho { padding: 10px; }
+
+        .grid.favoritos .cartucho h3 { font-size: 12px; min-height: 32px; }
+
+        @media (min-width: 560px) {
+            .grid.favoritos {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .partilha-caixa { animation: none; }
             .btn-partilha, .btn-compartilhar { transition: none; }
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            .cartucho, .recente, .esqueleto::after, .celebra.aberta,
-            .celebra-caixa, .celebra-capa { animation: none; }
-            .btn-voltar .seta svg, .barra-fill, .btn-fav, .recente { transition: none; }
-            .confete { display: none; }
         }
     </style>
 </head>
@@ -823,8 +859,6 @@
         <input class="busca" id="campoBusca" type="search" autocomplete="off"
                placeholder="BUSCAR NA MINHA ESTANTE" aria-label="Buscar na minha estante">
         <div class="linha-filtros">
-            <button class="btn-compartilhar" id="btnCompartilhar" type="button">COMPARTILHAR ESTANTE</button>
-            <p class="compartilhar-aviso" id="compartilharAviso" role="status" aria-live="polite"></p>
             <button class="chip ativo" type="button" data-filtro="todos">TODOS</button>
             <button class="chip" type="button" data-filtro="meus">MEUS</button>
             <button class="chip" type="button" data-filtro="favoritos">★ FAVORITOS</button>
@@ -837,6 +871,19 @@
     <div id="conteudo"></div>
     <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
 
+    <p class="compartilhar-aviso" id="compartilharAviso" role="status" aria-live="polite"></p>
+
+    <button class="btn-compartilhar" id="btnCompartilhar" type="button">
+        <span class="icone">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
+                <path d="M12 16V4M12 4l-4 4M12 4l4 4" fill="none" stroke="#fff"
+                      stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11A1.5 1.5 0 0 0 19 18.5V14"
+                      fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+            </svg>
+        </span>
+        COMPARTILHAR ESTANTE
+    </button>
     <div class="celebra" id="partilha" role="dialog" aria-modal="true" aria-labelledby="partilhaTitulo">
         <div class="celebra-caixa partilha-caixa">
             <p class="celebra-titulo" id="partilhaTitulo">SUA ESTANTE EM UMA IMAGEM</p>
@@ -1307,7 +1354,7 @@
             return d;
         }
 
-        function criarSecao(titulo, qtd, cards, mensagemVazia) {
+        function criarSecao(titulo, qtd, cards, mensagemVazia, classeGrid) {
             const frag = document.createDocumentFragment();
 
             const h = document.createElement('div');
@@ -1322,7 +1369,7 @@
                 frag.appendChild(v);
             } else {
                 const g = document.createElement('div');
-                g.className = 'grid';
+                g.className = 'grid' + (classeGrid ? ' ' + classeGrid : '');
                 cards.forEach(function (c) { g.appendChild(c); });
                 frag.appendChild(g);
             }
@@ -1430,7 +1477,8 @@
                 }
 
                 const titulo = estado.filtro === 'favoritos' ? 'FAVORITOS' : 'SUA ESTANTE';
-                conteudo.appendChild(criarSecao(titulo, meusVisiveis.length, cards, vazioMsg));
+                conteudo.appendChild(criarSecao(titulo, meusVisiveis.length, cards, vazioMsg,
+                    estado.filtro === 'favoritos' ? 'favoritos' : ''));
             }
 
             if (mostrarFaltam) {
@@ -1775,14 +1823,27 @@
                 ctx.restore();
             }
 
-            const cols = 4;
-            const gap = 18;
             const margem = 72;
+            const gap = 18;
+            const areaY = 418;
+            const areaAltura = 1156 - areaY - 24;
+
+            // Quanto menos cartuchos, maiores os cards.
+            let cols;
+            if (tenho <= 4)       cols = 2;
+            else if (tenho <= 9)  cols = 3;
+            else if (tenho <= 16) cols = 4;
+            else                  cols = 5;
+
+            const maxTiles = cols * 4;
+            const mostrar = tenho > maxTiles ? maxTiles - 1 : tenho;
+            const linhas = Math.max(1, Math.ceil(mostrar / cols));
+
             const cw = (CARD_LARGURA - margem * 2 - gap * (cols - 1)) / cols;
             const ch = cw * 490 / 690;
-            const y0 = 418;
-            const maxTiles = 16;
-            const mostrar = tenho > maxTiles ? maxTiles - 1 : tenho;
+
+            const alturaGrade = linhas * ch + (linhas - 1) * gap;
+            const y0 = areaY + Math.min(60, Math.max(0, (areaAltura - alturaGrade) / 2));
 
             const imagens = await Promise.all(
                 meus.slice(0, mostrar).map(function (g) {

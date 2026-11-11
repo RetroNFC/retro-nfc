@@ -1,11 +1,20 @@
 /* Importa a fonte retrô */
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @font-face {
     font-family: 'Pretendo';
     src: url('../fonts/Pretendo.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pixelify Retro';
+    src: url('../fonts/PixelifySans.ttf') format('truetype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+    size-adjust: 156.25%;
 }
 
 /* =========================================
@@ -18,7 +27,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Pixelify Sans', 'Press Start 2P', monospace;
+    font-family: 'Pixelify Retro', 'Press Start 2P', monospace;
 }
 
 body {
@@ -69,7 +78,7 @@ body {
 }
 
 #title {
-    font-size: 27px;
+    font-size: 17px;
     line-height: 1.5;
     color: #ffffff;
     margin-bottom: 10px;
@@ -78,7 +87,7 @@ body {
 }
 
 #subtitle {
-    font-size: 17px;
+    font-size: 11px;
     line-height: 1.5;
     color: #00CFFF;
     margin-bottom: 16px;
@@ -95,7 +104,7 @@ body {
 }
 
 .info p {
-    font-size: 14px;
+    font-size: 9px;
     line-height: 1.4;
     color: #E4DDF5;
     background: rgba(255, 255, 255, .07);
@@ -162,7 +171,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    font-family: 'Pixelify Sans', 'Press Start 2P', monospace;
+    font-family: 'Pixelify Retro', 'Press Start 2P', monospace;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;
@@ -174,7 +183,7 @@ body {
 #btnEstante {
     margin-top: 16px;
     padding: 14px 28px;
-    font-size: 16px;
+    font-size: 10px;
     box-shadow: 0 0 16px rgba(160, 32, 240, .3);
 }
 
@@ -185,7 +194,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     padding: 18px 35px;
-    font-size: 19px;
+    font-size: 12px;
     white-space: nowrap;
     box-shadow: 0 6px 24px rgba(160, 32, 240, .5);
 }
@@ -282,10 +291,10 @@ body {
 
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
-    font-size: 56px;
+    font-size: 36px;
     line-height: 1.2;
     margin-bottom: 8px;
-    letter-spacing: 3.1px;
+    letter-spacing: 2px;
     color: #FF8C00;
     background: linear-gradient(90deg, #00CFFF 0%, #A020F0 35%, #FF8C00 70%, #FFD700 100%);
     -webkit-background-clip: text;
@@ -296,16 +305,16 @@ body {
 
 .bootConsole {
     font-family: 'Pretendo', sans-serif;
-    font-size: 28px;
+    font-size: 18px;
     color: #ffffff;
-    letter-spacing: 3.1px;
+    letter-spacing: 2px;
     text-shadow: 1px 1px 0px #ffffff, -1px 0px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
 }
 
 .bootTerminal {
     width: 100%;
     text-align: center;
-    min-height: 203px;
+    min-height: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -315,10 +324,10 @@ body {
 }
 
 .bootLine {
-    font-size: 17px;
+    font-size: 11px;
     color: #B7C3D6;
     line-height: 1.5;
-    letter-spacing: 0.8px;
+    letter-spacing: .5px;
     transition: color .3s ease;
 }
 
@@ -476,8 +485,8 @@ body {
         grid-column: 2;
     }
 
-    #title    { font-size: 22px; margin-bottom: 6px; }
-    #subtitle { font-size: 16px; margin-bottom: 10px; }
+    #title    { font-size: 14px; margin-bottom: 6px; }
+    #subtitle { font-size: 10px; margin-bottom: 10px; }
     .info     { max-width: 100%; }
 
     #btnJogar, #startButton {

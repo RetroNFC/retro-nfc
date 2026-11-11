@@ -27,7 +27,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Pixelify Retro', 'Press Start 2P', monospace;
+    font-family: 'Jersey Retro', 'Press Start 2P', monospace;
 }
 
 body {
@@ -104,7 +104,7 @@ body {
 }
 
 .info p {
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.4;
     color: #E4DDF5;
     background: rgba(255, 255, 255, .07);
@@ -171,7 +171,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    font-family: 'Pixelify Retro', 'Press Start 2P', monospace;
+    font-family: 'Jersey Retro', 'Press Start 2P', monospace;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;

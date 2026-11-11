@@ -750,7 +750,7 @@
 
     <div class="celebra" id="celebra" role="dialog" aria-modal="true" aria-labelledby="celebraTitulo">
         <div class="celebra-caixa">
-            <p class="celebra-titulo" id="celebraTitulo">NOVO CARTUCHO NA SUA COLEÇÃO!</p>
+            <p class="celebra-titulo" id="celebraTitulo">NOVO CARTUCHO NA SUA ESTANTE!</p>
             <img class="celebra-capa" id="celebraCapa" src="" alt="">
             <p class="celebra-nome" id="celebraNome"></p>
             <p class="celebra-extra" id="celebraExtra"></p>
@@ -1326,7 +1326,7 @@
                 } else if (estado.filtro === 'favoritos') {
                     vazioMsg = 'NENHUM FAVORITO AINDA. TOQUE NA ESTRELA DE UM CARTUCHO PARA FAVORITAR!';
                 } else {
-                    vazioMsg = 'SUA ESTANTE ESTÁ VAZIA. ESCANEIE UM CARTUCHO RETRÔ NFC PARA COMEÇAR!';
+                    vazioMsg = 'ESTANTE VAZIA. ENCOSTE UM CARTUCHO RETRO NFC!';
                 }
 
                 const titulo = estado.filtro === 'favoritos' ? 'FAVORITOS' : 'SUA ESTANTE';
@@ -1336,7 +1336,7 @@
             if (mostrarFaltam) {
                 const cards = faltam.map(function (g, i) { return cartaoBloqueado(g, i); });
                 conteudo.appendChild(criarSecao('PARA DESCOBRIR', faltam.length, cards,
-                    'PARABÉNS! VOCÊ TEM TODOS OS CARTUCHOS DISPONÍVEIS. 🏆'));
+                    'VENCEDOR! ACERVO DE CARTUCHOS COMPLETO 🏆'));
             }
 
             estado.primeiraPintura = false;
@@ -1381,7 +1381,7 @@
             document.getElementById('celebraCapa').alt = game.title;
             document.getElementById('celebraNome').textContent = game.title;
             document.getElementById('celebraExtra').textContent =
-                extras > 0 ? ('+ ' + extras + (extras === 1 ? ' OUTRO CARTUCHO NOVO NA ESTANTE' : ' OUTROS CARTUCHOS NOVOS NA ESTANTE')) : 'ELE JÁ ESTÁ NA SUA ESTANTE!';
+                extras > 0 ? ('+ ' + extras + (extras === 1 ? ' OUTRO CARTUCHO NOVO NA ESTANTE' : ' OUTROS CARTUCHOS NOVOS NA ESTANTE')) : 'DIRETO PARA A ESTANTE!';
 
             celebrando = true;
             ajustarVolumeMusica();
@@ -1434,16 +1434,16 @@
 
             const aviso = document.getElementById('avisoErro');
             aviso.textContent =
-                'NÃO FOI POSSÍVEL ATUALIZAR O CATÁLOGO. ' +
-                'VERIFIQUE SUA CONEXÃO E RECARREGUE A PÁGINA.';
+                'FALHA AO ATUALIZAR O CATALOGO. ' +
+                'TENTE RECARREGAR A PAGINA.';
             aviso.style.display = 'block';
 
             if (estado.games.length === 0) {
                 const vazio = document.createElement('div');
                 vazio.className = 'vazio';
                 vazio.textContent =
-                    'O CATÁLOGO NÃO CARREGOU. ' +
-                    'ISSO NÃO SIGNIFICA QUE SUA COLEÇÃO FOI APAGADA.';
+                    'ERRO AO CARREGAR O CATALOGO. ' +
+                    'MAS SUA COLECAO ESTA A SALVO.';
 
                 const conteudo = document.getElementById('conteudo');
                 conteudo.replaceChildren(vazio);

@@ -9,12 +9,12 @@
 }
 
 @font-face {
-    font-family: 'Pixelify Retro';
-    src: url('../fonts/PixelifySans.ttf') format('truetype');
+    font-family: 'Jersey Retro';
+    src: url('../fonts/Jersey10.ttf') format('truetype');
     font-weight: 400 700;
     font-style: normal;
     font-display: swap;
-    size-adjust: 156.25%;
+    size-adjust: 200%;
 }
 
 /* =========================================

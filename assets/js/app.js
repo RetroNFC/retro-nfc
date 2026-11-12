@@ -902,6 +902,8 @@ function iniciarEmulador(modo) {
     document.getElementById("gameScreen").style.display = "none";
     const emulatorScreen = document.getElementById("emulatorScreen");
     emulatorScreen.style.display = "block";
+    emulatorScreen.classList.add("crt-turnon");
+    setTimeout(function () { emulatorScreen.classList.remove("crt-turnon"); }, 1200);
 
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";

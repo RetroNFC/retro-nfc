@@ -858,7 +858,7 @@ async function loadGames() {
 
                     // Alimenta a seção "Jogados recentemente" da estante
                     registrarRecente(CURRENT_GAME.key);
-
+                    try { Conquistas.registrarJogo(CURRENT_GAME.key); } catch (e) {}
                     try { registrarLogAcessoImediato(); } catch (e) {}
 
                     const gameScreen = document.getElementById("gameScreen");
@@ -904,7 +904,8 @@ function iniciarEmulador(modo) {
     emulatorScreen.style.display = "block";
     emulatorScreen.classList.add("crt-turnon");
     setTimeout(function () { emulatorScreen.classList.remove("crt-turnon"); }, 1200);
-
+    try { Conquistas.iniciarMaratona(); } catch (e) {}
+    
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";
 

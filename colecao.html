@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Cartuchos - Retrô NFC</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/conquistas.css">
     <style>
         * { box-sizing: border-box; }
 
@@ -860,6 +861,7 @@
         </div>
     </div>
 
+    <div id="cqFaixa"></div>
     <div id="conteudo"></div>
     <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
 
@@ -896,6 +898,8 @@
             <button class="btn-celebra" id="celebraFechar" type="button">BORA!</button>
         </div>
     </div>
+
+    <script src="assets/js/conquistas.js"></script>
 
     <script>
         const URL_BACKEND    = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
@@ -941,7 +945,8 @@
                         url.pathname + url.search + url.hash
                     );
                 } catch (e) {}
-            }
+            
+            if (entradaMusical) { try { Conquistas.marcar('trilha'); } catch (e) {} }
 
             return liberada;
         })();
@@ -1941,6 +1946,8 @@
             if (cardUrlAtual) {
                 URL.revokeObjectURL(cardUrlAtual);
                 cardUrlAtual = null;
+
+                try { Conquistas.marcar('partilha'); } catch (e) {}
             }
         }
 

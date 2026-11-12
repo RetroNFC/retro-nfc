@@ -242,7 +242,7 @@
     }
 
     function arte(familia) {
-        return 'assets/img/conquistas/' + (FAMILIAS[familia] ? FAMILIAS[familia].arte : 'site.webp');
+    return 'assets/img/' + (FAMILIAS[familia] ? FAMILIAS[familia].arte : 'site.webp');
     }
 
     var overlay = null, painel = null, faixa = null;

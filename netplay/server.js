@@ -13,8 +13,11 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: { origin: '*', methods: ['GET', 'POST'], credentials: true },
-    serveClient: false
+    cors: {
+        origin: 'https://retro-nfc.pages.dev',
+        methods: ['GET', 'POST']
+    },
+    serveClient: false,
     maxHttpBufferSize: 5 * 1024 * 1024
 });
 

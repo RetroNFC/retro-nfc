@@ -944,10 +944,7 @@
                         url.pathname + url.search + url.hash
                     );
                 } catch (e) {}
-            
-           
-            if (entradaMusical) { try { Conquistas.marcar('trilha'); } catch (e) {} }
-            try { Conquistas.avaliar(); } catch (e) {}
+            }
 
             return liberada;
         })();
@@ -2127,6 +2124,8 @@
             atualizarBotaoSom();
             inicializarMusica();
             carregarCatalogoColecao();
+            try { if (entradaMusical) Conquistas.marcar('trilha'); } catch (e) {}
+            try { Conquistas.avaliar(); } catch (e) {}
         }
 
         window.addEventListener('storage', function (evento) {

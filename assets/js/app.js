@@ -499,7 +499,7 @@ function escolherModoDeJogo() {
 
         tela1.appendChild(sub1);
         tela1.appendChild(bSolo);
-        tela1.appendChild(bCoop);
+        //tela1.appendChild(bCoop);
         
         // ---------- Tela 2: instrucoes do coop ----------
         const tela2 = document.createElement('div');

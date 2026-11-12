@@ -1,18 +1,18 @@
 // =====================================================
-// RETRÔ NFC — app.js (v9.1)
+// RETRO NFC — app.js (v9.2)
 // Frontend envia apenas campos estruturados; o Apps Script monta o texto.
 // Falha de armazenamento ou de telemetria nunca bloqueia o jogo.
 // =====================================================
 
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
-const APP_VERSAO = "9.1";
+const APP_VERSAO = "9.2";
 
 // --- Netplay (coop online) ---------------------------------------------
 // Deixe vazio para desativar o coop: o botao aparece como INDISPONIVEL.
 // Precisa ser HTTPS: a pagina roda em HTTPS e o navegador bloqueia
 // WebSocket inseguro (mixed content).
-const NETPLAY_SERVIDOR = "https://netplay.seudominio.com";
+const NETPLAY_SERVIDOR = "https://retronfc-netplay-3eoc.onrender.com";
 
 const NETPLAY_ATIVO = /^https:\/\/.+/i.test(NETPLAY_SERVIDOR);
 
@@ -593,6 +593,101 @@ function escolherModoDeJogo() {
     });
 }
 
+// --- Netplay: acordar o servidor (o Render free dorme por inatividade) ---
+// Mostra LIGANDO SERVIDOR com contador e barra ate o servico responder.
+// Resolve true quando a sala pode ser criada, false se o jogador desistir
+// ou se o limite de espera acabar.
+function acordarServidor() {
+    return new Promise(function (resolve) {
+        const overlay = document.createElement('div');
+        overlay.id = 'servidorOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+
+        const caixa = document.createElement('div');
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+
+        const titulo = document.createElement('div');
+        titulo.textContent = 'LIGANDO SERVIDOR';
+        titulo.style.cssText = 'font-size:11px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+
+        const sub = document.createElement('p');
+        sub.textContent = 'Aguarde ate 1 minuto para que a sala seja criada.';
+        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 18px;';
+
+        const trilho = document.createElement('div');
+        trilho.style.cssText = 'width:100%;height:6px;border-radius:50px;background:#1d1730;overflow:hidden;margin-bottom:12px;';
+
+        const barra = document.createElement('div');
+        barra.style.cssText = 'width:0%;height:100%;border-radius:50px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);transition:width .25s linear;';
+        trilho.appendChild(barra);
+
+        const contador = document.createElement('div');
+        contador.textContent = '0s';
+        contador.style.cssText = 'color:#8b9bb0;font-size:8px;line-height:1.8;margin-bottom:18px;';
+
+        const bSolo = document.createElement('button');
+        bSolo.type = 'button';
+        bSolo.textContent = 'JOGAR SOZINHO';
+        bSolo.style.cssText = 'width:100%;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:8px;padding:13px;cursor:pointer;';
+
+        caixa.appendChild(titulo);
+        caixa.appendChild(sub);
+        caixa.appendChild(trilho);
+        caixa.appendChild(contador);
+        caixa.appendChild(bSolo);
+        overlay.appendChild(caixa);
+        document.body.appendChild(overlay);
+
+        let encerrado = false;
+        const inicio  = Date.now();
+        const LIMITE  = 75000;
+
+        function finalizar(ok) {
+            if (encerrado) return;
+            encerrado = true;
+            clearInterval(relogio);
+            overlay.remove();
+            resolve(ok);
+        }
+
+        const relogio = setInterval(function () {
+            const passado = Date.now() - inicio;
+            contador.textContent = Math.floor(passado / 1000) + 's';
+            barra.style.width = Math.min(100, (passado / LIMITE) * 100) + '%';
+            if (passado >= LIMITE) finalizar(false);
+        }, 250);
+
+        function agendar() {
+            if (encerrado) return;
+            setTimeout(tentar, 2500);
+        }
+
+        function tentar() {
+            if (encerrado) return;
+            const ctrl  = ('AbortController' in window) ? new AbortController() : null;
+            const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 6000) : null;
+
+            fetch(NETPLAY_SERVIDOR + '/?ts=' + Date.now(), ctrl
+                ? { signal: ctrl.signal, cache: 'no-store' }
+                : { cache: 'no-store' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (j) {
+                    if (timer) clearTimeout(timer);
+                    if (j && j.ok) { finalizar(true); return; }
+                    agendar();
+                })
+                .catch(function () {
+                    if (timer) clearTimeout(timer);
+                    agendar();
+                });
+        }
+
+        bSolo.addEventListener('click', function () { finalizar(false); });
+
+        tentar();
+    });
+}
+
 // --- Erro recuperável (nunca deixa a tela preta) ---
 function recarregarComChave() {
     const base = window.location.pathname;
@@ -783,7 +878,13 @@ async function loadGames() {
                     if (!nome) { btn.dataset.ocupado = ''; return; }
 
                     // Solo ou coop online (a TAG já foi validada em loadGames)
-                    const modo = await escolherModoDeJogo();
+                    let modo = await escolherModoDeJogo();
+
+                    // Coop: acorda o servidor antes de abrir o emulador
+                    if (modo === 'coop' && NETPLAY_ATIVO) {
+                        const acordou = await acordarServidor();
+                        if (!acordou) modo = 'solo';
+                    }
 
                     // Alimenta a seção "Jogados recentemente" da estante
                     registrarRecente(CURRENT_GAME.key);

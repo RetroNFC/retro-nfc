@@ -494,7 +494,7 @@ function escolherModoDeJogo() {
         const tela1 = document.createElement('div');
 
         const sub1 = document.createElement('p');
-        sub1.textContent = 'Como voce quer jogar agora?';
+        sub1.textContent = 'Como você quer jogar agora?';
         sub1.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;';
 
         const bSolo = document.createElement('button');

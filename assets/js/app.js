@@ -738,7 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rapido = VISITAS_ATUAIS > 1;
     window.RETRONFC_RAPIDO = rapido;
-    const esperaMinima = rapido ? 600 : 1500;
+    const esperaMinima = rapido ? 600 : 3000;
 
     Promise.all([
         loadGames(),

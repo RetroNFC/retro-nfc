@@ -51,45 +51,157 @@
                 return;
             }
 
-            // Guarda a chave real desta sessao.
-            if (chave && chave !== CHAVE_FALSA) {
-                gravarSessao(chave);
-                return;
-            }
-
-            // URL ja mascarada: devolve a chave real antes de o app.js ler o endereco.
-            if (chave === CHAVE_FALSA) {
-                var guardada = lerSessao();
-
-                if (guardada) {
-                    try {
-                        window.history.replaceState(
-                            null,
-                            '',
-                            window.location.pathname + '?k=' + encodeURIComponent(guardada)
-                        );
-                    } catch (e) {}
-                }
-            }
+            // Guarda a chave real desta sessao. A URL mascarada NAO e restaurada:
+            // quem recarrega depois da camuflagem cai na tela de bloqueio.
+            if (chave && chave !== CHAVE_FALSA) gravarSessao(chave);
         })();
     </script>
+
+    <style>
+        /* =========================================
+           AJUSTES EXCLUSIVOS DE DESKTOP
+           O celular continua exatamente como está.
+           ========================================= */
+        @media (min-width: 769px) {
+
+            /* Sem barras de rolagem: as telas ocupam a janela inteira */
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            body {
+                padding: 0;
+                min-height: 100dvh;
+            }
+
+            #gameScreen,
+            #bootScreen {
+                width: 100%;
+            }
+
+            /* SPLASH: mostra a arte inteira, sem esticar */
+            #splashScreen {
+                width: 100%;
+            }
+
+            #splashScreen img {
+                object-fit: contain;
+            }
+
+            /* BOOT: fundo sem corte e tipografia proporcional à tela */
+            #bootScreen::before {
+                background-size: contain;
+                background-position: center center;
+            }
+
+            .header { margin-bottom: 42px; }
+            .bootLogo { font-size: 58px; letter-spacing: 3px; }
+            .bootConsole { font-size: 24px; letter-spacing: 3px; }
+
+            .bootTerminal { min-height: 170px; gap: 16px; }
+            .bootLine { font-size: 15px; }
+
+            .progress-container {
+                width: 440px;
+                height: 32px;
+                margin-top: 22px;
+                padding: 4px;
+            }
+
+            .progress-fill { background-size: 432px 100%; }
+
+            /* TELA DO JOGO: capa e textos maiores */
+            #gameScreen { padding: 32px; }
+            #gameCover { max-width: 360px; margin-bottom: 26px; }
+            #title { font-size: 24px; }
+            #subtitle { font-size: 14px; }
+
+            .info { max-width: 460px; gap: 10px; }
+            .info p { font-size: 13px; padding: 8px 14px; }
+
+            #btnJogar, #startButton {
+                width: 320px;
+                height: 145px;
+                margin-top: 30px;
+            }
+
+            #btnEstante {
+                font-size: 12px;
+                padding: 16px 32px;
+                margin-top: 20px;
+            }
+
+            /* TELA DE BLOQUEIO: arte inteira, sem esticar */
+            #invalidScreen {
+                background-size: contain !important;
+                background-color: #000 !important;
+            }
+
+            #btnEstanteErro {
+                font-size: 13px;
+                padding: 18px 38px;
+                bottom: 12%;
+            }
+        }
+
+        /* Janelas de desktop com pouca altura: capa à esquerda, texto à direita */
+        @media (min-width: 769px) and (max-height: 860px) {
+
+            #gameScreen:not([style*="display: none"]) {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                grid-template-rows: repeat(5, auto);
+                align-content: center;
+                justify-items: center;
+                column-gap: 48px;
+                height: 100dvh;
+                padding: 24px 48px;
+            }
+
+            #gameCover {
+                grid-column: 1;
+                grid-row: 1 / span 5;
+                align-self: center;
+                justify-self: end;
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 74dvh;
+                object-fit: contain;
+                margin: 0;
+            }
+
+            #title, #subtitle, .info, #btnJogar, #btnEstante {
+                grid-column: 2;
+            }
+
+            #btnJogar, #startButton {
+                margin-top: 14px;
+            }
+
+            #btnEstante {
+                margin-top: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="splashScreen">
         <img src="assets/img/retronfc.webp" alt="Logo Retrô NFC">
     </div>
-  
+
     <section id="gameScreen" style="display: none;">
         <img id="gameCover" src="" alt="Capa do Jogo">
         <h1 id="title">Carregando...</h1>
         <h2 id="subtitle"></h2>
-      
+
         <div class="info">
             <p id="year"></p>
             <p id="players"></p>
             <p id="developer"></p>
         </div>
-      
+
         <button id="btnJogar">JOGAR</button>
         <!-- 🏆 BOTÃO DA ESTANTE -->
         <button id="btnEstante" onclick="rastrearCliqueColecao('Tela Principal')">VER MEUS CARTUCHOS</button>
@@ -111,7 +223,7 @@
             <div id="game"></div>
         </div>
     </section>
-  
+
     <div id="invalidScreen">
         <!-- BOTÃO DE VENDAS NA TELA DE ERRO -->
         <button id="btnEstanteErro" onclick="rastrearCliqueColecao('Tela de Bloqueio - Link Compartilhado')">VER MEUS CARTUCHOS</button>

@@ -476,8 +476,6 @@ function idNumericoDoJogo(key) {
 // Criado por JS: não exige alteração em play.html nem em style.css.
 function escolherModoDeJogo() {
     return new Promise(function (resolve) {
-        const lembrado = lsGet(CHAVE_MODO);
-        if (lembrado === 'solo') { resolve('solo'); return; }
 
         const overlay = document.createElement('div');
         overlay.id = 'modoOverlay';
@@ -508,24 +506,10 @@ function escolherModoDeJogo() {
         bCoop.disabled = !NETPLAY_ATIVO;
         bCoop.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:' + (NETPLAY_ATIVO ? '#00CFFF' : '#4a4560') + ';border:1px solid ' + (NETPLAY_ATIVO ? '#00CFFF' : '#2a2142') + ';border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
 
-        const lembrar = document.createElement('label');
-        lembrar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;color:#8b9bb0;font-size:7px;line-height:1.6;cursor:pointer;';
-
-        const chk = document.createElement('input');
-        chk.type = 'checkbox';
-        chk.style.cssText = 'accent-color:#A020F0;width:14px;height:14px;cursor:pointer;';
-
-        const chkTxt = document.createElement('span');
-        chkTxt.textContent = 'NAO PERGUNTAR DE NOVO';
-
-        lembrar.appendChild(chk);
-        lembrar.appendChild(chkTxt);
-
         tela1.appendChild(sub1);
         tela1.appendChild(bSolo);
         tela1.appendChild(bCoop);
-        tela1.appendChild(lembrar);
-
+        
         // ---------- Tela 2: instrucoes do coop ----------
         const tela2 = document.createElement('div');
         tela2.style.display = 'none';
@@ -569,7 +553,6 @@ function escolherModoDeJogo() {
         document.body.appendChild(overlay);
 
         function fechar(modo) {
-            if (chk.checked) lsSet(CHAVE_MODO, modo);
             overlay.remove();
             resolve(modo);
         }
@@ -585,12 +568,7 @@ function escolherModoDeJogo() {
         });
         bIniciar.addEventListener('click', function () { fechar('coop'); });
 
-        // Preferencia ja salva como coop: vai direto para as instrucoes
-        if (lembrado === 'coop' && NETPLAY_ATIVO) {
-            tela1.style.display = 'none';
-            tela2.style.display = 'block';
-        }
-    });
+        });
 }
 
 // --- Netplay: acordar o servidor (o Render free dorme por inatividade) ---

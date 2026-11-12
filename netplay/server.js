@@ -15,6 +15,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: '*', methods: ['GET', 'POST'], credentials: true },
     serveClient: false
+    maxHttpBufferSize: 5 * 1024 * 1024
 });
 
 app.use(cors({

@@ -861,7 +861,6 @@
         </div>
     </div>
 
-    <div id="cqFaixa"></div>
     <div id="conteudo"></div>
     <div class="aviso-erro" id="avisoErro" style="display:none;"></div>
 
@@ -946,7 +945,9 @@
                     );
                 } catch (e) {}
             
+           
             if (entradaMusical) { try { Conquistas.marcar('trilha'); } catch (e) {} }
+            try { Conquistas.avaliar(); } catch (e) {}
 
             return liberada;
         })();
@@ -1948,6 +1949,7 @@
                 cardUrlAtual = null;
 
                 try { Conquistas.marcar('partilha'); } catch (e) {}
+                try { Conquistas.avaliar(); } catch (e) {}
             }
         }
 

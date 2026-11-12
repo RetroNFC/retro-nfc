@@ -26,14 +26,51 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <script>
         (function () {
-            // Só redireciona no domínio antigo (GitHub Pages). No pages.dev segue normal.
-            if (window.location.hostname !== "retronfc.github.io") return;
+            var CHAVE_SESSAO = 'retronfc_chave_ativa';
+            var CHAVE_FALSA  = 'sessao-nfc-ativa-nao-compartilhar';
+
+            function lerSessao() {
+                try { return sessionStorage.getItem(CHAVE_SESSAO) || ''; } catch (e) { return ''; }
+            }
+
+            function gravarSessao(chave) {
+                try { sessionStorage.setItem(CHAVE_SESSAO, chave); } catch (e) {}
+            }
 
             var params = new URLSearchParams(window.location.search);
-            var chave = params.get("k") || "";
+            var chave = params.get('k') || '';
 
-            var url = "https://retro-nfc.pages.dev/play.html" + (chave ? "?k=" + encodeURIComponent(chave) : "");
-            window.location.replace(url);
+            // Dominio antigo (GitHub Pages): redireciona preservando a chave real.
+            if (window.location.hostname === 'retronfc.github.io') {
+                if (chave === CHAVE_FALSA) chave = lerSessao();
+
+                window.location.replace(
+                    'https://retro-nfc.pages.dev/play.html' +
+                    (chave ? '?k=' + encodeURIComponent(chave) : '')
+                );
+                return;
+            }
+
+            // Guarda a chave real desta sessao.
+            if (chave && chave !== CHAVE_FALSA) {
+                gravarSessao(chave);
+                return;
+            }
+
+            // URL ja mascarada: devolve a chave real antes de o app.js ler o endereco.
+            if (chave === CHAVE_FALSA) {
+                var guardada = lerSessao();
+
+                if (guardada) {
+                    try {
+                        window.history.replaceState(
+                            null,
+                            '',
+                            window.location.pathname + '?k=' + encodeURIComponent(guardada)
+                        );
+                    } catch (e) {}
+                }
+            }
         })();
     </script>
 </head>
@@ -41,18 +78,18 @@
     <div id="splashScreen">
         <img src="assets/img/retronfc.png" alt="Logo Retrô NFC">
     </div>
-    
+  
     <section id="gameScreen" style="display: none;">
         <img id="gameCover" src="" alt="Capa do Jogo">
         <h1 id="title">Carregando...</h1>
         <h2 id="subtitle"></h2>
-        
+      
         <div class="info">
             <p id="year"></p>
             <p id="players"></p>
             <p id="developer"></p>
         </div>
-        
+      
         <button id="btnJogar">JOGAR</button>
         <!-- 🏆 BOTÃO DA ESTANTE -->
         <button id="btnEstante" onclick="rastrearCliqueColecao('Tela Principal')">VER MEUS CARTUCHOS</button>
@@ -74,7 +111,7 @@
             <div id="game"></div>
         </div>
     </section>
-    
+  
     <div id="invalidScreen">
         <!-- BOTÃO DE VENDAS NA TELA DE ERRO -->
         <button id="btnEstanteErro" onclick="rastrearCliqueColecao('Tela de Bloqueio - Link Compartilhado')">VER MEUS CARTUCHOS</button>

@@ -165,9 +165,9 @@
     var HORA = 3600000;
 
     var LISTA = [
-        { id: 'visita_1',    familia: 'site',    nivel: 1, nome: 'PRIMEIRA VISITA',     desc: 'Abriu o Retro NFC pela primeira vez.',        meta: 1,        valor: function (c) { return c.visitas; } },
-        { id: 'visita_100',  familia: 'site',    nivel: 3, nome: 'CEM VISITAS',         desc: 'Voltou ao site cem vezes.',                   meta: 100,      valor: function (c) { return c.visitas; } },
-
+        { id: 'visita_1',    familia: 'site',    nivel: 1, nome: 'PRIMEIRO JOGO',       desc: 'Abriu um jogo pela primeira vez.',            meta: 1,        valor: function (c) { return c.visitas; } },
+        { id: 'visita_100',  familia: 'site',    nivel: 3, nome: 'CEM PARTIDAS',        desc: 'Abriu um jogo cem vezes.',                    meta: 100,      valor: function (c) { return c.visitas; } },
+        
         { id: 'cartucho_1',  familia: 'colecao', nivel: 1, nome: 'PRIMEIRO CARTUCHO',   desc: 'Um cartucho na estante.',                     meta: 1,        valor: function (c) { return c.colecao; } },
         { id: 'cartucho_5',  familia: 'colecao', nivel: 2, nome: 'CINCO CARTUCHOS',     desc: 'Cinco cartuchos na estante.',                 meta: 5,        valor: function (c) { return c.colecao; } },
         { id: 'cartucho_10', familia: 'colecao', nivel: 2, nome: 'DEZ CARTUCHOS',       desc: 'Dez cartuchos na estante.',                   meta: 10,       valor: function (c) { return c.colecao; } },

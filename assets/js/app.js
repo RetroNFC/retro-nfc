@@ -925,11 +925,14 @@ function iniciarEmulador(modo) {
 
     let jogoIniciou = false;
 
-    // Netplay: o EmulatorJS 4.2.3 exige as duas flags globais para habilitar o recurso
-    window.EJS_DEBUG_XX = true;
-    window.EJS_EXPERIMENTAL_NETPLAY = true;
-    window.EJS_Buttons = { netplay: true };
-    window.EJS_player        = '#game';
+    // Netplay: habilita o recurso e o botao somente no modo coop
+    const coopAtivo = modo === 'coop' && NETPLAY_ATIVO;
+
+    window.EJS_DEBUG_XX = coopAtivo;
+    window.EJS_EXPERIMENTAL_NETPLAY = coopAtivo;
+    window.EJS_Buttons = { netplay: coopAtivo };
+
+    window.EJS_player = '#game';
     window.EJS_core          = CURRENT_GAME.core;
     window.EJS_gameUrl       = CURRENT_GAME.romUrl;
     window.EJS_startOnLoaded = true;
@@ -939,14 +942,8 @@ function iniciarEmulador(modo) {
     // ID numérico estável: separa saves por jogo e é exigido pelo netplay
     window.EJS_gameID = idNumericoDoJogo(CURRENT_GAME.key);
 
-    // Netplay: só arma quando o jogador escolheu coop e o servidor é HTTPS
-    if (modo === 'coop' && NETPLAY_ATIVO) {
-        window.EJS_netplayServer     = NETPLAY_SERVIDOR;
-        window.EJS_netplayICEServers = NETPLAY_ICE;
-    } else {
-        window.EJS_netplayServer     = '';
-        window.EJS_netplayICEServers = [];
-    }
+    // Configura o servidor apenas no modo coop
+window.EJS_netplayServer = coopAtivo ? NETPLAY_SERVIDOR : '';
 
     const script = document.createElement('script');
     script.src     = 'https://cdn.emulatorjs.org/stable/data/loader.js';

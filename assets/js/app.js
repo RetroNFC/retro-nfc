@@ -16,15 +16,6 @@ const NETPLAY_SERVIDOR = "https://retronfc-netplay-3eoc.onrender.com";
 
 const NETPLAY_ATIVO = /^https:\/\/.+/i.test(NETPLAY_SERVIDOR);
 
-const NETPLAY_ICE = [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun.nextcloud.com:3478' },
-    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
-];
-
 // Chaves do localStorage (todas com o prefixo retronfc_)
 const CHAVE_COLECAO   = 'retronfc_colecao';
 const CHAVE_JOGOS     = 'retronfc_games_cache';
@@ -934,6 +925,10 @@ function iniciarEmulador(modo) {
 
     let jogoIniciou = false;
 
+    // Netplay: o EmulatorJS 4.2.3 exige as duas flags globais para habilitar o recurso
+    window.EJS_DEBUG_XX = true;
+    window.EJS_EXPERIMENTAL_NETPLAY = true;
+    window.EJS_Buttons = { netplay: true };
     window.EJS_player        = '#game';
     window.EJS_core          = CURRENT_GAME.core;
     window.EJS_gameUrl       = CURRENT_GAME.romUrl;

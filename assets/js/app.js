@@ -847,7 +847,8 @@ async function loadGames() {
                     if (!nome) { btn.dataset.ocupado = ''; return; }
 
                     // Solo ou coop online (a TAG já foi validada em loadGames)
-                    let modo = await escolherModoDeJogo();
+                    // let modo = await escolherModoDeJogo();
+                    let modo = 'solo';
 
                     // Coop: acorda o servidor antes de abrir o emulador
                     if (modo === 'coop' && NETPLAY_ATIVO) {
@@ -864,7 +865,7 @@ async function loadGames() {
                     gameScreen.classList.add("crt-shutdown");
                     setTimeout(() => {
                         try { iniciarEmulador(modo); } catch (e) { falhaEmulador(e); }
-                    }, 400);
+                    }, 1150);
                 } catch (e) {
                     btn.dataset.ocupado = '';
                     falhaEmulador(e);

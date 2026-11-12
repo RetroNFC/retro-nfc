@@ -1,12 +1,29 @@
 // =====================================================
-// RETRÔ NFC — app.js (v9)
+// RETRÔ NFC — app.js (v9.1)
 // Frontend envia apenas campos estruturados; o Apps Script monta o texto.
 // Falha de armazenamento ou de telemetria nunca bloqueia o jogo.
 // =====================================================
 
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
-const APP_VERSAO = "9.0";
+const APP_VERSAO = "9.1";
+
+// --- Netplay (coop online) ---------------------------------------------
+// Deixe vazio para desativar o coop: o botao aparece como INDISPONIVEL.
+// Precisa ser HTTPS: a pagina roda em HTTPS e o navegador bloqueia
+// WebSocket inseguro (mixed content).
+const NETPLAY_SERVIDOR = "https://netplay.seudominio.com";
+
+const NETPLAY_ATIVO = /^https:\/\/.+/i.test(NETPLAY_SERVIDOR);
+
+const NETPLAY_ICE = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun.nextcloud.com:3478' },
+    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
+];
 
 // Chaves do localStorage (todas com o prefixo retronfc_)
 const CHAVE_COLECAO   = 'retronfc_colecao';
@@ -16,6 +33,7 @@ const CHAVE_ID        = 'retronfc_id_curto';
 const CHAVE_VISITAS   = 'retronfc_visitas';
 const CHAVE_PENDENTES = 'retronfc_pendentes';
 const CHAVE_RECENTES  = 'retronfc_recentes';
+const CHAVE_MODO      = 'retronfc_modo_jogo';
 
 // Identificador único desta sessão de jogo (o backend edita a mesma mensagem)
 const SESSAO_ID = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -358,7 +376,7 @@ function limparNome(txt) {
     try {
         s = s.replace(/[^\p{L}\p{N} ._-]/gu, '');
     } catch (e) {
-        s = s.replace(/[^A-Za-zÀ-ÿ0-9 ._-]/g, '');
+        s = s.replace(/[^A-Za-z\u00c0-\u00ff0-9 ._-]/g, '');
     }
     return s.replace(/\s+/g, ' ').trim().substring(0, 20);
 }
@@ -437,6 +455,141 @@ function pedirNome() {
         input.addEventListener('keydown', function (ev) {
             if (ev.key === 'Enter') { ev.preventDefault(); confirmar(); }
         });
+    });
+}
+
+// --- Netplay: ID numérico estável por jogo ---
+// EJS_gameID precisa ser número e único por jogo no servidor inteiro.
+// Derivamos do UUID do games.json (FNV-1a 32 bits), então o mesmo jogo
+// sempre gera o mesmo ID, em qualquer aparelho, sem precisar editar o JSON.
+function idNumericoDoJogo(key) {
+    let h = 2166136261;
+    const s = String(key || '');
+    for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    return ((h >>> 0) % 2000000000) + 1;
+}
+
+// --- Netplay: escolha do modo de jogo (solo ou coop online) ---
+// Criado por JS: não exige alteração em play.html nem em style.css.
+function escolherModoDeJogo() {
+    return new Promise(function (resolve) {
+        const lembrado = lsGet(CHAVE_MODO);
+        if (lembrado === 'solo') { resolve('solo'); return; }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'modoOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(7,4,15,.94);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+
+        const caixa = document.createElement('div');
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+
+        const titulo = document.createElement('div');
+        titulo.textContent = 'MODO DE JOGO';
+        titulo.style.cssText = 'font-size:12px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+
+        // ---------- Tela 1: escolha ----------
+        const tela1 = document.createElement('div');
+
+        const sub1 = document.createElement('p');
+        sub1.textContent = 'Como voce quer jogar agora?';
+        sub1.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;';
+
+        const bSolo = document.createElement('button');
+        bSolo.type = 'button';
+        bSolo.textContent = 'JOGAR SOZINHO';
+        bSolo.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+
+        const bCoop = document.createElement('button');
+        bCoop.type = 'button';
+        bCoop.textContent = NETPLAY_ATIVO ? 'COOP ONLINE' : 'COOP INDISPONIVEL';
+        bCoop.disabled = !NETPLAY_ATIVO;
+        bCoop.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:' + (NETPLAY_ATIVO ? '#00CFFF' : '#4a4560') + ';border:1px solid ' + (NETPLAY_ATIVO ? '#00CFFF' : '#2a2142') + ';border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
+
+        const lembrar = document.createElement('label');
+        lembrar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;color:#8b9bb0;font-size:7px;line-height:1.6;cursor:pointer;';
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.style.cssText = 'accent-color:#A020F0;width:14px;height:14px;cursor:pointer;';
+
+        const chkTxt = document.createElement('span');
+        chkTxt.textContent = 'NAO PERGUNTAR DE NOVO';
+
+        lembrar.appendChild(chk);
+        lembrar.appendChild(chkTxt);
+
+        tela1.appendChild(sub1);
+        tela1.appendChild(bSolo);
+        tela1.appendChild(bCoop);
+        tela1.appendChild(lembrar);
+
+        // ---------- Tela 2: instrucoes do coop ----------
+        const tela2 = document.createElement('div');
+        tela2.style.display = 'none';
+
+        const sub2 = document.createElement('p');
+        sub2.textContent = 'Os dois aparelhos precisam ter escaneado a TAG deste cartucho. Um cria a sala e o outro entra com o codigo.';
+        sub2.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 14px;text-align:left;';
+
+        const passos = document.createElement('div');
+        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:7px;line-height:2.1;margin:0 0 18px;';
+
+        ['1. Toque em INICIAR COOP nos dois aparelhos.',
+         '2. Abra o menu do emulador e escolha NETPLAY.',
+         '3. Um cria a sala, o outro entra com o codigo.',
+         '4. Os dois jogam o mesmo jogo, em tempo real.'
+        ].forEach(function (t) {
+            const l = document.createElement('div');
+            l.textContent = t;
+            passos.appendChild(l);
+        });
+
+        const bIniciar = document.createElement('button');
+        bIniciar.type = 'button';
+        bIniciar.textContent = 'INICIAR COOP';
+        bIniciar.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+
+        const bVoltar = document.createElement('button');
+        bVoltar.type = 'button';
+        bVoltar.textContent = 'VOLTAR';
+        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:8px;padding:13px;cursor:pointer;';
+
+        tela2.appendChild(sub2);
+        tela2.appendChild(passos);
+        tela2.appendChild(bIniciar);
+        tela2.appendChild(bVoltar);
+
+        caixa.appendChild(titulo);
+        caixa.appendChild(tela1);
+        caixa.appendChild(tela2);
+        overlay.appendChild(caixa);
+        document.body.appendChild(overlay);
+
+        function fechar(modo) {
+            if (chk.checked) lsSet(CHAVE_MODO, modo);
+            overlay.remove();
+            resolve(modo);
+        }
+
+        bSolo.addEventListener('click', function () { fechar('solo'); });
+        bCoop.addEventListener('click', function () {
+            tela1.style.display = 'none';
+            tela2.style.display = 'block';
+        });
+        bVoltar.addEventListener('click', function () {
+            tela2.style.display = 'none';
+            tela1.style.display = 'block';
+        });
+        bIniciar.addEventListener('click', function () { fechar('coop'); });
+
+        // Preferencia ja salva como coop: vai direto para as instrucoes
+        if (lembrado === 'coop' && NETPLAY_ATIVO) {
+            tela1.style.display = 'none';
+            tela2.style.display = 'block';
+        }
     });
 }
 
@@ -629,6 +782,9 @@ async function loadGames() {
                     const nome = await pedirNome();
                     if (!nome) { btn.dataset.ocupado = ''; return; }
 
+                    // Solo ou coop online (a TAG já foi validada em loadGames)
+                    const modo = await escolherModoDeJogo();
+
                     // Alimenta a seção "Jogados recentemente" da estante
                     registrarRecente(CURRENT_GAME.key);
 
@@ -637,7 +793,7 @@ async function loadGames() {
                     const gameScreen = document.getElementById("gameScreen");
                     gameScreen.classList.add("crt-shutdown");
                     setTimeout(() => {
-                        try { iniciarEmulador(); } catch (e) { falhaEmulador(e); }
+                        try { iniciarEmulador(modo); } catch (e) { falhaEmulador(e); }
                     }, 400);
                 } catch (e) {
                     btn.dataset.ocupado = '';
@@ -669,7 +825,7 @@ function falhaEmulador(motivo) {
     );
 }
 
-function iniciarEmulador() {
+function iniciarEmulador(modo) {
     if (!CURRENT_GAME) throw new Error("Jogo não carregado");
 
     document.getElementById("gameScreen").style.display = "none";
@@ -705,6 +861,18 @@ function iniciarEmulador() {
     window.EJS_startOnLoaded = true;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_onGameStart   = function () { jogoIniciou = true; };
+
+    // ID numérico estável: separa saves por jogo e é exigido pelo netplay
+    window.EJS_gameID = idNumericoDoJogo(CURRENT_GAME.key);
+
+    // Netplay: só arma quando o jogador escolheu coop e o servidor é HTTPS
+    if (modo === 'coop' && NETPLAY_ATIVO) {
+        window.EJS_netplayServer     = NETPLAY_SERVIDOR;
+        window.EJS_netplayICEServers = NETPLAY_ICE;
+    } else {
+        window.EJS_netplayServer     = '';
+        window.EJS_netplayICEServers = [];
+    }
 
     const script = document.createElement('script');
     script.src     = 'https://cdn.emulatorjs.org/stable/data/loader.js';

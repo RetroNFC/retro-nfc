@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Cartuchos - Retrô NFC</title>
-    <link rel="preload" href="games.json" as="fetch" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
@@ -47,7 +46,7 @@
             color: var(--texto);
             font-family: 'Jersey Retro', 'Press Start 2P', monospace;
             text-align: center;
-            padding: 84px 18px 48px;
+            padding: 84px 18px 112px;
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
@@ -619,7 +618,6 @@
             text-align: center;
             padding: 26px 20px 22px;
             border-radius: 18px;
-            background: linear-gradient(165deg, #1a1230, #0F0A1C);
             border: 2px solid transparent;
             background:
                 linear-gradient(165deg, #1a1230, #0F0A1C) padding-box,
@@ -706,8 +704,6 @@
         }
 
         /* --- Item 14: compartilhar estante (flutuante) --- */
-        body { padding-bottom: 112px; }
-
         .btn-compartilhar {
             position: fixed;
             right: 16px;
@@ -916,13 +912,13 @@
         const CHAVE_SOM      = 'retronfc_som';
         const CHAVE_FAVS     = 'retronfc_favoritos';
         const CHAVE_RECENTES = 'retronfc_recentes';
-        const APP_VERSAO     = "9.0";
+        const APP_VERSAO     = "9.1";
 
         const VOLUME_NORMAL     = 0.04;   // 4%
         const VOLUME_CELEBRACAO = 0.015;  // 1,5%
 
         const estado = {
-            games: [], filtro: 'todos', busca: '',
+            games: [], filtro: 'todos', busca: '', novosKeys: [],
             celebrou: false, primeiraPintura: true, semAnimacao: false
         };
 
@@ -1707,14 +1703,30 @@
             ctx.closePath();
         }
 
-        function ajustarFonteCard(ctx, texto, maxLargura, tamanho, peso) {
+        // Desenha o texto no card reduzindo a fonte e, se ainda faltar espaco,
+        // comprimindo na horizontal. Assim nada estoura a area do card.
+        function textoCard(ctx, texto, x, y, maxLargura, tamanho, cor, peso) {
             let t = tamanho;
+
             do {
                 ctx.font = (peso || '400') + ' ' + t + 'px ' + CARD_FONTE;
                 if (ctx.measureText(texto).width <= maxLargura) break;
                 t -= 2;
             } while (t > 10);
-            return t;
+
+            const largura = ctx.measureText(texto).width;
+            ctx.fillStyle = cor;
+
+            if (largura > maxLargura && largura > 0) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(maxLargura / largura, 1);
+                ctx.fillText(texto, 0, 0);
+                ctx.restore();
+                return;
+            }
+
+            ctx.fillText(texto, x, y);
         }
 
         function meusCartuchosNaOrdem() {
@@ -1785,17 +1797,11 @@
             marca.addColorStop(0.7, '#FF8C00');
             marca.addColorStop(1, '#FFD700');
 
-            ajustarFonteCard(ctx, 'RETRO NFC', 700, 44);
-            ctx.fillStyle = marca;
-            ctx.fillText('RETRO NFC', 540, 132);
+            textoCard(ctx, 'RETRO NFC', 540, 132, 700, 44, marca);
 
-            ajustarFonteCard(ctx, 'MINHA ESTANTE', 900, 74);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('MINHA ESTANTE', 540, 268);
+            textoCard(ctx, 'MINHA ESTANTE', 540, 268, 900, 74, '#ffffff');
 
-            ajustarFonteCard(ctx, tenho + ' DE ' + total + ' CARTUCHOS', 900, 30);
-            ctx.fillStyle = '#9a90b5';
-            ctx.fillText(tenho + ' DE ' + total + ' CARTUCHOS  \u00b7  ' + pct + '%', 540, 320);
+            textoCard(ctx, tenho + ' DE ' + total + ' CARTUCHOS  \u00b7  ' + pct + '%', 540, 320, 900, 30, '#9a90b5');
 
             const barraX = 72;
             const barraY = 352;
@@ -1895,13 +1901,8 @@
                 ctx.stroke();
 
                 const sobra = tenho - mostrar;
-                ajustarFonteCard(ctx, '+' + sobra, cw - 24, 54);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText('+' + sobra, x + cw / 2, y + ch / 2 + 4);
-
-                ajustarFonteCard(ctx, 'MAIS', cw - 24, 18);
-                ctx.fillStyle = '#9a90b5';
-                ctx.fillText('MAIS', x + cw / 2, y + ch / 2 + 40);
+                textoCard(ctx, '+' + sobra, x + cw / 2, y + ch / 2 + 4, cw - 24, 54, '#ffffff');
+                textoCard(ctx, 'MAIS', x + cw / 2, y + ch / 2 + 40, cw - 24, 18, '#9a90b5');
             }
 
             const linhaY = 1156;
@@ -1912,13 +1913,8 @@
             ctx.fillStyle = linha;
             ctx.fillRect(margem, linhaY, CARD_LARGURA - margem * 2, 3);
 
-            ajustarFonteCard(ctx, 'RETRO-NFC.PAGES.DEV', 900, 34);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('RETRO-NFC.PAGES.DEV', 540, 1226);
-
-            ajustarFonteCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 900, 24);
-            ctx.fillStyle = '#9a90b5';
-            ctx.fillText('ENCOSTE A TAG PARA JOGAR', 540, 1276);
+            textoCard(ctx, 'RETRO-NFC.PAGES.DEV', 540, 1226, 900, 34, '#ffffff');
+            textoCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 540, 1276, 900, 24, '#9a90b5');
 
             return canvas;
         }
@@ -1926,7 +1922,7 @@
         function arquivoDoCard() {
             if (!cardBlobAtual) return null;
             try {
-                return new File([cardBlobAtual], 'retro-nfc-estante.png', { type: 'image/png' });
+                return new File([cardBlobAtual], 'retro-nfc-estante.jpg', { type: 'image/jpeg' });
             } catch (e) {
                 return null;
             }
@@ -1969,13 +1965,18 @@
 
                 if (meusCartuchosNaOrdem().length === 0) {
                     aviso.textContent = 'SUA ESTANTE AINDA ESTA VAZIA. ENCOSTE UM CARTUCHO RETRO NFC.';
+                    setTimeout(function () {
+                        if (aviso.textContent.indexOf('AINDA ESTA VAZIA') !== -1) {
+                            aviso.textContent = '';
+                        }
+                    }, 5000);
                     return;
                 }
 
                 const canvas = await gerarCardEstante();
 
                 const blob = await new Promise(function (resolve) {
-                    canvas.toBlob(resolve, 'image/png');
+                    canvas.toBlob(resolve, 'image/jpeg', 0.92);
                 });
 
                 if (!blob) throw new Error('falha ao gerar a imagem');
@@ -2000,13 +2001,22 @@
             const arquivo = arquivoDoCard();
             if (!arquivo) return;
 
+            const aviso = document.getElementById('compartilharAviso');
+
             try {
                 await navigator.share({
                     files: [arquivo],
                     title: 'Minha estante Retrô NFC',
                     text: 'Minha coleção de cartuchos Retrô NFC'
                 });
-            } catch (e) {}
+                aviso.textContent = '';
+            } catch (e) {
+                // AbortError = a pessoa fechou o menu nativo. Não é falha.
+                if (e && e.name === 'AbortError') return;
+
+                aviso.textContent = 'NAO FOI POSSIVEL COMPARTILHAR. USE O BOTAO BAIXAR.';
+                setTimeout(function () { aviso.textContent = ''; }, 6000);
+            }
         }
 
         function baixarCard() {
@@ -2015,7 +2025,7 @@
             const url = URL.createObjectURL(cardBlobAtual);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'retro-nfc-estante.png';
+            link.download = 'retro-nfc-estante.jpg';
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -2046,6 +2056,12 @@
 
         /* ---------- Eventos da interface ---------- */
         function inicializarColecao() {
+            // Estado inicial dos chips para leitores de tela.
+            document.querySelectorAll('[data-filtro]').forEach(function (botao) {
+                const ativo = botao.getAttribute('data-filtro') === estado.filtro;
+                botao.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+            });
+
             document.querySelectorAll('[data-filtro]').forEach(function (botao) {
                 botao.addEventListener('click', function () {
                     estado.filtro = botao.getAttribute('data-filtro');

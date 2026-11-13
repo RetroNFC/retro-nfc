@@ -165,31 +165,31 @@
     var HORA = 3600000;
 
     var LISTA = [
-        { id: 'visita_1',    familia: 'site',    nivel: 1, nome: 'PRIMEIRO JOGO',       desc: 'Abriu um jogo pela primeira vez.',            meta: 1,        valor: function (c) { return c.visitas; } },
-        { id: 'visita_100',  familia: 'site',    nivel: 3, nome: 'CEM PARTIDAS',        desc: 'Abriu um jogo cem vezes.',                    meta: 100,      valor: function (c) { return c.visitas; } },
-        
-        { id: 'cartucho_1',  familia: 'colecao', nivel: 1, nome: 'PRIMEIRO CARTUCHO',   desc: 'Um cartucho na estante.',                     meta: 1,        valor: function (c) { return c.colecao; } },
-        { id: 'cartucho_5',  familia: 'colecao', nivel: 2, nome: 'CINCO CARTUCHOS',     desc: 'Cinco cartuchos na estante.',                 meta: 5,        valor: function (c) { return c.colecao; } },
-        { id: 'cartucho_10', familia: 'colecao', nivel: 2, nome: 'DEZ CARTUCHOS',       desc: 'Dez cartuchos na estante.',                   meta: 10,       valor: function (c) { return c.colecao; } },
-        { id: 'cartucho_20', familia: 'colecao', nivel: 3, nome: 'VINTE CARTUCHOS',     desc: 'Vinte cartuchos na estante.',                 meta: 20,       valor: function (c) { return c.colecao; } },
-        { id: 'cartucho_30', familia: 'colecao', nivel: 4, nome: 'ESTANTE COMPLETA',    desc: 'Os trinta cartuchos do catálogo.',            meta: 30,       valor: function (c) { return c.colecao; } },
+        { id: 'visita_1',    familia: 'site',    nivel: 1, arte: 'site.webp', nome: 'PRIMEIRO JOGO',       desc: 'Abriu um jogo pela primeira vez.',            meta: 1,        valor: function (c) { return c.visitas; } },
+        { id: 'visita_100',  familia: 'site',    nivel: 3, arte: 'cem_partidas.webp', nome: 'CEM PARTIDAS',        desc: 'Abriu um jogo cem vezes.',                    meta: 100,      valor: function (c) { return c.visitas; } },
 
-        { id: 'tempo_1h',    familia: 'tempo',   nivel: 1, nome: 'UMA HORA',            desc: 'Uma hora de jogo acumulada.',                 meta: HORA,     valor: function (c) { return c.tempo; } },
-        { id: 'tempo_10h',   familia: 'tempo',   nivel: 2, nome: 'DEZ HORAS',           desc: 'Dez horas de jogo acumuladas.',               meta: 10 * HORA, valor: function (c) { return c.tempo; } },
-        { id: 'tempo_100h',  familia: 'tempo',   nivel: 4, nome: 'CEM HORAS',           desc: 'Cem horas de jogo acumuladas.',               meta: 100 * HORA, valor: function (c) { return c.tempo; } },
+        { id: 'cartucho_1',  familia: 'colecao', nivel: 1, arte: 'colecao.webp', nome: 'PRIMEIRO CARTUCHO',   desc: 'Um cartucho na estante.',                     meta: 1,        valor: function (c) { return c.colecao; } },
+        { id: 'cartucho_5',  familia: 'colecao', nivel: 2, arte: 'cinco_cartuchos.webp', nome: 'CINCO CARTUCHOS',     desc: 'Cinco cartuchos na estante.',                 meta: 5,        valor: function (c) { return c.colecao; } },
+        { id: 'cartucho_10', familia: 'colecao', nivel: 2, arte: 'dez_cartuchos.webp', nome: 'DEZ CARTUCHOS',       desc: 'Dez cartuchos na estante.',                   meta: 10,       valor: function (c) { return c.colecao; } },
+        { id: 'cartucho_20', familia: 'colecao', nivel: 3, arte: 'vinte_cartuchos.webp', nome: 'VINTE CARTUCHOS',     desc: 'Vinte cartuchos na estante.',                 meta: 20,       valor: function (c) { return c.colecao; } },
+        { id: 'cartucho_30', familia: 'colecao', nivel: 4, arte: 'estante_completa.webp', nome: 'ESTANTE COMPLETA',    desc: 'Os trinta cartuchos do catálogo.',            meta: 30,       valor: function (c) { return c.colecao; } },
 
-        { id: 'dias_7',      familia: 'habito',  nivel: 2, nome: 'SETE DIAS',           desc: 'Jogou em sete dias diferentes.',              meta: 7,        valor: function (c) { return c.dias; } },
-        { id: 'dias_30',     familia: 'habito',  nivel: 3, nome: 'UM MÊS',              desc: 'Jogou em trinta dias diferentes.',            meta: 30,       valor: function (c) { return c.dias; } },
-        { id: 'saudade',     familia: 'habito',  nivel: 3, nome: 'SAUDADE',             desc: 'Voltou depois de trinta dias fora.',          meta: 1,        valor: function (c) { return c.flags.saudade ? 1 : 0; } },
+        { id: 'tempo_1h',    familia: 'tempo',   nivel: 1, arte: 'tempo.webp', nome: 'UMA HORA',            desc: 'Uma hora de jogo acumulada.',                 meta: HORA,     valor: function (c) { return c.tempo; } },
+        { id: 'tempo_10h',   familia: 'tempo',   nivel: 2, arte: 'dez_horas.webp', nome: 'DEZ HORAS',           desc: 'Dez horas de jogo acumuladas.',               meta: 10 * HORA, valor: function (c) { return c.tempo; } },
+        { id: 'tempo_100h',  familia: 'tempo',   nivel: 4, arte: 'cem_horas.webp', nome: 'CEM HORAS',           desc: 'Cem horas de jogo acumuladas.',               meta: 100 * HORA, valor: function (c) { return c.tempo; } },
 
-        { id: 'madrugada',   familia: 'humor',   nivel: 2, nome: 'MADRUGADA',           desc: 'Abriu um jogo entre meia-noite e cinco.',     meta: 1,        valor: function (c) { return c.flags.madrugada ? 1 : 0; } },
-        { id: 'maratona_1h', familia: 'humor',   nivel: 2, nome: 'MARATONA',            desc: 'Uma hora seguida no mesmo jogo.',             meta: HORA,     valor: function (c) { return c.maratona; } },
-        { id: 'maratona_5h', familia: 'humor',   nivel: 4, nome: 'MARATONA ÉPICA',      desc: 'Cinco horas seguidas no mesmo jogo.',         meta: 5 * HORA, valor: function (c) { return c.maratona; } },
+        { id: 'dias_7',      familia: 'habito',  nivel: 2, arte: 'habito.webp', nome: 'SETE DIAS',           desc: 'Jogou em sete dias diferentes.',              meta: 7,        valor: function (c) { return c.dias; } },
+        { id: 'dias_30',     familia: 'habito',  nivel: 3, arte: 'um_mes.webp', nome: 'UM MÊS',              desc: 'Jogou em trinta dias diferentes.',            meta: 30,       valor: function (c) { return c.dias; } },
+        { id: 'saudade',     familia: 'habito',  nivel: 3, arte: 'saudade.webp', nome: 'SAUDADE',             desc: 'Voltou depois de trinta dias fora.',          meta: 1,        valor: function (c) { return c.flags.saudade ? 1 : 0; } },
 
-        { id: 'favorito_1',  familia: 'estante', nivel: 1, nome: 'FAVORITO',            desc: 'Marcou um cartucho com a estrela.',           meta: 1,        valor: function (c) { return c.favs; } },
-        { id: 'favorito_5',  familia: 'estante', nivel: 2, nome: 'CINCO FAVORITOS',     desc: 'Marcou cinco cartuchos.',                     meta: 5,        valor: function (c) { return c.favs; } },
-        { id: 'partilhou',   familia: 'estante', nivel: 2, nome: 'MOSTREI PRA GALERA',  desc: 'Gerou o card da estante.',                    meta: 1,        valor: function (c) { return c.flags.partilha ? 1 : 0; } },
-        { id: 'trilha',      familia: 'estante', nivel: 1, nome: 'NO EMBALO DA TRILHA', desc: 'Abriu a estante com música.',                 meta: 1,        valor: function (c) { return c.flags.trilha ? 1 : 0; } }
+        { id: 'madrugada',   familia: 'humor',   nivel: 2, arte: 'humor.webp', nome: 'MADRUGADA',           desc: 'Abriu um jogo entre meia-noite e cinco.',     meta: 1,        valor: function (c) { return c.flags.madrugada ? 1 : 0; } },
+        { id: 'maratona_1h', familia: 'humor',   nivel: 2, arte: 'maratona.webp', nome: 'MARATONA',            desc: 'Uma hora seguida no mesmo jogo.',             meta: HORA,     valor: function (c) { return c.maratona; } },
+        { id: 'maratona_5h', familia: 'humor',   nivel: 4, arte: 'maratona_epica.webp', nome: 'MARATONA ÉPICA',      desc: 'Cinco horas seguidas no mesmo jogo.',         meta: 5 * HORA, valor: function (c) { return c.maratona; } },
+
+        { id: 'favorito_1',  familia: 'estante', nivel: 1, arte: 'estante.webp', nome: 'FAVORITO',            desc: 'Marcou um cartucho com a estrela.',           meta: 1,        valor: function (c) { return c.favs; } },
+        { id: 'favorito_5',  familia: 'estante', nivel: 2, arte: 'cinco_favoritos.webp', nome: 'CINCO FAVORITOS',     desc: 'Marcou cinco cartuchos.',                     meta: 5,        valor: function (c) { return c.favs; } },
+        { id: 'partilhou',   familia: 'estante', nivel: 2, arte: 'mostrei_pra_galera.webp', nome: 'MOSTREI PRA GALERA',  desc: 'Gerou o card da estante.',                    meta: 1,        valor: function (c) { return c.flags.partilha ? 1 : 0; } },
+        { id: 'trilha',      familia: 'estante', nivel: 1, arte: 'no_embalo_da_trilha.webp', nome: 'NO EMBALO DA TRILHA', desc: 'Abriu a estante com música.',                 meta: 1,        valor: function (c) { return c.flags.trilha ? 1 : 0; } }
     ];
 
     // --- Estado gravado ---
@@ -241,8 +241,10 @@
         return n;
     }
 
-    function arte(familia) {
-    return 'assets/img/' + (FAMILIAS[familia] ? FAMILIAS[familia].arte : 'site.webp');
+    function arte(a) {
+        if (!a) return 'assets/img/site.webp';
+        if (a.arte) return 'assets/img/' + a.arte;
+        return 'assets/img/' + (FAMILIAS[a.familia] ? FAMILIAS[a.familia].arte : 'site.webp');
     }
 
     var overlay = null, painel = null, faixa = null;
@@ -305,7 +307,7 @@
         var a = fila.shift();
         var feitos = idsDesbloqueados().length;
 
-        document.getElementById('cqSelo').src = arte(a.familia);
+        document.getElementById('cqSelo').src = arte(a);
         document.getElementById('cqNome').textContent = a.nome;
         document.getElementById('cqDesc').textContent = a.desc;
         document.getElementById('cqContador').textContent = feitos + ' DE ' + LISTA.length;
@@ -371,7 +373,7 @@
                 var linha = el('div', 'cq-item' + (aberta ? ' aberta' : ''));
 
                 var img = el('img', 'cq-item-selo');
-                img.src = arte(a.familia);
+                img.src = arte(a);
                 img.alt = '';
                 linha.appendChild(img);
 
@@ -446,7 +448,7 @@
 
         LISTA.forEach(function (a) {
             var img = el('img', 'cq-selo-mini' + (feitos.indexOf(a.id) !== -1 ? ' on' : ''));
-            img.src = arte(a.familia);
+            img.src = arte(a);
             img.alt = a.nome;
             img.title = a.nome;
             selos.appendChild(img);

@@ -1102,7 +1102,9 @@
             if (pos === -1) lista.push(key);
             else lista.splice(pos, 1);
             salvarLista(CHAVE_FAVS, lista);
-
+            try { Conquistas.avaliar(); } catch (e) {}
+            try { Conquistas.pintarFaixa(); } catch (e) {}
+            
             const ativo = pos === -1;
 
             // Atualiza todas as estrelas desse jogo sem redesenhar a tela.

@@ -247,7 +247,7 @@
         return 'assets/img/' + (FAMILIAS[a.familia] ? FAMILIAS[a.familia].arte : 'site.webp');
     }
 
-    var overlay = null, painel = null, faixa = null;
+    var overlay = null, painel = null, faixa = null, detalhe = null;
     var fila = [], mostrando = false;
 
     function montarOverlay() {
@@ -321,7 +321,79 @@
         overlay.classList.remove('aberta');
         setTimeout(mostrarProximo, 220);
     }
+    function montarDetalhe() {
+        if (detalhe) return;
+        detalhe = el('div', 'cq-overlay cq-detalhe');
+        detalhe.id = 'cqDetalhe';
+        detalhe.setAttribute('role', 'dialog');
+        detalhe.setAttribute('aria-modal', 'true');
 
+        var caixa = el('div', 'cq-caixa');
+        caixa.appendChild(el('p', 'cq-titulo', 'CONQUISTA'));
+
+        var selo = el('img', 'cq-selo');
+        selo.id = 'cqDetSelo';
+        selo.alt = '';
+        caixa.appendChild(selo);
+
+        var nome = el('p', 'cq-nome');
+        nome.id = 'cqDetNome';
+        caixa.appendChild(nome);
+
+        var desc = el('p', 'cq-desc');
+        desc.id = 'cqDetDesc';
+        caixa.appendChild(desc);
+
+        var prog = el('p', 'cq-contador');
+        prog.id = 'cqDetProg';
+        caixa.appendChild(prog);
+
+        var btn = el('button', 'cq-btn', 'VOLTAR');
+        btn.type = 'button';
+        btn.addEventListener('click', fecharDetalhe);
+        caixa.appendChild(btn);
+
+        detalhe.appendChild(caixa);
+        detalhe.addEventListener('click', function (ev) {
+            if (ev.target === detalhe) fecharDetalhe();
+        });
+        document.body.appendChild(detalhe);
+    }
+
+    function abrirDetalhe(a) {
+        if (!a) return;
+        montarDetalhe();
+
+        var feitos = idsDesbloqueados();
+        var aberta = feitos.indexOf(a.id) !== -1;
+        var c = contexto();
+
+        document.getElementById('cqDetSelo').src = arte(a);
+        document.getElementById('cqDetNome').textContent = a.nome;
+        document.getElementById('cqDetDesc').textContent = a.desc;
+
+        var prog = '';
+        if (aberta) {
+            var reg = desbloqueadas().filter(function (d) { return d.id === a.id; })[0];
+            prog = (reg && reg.em)
+                ? 'OBTIDA EM ' + new Date(reg.em).toLocaleDateString('pt-BR')
+                : 'DESBLOQUEADA';
+        } else {
+            var v = 0;
+            try { v = a.valor(c) || 0; } catch (e) { v = 0; }
+            prog = (a.meta > 1)
+                ? 'PROGRESSO ' + Math.min(v, a.meta) + ' / ' + a.meta
+                : 'BLOQUEADA';
+        }
+        document.getElementById('cqDetProg').textContent = prog;
+
+        detalhe.classList.add('aberta');
+    }
+
+    function fecharDetalhe() {
+        if (detalhe) detalhe.classList.remove('aberta');
+    }
+    
     function montarPainel() {
         if (painel) return;
         painel = el('div', 'cq-painel');
@@ -370,7 +442,17 @@
                 var aberta = feitos.indexOf(a.id) !== -1;
                 var reg = desbloqueadas().filter(function (d) { return d.id === a.id; })[0];
 
-                var linha = el('div', 'cq-item' + (aberta ? ' aberta' : ''));
+                var linha = el('div', 'cq-item clicavel' + (aberta ? ' aberta' : ''));
+                linha.setAttribute('role', 'button');
+                linha.setAttribute('tabindex', '0');
+                linha.setAttribute('aria-label', 'Ver conquista ' + a.nome);
+                linha.addEventListener('click', function () { abrirDetalhe(a); });
+                linha.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        abrirDetalhe(a);
+                    }
+                });
 
                 var img = el('img', 'cq-item-selo');
                 img.src = arte(a);
@@ -467,7 +549,8 @@
         iniciarMaratona: iniciarMaratona,
         montarFaixa: montarFaixa,
         pintarFaixa: pintarFaixa,
-        abrirPainel: abrirPainel
+        abrirPainel: abrirPainel,
+        abrirDetalhe: abrirDetalhe
     };
 
     global.Conquistas = API;
@@ -476,6 +559,7 @@
     function iniciar() {
         registrarPresenca();
         montarOverlay();
+        montarDetalhe();
         montarPainel();
         if (document.getElementById('conteudo')) montarFaixa();
         avaliar();

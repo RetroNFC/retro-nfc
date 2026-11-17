@@ -15,6 +15,7 @@
     let canal = null;
     let sala = null;
     let fila = [];
+    let convidadoPresente = false;
     let destinoAudio = null;
 
     function codigoSala() {
@@ -182,7 +183,8 @@
                     reject(new Error(d.erro || 'erro ao abrir a sala'));
                     return;
                 }
-
+                
+                if (d.t === 'convidado') { convidadoPresente = true; oferecer().catch(function () {}); return; }
                 if (d.t === 'convidado') { oferecer().catch(function () {}); return; }
                 if (d.t === 'sinal')    { receberSinal(d.dados).catch(function () {}); return; }
                 if (d.t === 'saiu')     { try { if (pc) pc.close(); } catch (e) {} pc = null; canal = null; return; }
@@ -194,13 +196,20 @@
             };
         });
     }
-
-    function fechar() {
+    function renegociar() {
+        if (!ws || !sala || !convidadoPresente) return;
         try { if (canal) canal.close(); } catch (e) {}
         try { if (pc) pc.close(); } catch (e) {}
-        try { if (ws) ws.close(); } catch (e) {}
-        pc = null; canal = null; ws = null; sala = null; fila = [];
+        pc = null; canal = null;
+        oferecer().catch(function () {});
     }
+    window.Netplay = {
+        abrirSala: abrirSala,
+        fechar: fechar,
+        renegociar: renegociar,
+        instalarCapturaDeAudio: instalarCapturaDeAudio,
+        salaAtual: function () { return sala; }
+    };
 
     window.Netplay = {
         abrirSala: abrirSala,

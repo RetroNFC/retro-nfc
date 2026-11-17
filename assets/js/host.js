@@ -184,7 +184,11 @@
                     return;
                 }
                 
-                if (d.t === 'convidado') { convidadoPresente = true; oferecer().catch(function () {}); return; }
+                if (d.t === 'convidado') {
+                    convidadoPresente = true;
+                    oferecer().catch(function () {});
+                    return;
+                }
                 if (d.t === 'sinal')    { receberSinal(d.dados).catch(function () {}); return; }
                 if (d.t === 'saiu')     { try { if (pc) pc.close(); } catch (e) {} pc = null; canal = null; return; }
             };
@@ -202,6 +206,20 @@
         pc = null; canal = null;
         oferecer().catch(function () {});
     }
+
+    function fechar() {
+        try { if (canal) canal.close(); } catch (e) {}
+        try { if (pc) pc.close(); } catch (e) {}
+        try { if (ws) ws.close(); } catch (e) {}
+
+        ws = null;
+        pc = null;
+        canal = null;
+        sala = null;
+        fila = [];
+        convidadoPresente = false;
+    }
+    
     window.Netplay = {
         abrirSala: abrirSala,
         fechar: fechar,

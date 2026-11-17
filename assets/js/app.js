@@ -522,7 +522,7 @@ function escolherModoDeJogo() {
 
         tela1.appendChild(sub1);
         tela1.appendChild(bSolo);
-        //tela1.appendChild(bCoop);
+        tela1.appendChild(bCoop);
         
         // ---------- Tela 2: instrucoes do coop ----------
         const tela2 = document.createElement('div');
@@ -562,7 +562,7 @@ function escolherModoDeJogo() {
 
         caixa.appendChild(titulo);
         caixa.appendChild(tela1);
-        caixa.appendChild(tela2);
+        //caixa.appendChild(tela2);
         overlay.appendChild(caixa);
         document.body.appendChild(overlay);
 
@@ -572,10 +572,7 @@ function escolherModoDeJogo() {
         }
 
         bSolo.addEventListener('click', function () { fechar('solo'); });
-        bCoop.addEventListener('click', function () {
-            tela1.style.display = 'none';
-            tela2.style.display = 'block';
-        });
+        bCoop.addEventListener('click', function () { fechar('coop'); });
         bVoltar.addEventListener('click', function () {
             tela2.style.display = 'none';
             tela1.style.display = 'block';

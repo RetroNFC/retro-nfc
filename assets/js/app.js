@@ -645,7 +645,46 @@ function mostrarSalaCriada(dados) {
         });
     });
 }
+// --- Netplay: aviso quando o coop nao consegue abrir a sala ---
+function avisarCoopFalhou(erro) {
+    return new Promise(function (resolve) {
+        const overlay = document.createElement('div');
+        overlay.id = 'coopErroOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
 
+        const caixa = document.createElement('div');
+        caixa.style.cssText = 'border:2px solid #FF8C00;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:#0F0A1C;';
+
+        const titulo = document.createElement('div');
+        titulo.textContent = 'Coop indisponível';
+        titulo.style.cssText = 'font-size:11px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
+
+        const sub = document.createElement('p');
+        sub.textContent = 'Não foi possível abrir a sala agora.';
+        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 12px;';
+
+        const detalhe = document.createElement('p');
+        detalhe.textContent = (erro && erro.message) ? erro.message : 'erro desconhecido';
+        detalhe.style.cssText = 'color:#8b9bb0;font-size:7px;line-height:2;margin:0 0 18px;word-break:break-word;';
+
+        const bOk = document.createElement('button');
+        bOk.type = 'button';
+        bOk.textContent = 'Jogar sozinho';
+        bOk.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:pointer;';
+
+        caixa.appendChild(titulo);
+        caixa.appendChild(sub);
+        caixa.appendChild(detalhe);
+        caixa.appendChild(bOk);
+        overlay.appendChild(caixa);
+        document.body.appendChild(overlay);
+
+        bOk.addEventListener('click', function () {
+            overlay.remove();
+            resolve(true);
+        });
+    });
+}
 // --- Netplay: acordar o servidor (o Render free dorme por inatividade) ---
 // Mostra LIGANDO SERVIDOR com contador e barra ate o servico responder.
 // Resolve true quando a sala pode ser criada, false se o jogador desistir
@@ -940,9 +979,13 @@ async function loadGames() {
                             modo = 'solo';
                         } else {
                             try {
+                                if (!window.Netplay || typeof window.Netplay.abrirSala !== 'function') {
+                                    throw new Error('host.js nao carregou');
+                                }
                                 const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
                                 await mostrarSalaCriada(sala);
                             } catch (e) {
+                                await avisarCoopFalhou(e);
                                 modo = 'solo';
                             }
                         }

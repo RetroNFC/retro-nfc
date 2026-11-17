@@ -1036,7 +1036,10 @@ function iniciarEmulador(modo) {
     window.EJS_onGameStart   = function () { jogoIniciou = true; };
 
     // ID numérico estável: separa saves por jogo e é exigido pelo netplay
-    window.EJS_gameID = idNumericoDoJogo(CURRENT_GAME.key);
+    window.EJS_onGameStart   = function () {
+        jogoIniciou = true;
+        if (coopAtivo && window.Netplay) window.Netplay.renegociar();
+    };
 
     // Configura o servidor apenas no modo coop
 window.EJS_netplayServer = coopAtivo ? NETPLAY_SERVIDOR : '';

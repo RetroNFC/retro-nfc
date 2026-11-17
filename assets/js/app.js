@@ -12,7 +12,8 @@ const APP_VERSAO = "9.2";
 // Deixe vazio para desativar o coop: o botao aparece como INDISPONIVEL.
 // Precisa ser HTTPS: a pagina roda em HTTPS e o navegador bloqueia
 // WebSocket inseguro (mixed content).
-const NETPLAY_SERVIDOR = "https://retronfc-netplay-3eoc.onrender.com";
+const NETPLAY_SERVIDOR = "https://retronfc-netplay.omitodofifa.workers.dev";
+const NETPLAY_WS       = "wss://retronfc-netplay.omitodofifa.workers.dev/ws";
 
 const NETPLAY_ATIVO = /^https:\/\/.+/i.test(NETPLAY_SERVIDOR);
 
@@ -256,7 +257,15 @@ function restaurarBotoesEstante() {
 }
 window.addEventListener('pageshow', restaurarBotoesEstante);
 
-function rastrearCliqueColecao(origem) {
+let _estanteEmCurso = false;
+
+function rastrearCliqueColecao(origem, evento) {
+    // Só dispara com clique real no botão da estante.
+    // Chamada programática, disparo no load ou repetição são ignorados.
+    if (!evento || evento.isTrusted !== true) return;
+    if (_estanteEmCurso) return;
+    _estanteEmCurso = true;
+
     try { marcarCarregandoEstante(); } catch (e) {}
 
     try {
@@ -274,7 +283,7 @@ function rastrearCliqueColecao(origem) {
 
         enviarComConfirmacao({
             origemRequisicao: "SiteRetroNFC",
-            tipo: "Acesso",
+            tipo: "Estante",
             origem: origem,
             nome: obterNome(),
             jogador: obterJogador(),
@@ -286,6 +295,23 @@ function rastrearCliqueColecao(origem) {
             jogos: listaJogos
         }, { keepalive: true });
     } catch (e) {}
+
+    window.location.href = 'colecao.html?musica=1';
+}
+
+function ligarBotoesEstante() {
+    [
+        ['btnEstante', 'Tela Principal'],
+        ['btnEstanteErro', 'Tela de Bloqueio - Link Compartilhado']
+    ].forEach(function (par) {
+        const b = document.getElementById(par[0]);
+        if (!b) return;
+        b.removeAttribute('onclick');
+        b.addEventListener('click', function (ev) {
+            rastrearCliqueColecao(par[1], ev);
+        });
+    });
+}
 
     window.location.href = 'colecao.html?musica=1';
 }
@@ -975,6 +1001,7 @@ function mostrarTelaErro() {
 
 // --- Inicialização: o boot começa quando os dados estão prontos ---
 document.addEventListener("DOMContentLoaded", () => {
+    ligarBotoesEstante();
     document.getElementById("gameScreen").style.display   = "none";
     document.getElementById("bootScreen").style.display   = "none";
     document.getElementById("splashScreen").style.display = "flex";

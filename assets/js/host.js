@@ -185,7 +185,6 @@
                 }
                 
                 if (d.t === 'convidado') { convidadoPresente = true; oferecer().catch(function () {}); return; }
-                if (d.t === 'convidado') { oferecer().catch(function () {}); return; }
                 if (d.t === 'sinal')    { receberSinal(d.dados).catch(function () {}); return; }
                 if (d.t === 'saiu')     { try { if (pc) pc.close(); } catch (e) {} pc = null; canal = null; return; }
             };
@@ -211,10 +210,4 @@
         salaAtual: function () { return sala; }
     };
 
-    window.Netplay = {
-        abrirSala: abrirSala,
-        fechar: fechar,
-        instalarCapturaDeAudio: instalarCapturaDeAudio,
-        salaAtual: function () { return sala; }
-    };
 })();

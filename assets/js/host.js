@@ -7,7 +7,7 @@
     'use strict';
 
     const CFG       = window.RETRONFC_NETPLAY || {};
-    const WS_BASE   = CFG.ws   || 'wss://retronfc-netplay.SEUSUBDOMINIO.workers.dev/ws';
+    const WS_BASE   = CFG.ws   || 'wss://retronfc-netplay.omitodofifa.workers.dev/ws';
     const LINK_BASE = CFG.link || 'https://retro-nfc.pages.dev/convite.html';
 
     let ws = null;

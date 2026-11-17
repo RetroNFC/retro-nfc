@@ -585,6 +585,70 @@ function escolherModoDeJogo() {
         });
 }
 
+// --- Netplay: popup da sala criada (codigo e link para o convidado) ---
+function mostrarSalaCriada(dados) {
+    return new Promise(function (resolve) {
+        const overlay = document.createElement('div');
+        overlay.id = 'salaOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+
+        const caixa = document.createElement('div');
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+
+        const titulo = document.createElement('div');
+        titulo.textContent = 'Sala criada';
+        titulo.style.cssText = 'font-size:12px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+
+        const sub = document.createElement('p');
+        sub.textContent = 'Envie o link para o outro jogador. Ele precisa encostar a tag deste cartucho para entrar.';
+        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;text-align:left;';
+
+        const rotulo = document.createElement('div');
+        rotulo.textContent = 'Código da sala';
+        rotulo.style.cssText = 'color:#8b9bb0;font-size:7px;line-height:2;margin-bottom:6px;';
+
+        const codigo = document.createElement('div');
+        codigo.textContent = dados.sala;
+        codigo.style.cssText = 'color:#00CFFF;font-size:16px;letter-spacing:6px;margin-bottom:16px;';
+
+        const bCopiar = document.createElement('button');
+        bCopiar.type = 'button';
+        bCopiar.textContent = 'Copiar link do convite';
+        bCopiar.style.cssText = 'width:100%;background:transparent;color:#00CFFF;border:1px solid #00CFFF;border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:pointer;';
+
+        const bComecar = document.createElement('button');
+        bComecar.type = 'button';
+        bComecar.textContent = 'Começar partida';
+        bComecar.style.cssText = 'width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+
+        caixa.appendChild(titulo);
+        caixa.appendChild(sub);
+        caixa.appendChild(rotulo);
+        caixa.appendChild(codigo);
+        caixa.appendChild(bCopiar);
+        caixa.appendChild(bComecar);
+        overlay.appendChild(caixa);
+        document.body.appendChild(overlay);
+
+        bCopiar.addEventListener('click', function () {
+            const texto = dados.link;
+            function feito() { bCopiar.textContent = 'Link copiado'; }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(feito).catch(function () {
+                    window.prompt('Copie o link:', texto);
+                });
+            } else {
+                window.prompt('Copie o link:', texto);
+            }
+        });
+
+        bComecar.addEventListener('click', function () {
+            overlay.remove();
+            resolve(true);
+        });
+    });
+}
+
 // --- Netplay: acordar o servidor (o Render free dorme por inatividade) ---
 // Mostra LIGANDO SERVIDOR com contador e barra ate o servico responder.
 // Resolve true quando a sala pode ser criada, false se o jogador desistir
@@ -872,10 +936,19 @@ async function loadGames() {
                     // Solo ou coop online (a TAG já foi validada em loadGames)
                     let modo = await escolherModoDeJogo();
                     
-                    // Coop: acorda o servidor antes de abrir o emulador
+                    // Coop: cria a sala e mostra o convite antes de abrir o emulador
                     if (modo === 'coop' && NETPLAY_ATIVO) {
                         const acordou = await acordarServidor();
-                        if (!acordou) modo = 'solo';
+                        if (!acordou) {
+                            modo = 'solo';
+                        } else {
+                            try {
+                                const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
+                                await mostrarSalaCriada(sala);
+                            } catch (e) {
+                                modo = 'solo';
+                            }
+                        }
                     }
 
                     // Alimenta a seção "Jogados recentemente" da estante

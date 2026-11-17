@@ -313,9 +313,6 @@ function ligarBotoesEstante() {
     });
 }
 
-    window.location.href = 'colecao.html?musica=1';
-}
-
 // --- Verificação de domínio ---
 const DOMINIOS_PERMITIDOS = [
     "retronfc.github.io",

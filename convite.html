@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Retrô NFC — Convite</title>
+    <meta name="theme-color" content="#0B0714">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Pretendo';
+            src: url('assets/fonts/Pretendo.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        :root {
+            --bg: #0B0714;
+            --texto: #ece8f7;
+            --dim: #9a90b5;
+            --azul: #00CFFF;
+            --roxo: #A020F0;
+            --amarelo: #FFD700;
+            --marca: linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: var(--bg);
+            color: var(--texto);
+            font-family: 'Press Start 2P', monospace;
+            overflow: hidden;
+        }
+
+        #gate {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(900px 500px at 50% -10%, rgba(160,32,240,.22), transparent 70%),
+                var(--bg);
+        }
+
+        #gate.oculto { display: none; }
+
+        .caixa {
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            padding: 28px 22px;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            background:
+                linear-gradient(160deg, #1a1230, #0F0A1C) padding-box,
+                var(--marca) border-box;
+            box-shadow: 0 0 34px rgba(160,32,240,.45);
+        }
+
+        .titulo {
+            font-family: 'Pretendo', sans-serif;
+            font-size: 20px;
+            letter-spacing: 1px;
+            margin: 0 0 16px;
+            background: var(--marca);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .texto {
+            font-size: 8px;
+            line-height: 2;
+            color: var(--texto);
+            margin: 0 0 18px;
+        }
+
+        .status {
+            font-size: 8px;
+            line-height: 1.9;
+            color: var(--dim);
+            min-height: 16px;
+        }
+
+        #stage {
+            position: fixed;
+            inset: 0;
+            display: none;
+            background: #000;
+        }
+
+        #stage.ativo { display: block; }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+            display: block;
+        }
+
+        #pad {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: calc(8px + env(safe-area-inset-bottom));
+            z-index: 30;
+            display: none;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 10px;
+            pointer-events: none;
+        }
+
+        #pad.ativo { display: flex; }
+
+        .lado {
+            display: grid;
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        .cruz {
+            grid-template-columns: repeat(3, 44px);
+            grid-template-rows: repeat(3, 44px);
+        }
+
+        .faces {
+            grid-template-columns: repeat(3, 44px);
+            grid-template-rows: repeat(2, 44px);
+        }
+
+        .botao {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(11,7,20,.62);
+            color: #fff;
+            font-family: inherit;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            touch-action: none;
+            user-select: none;
+        }
+
+        .botao.pressionado {
+            background: linear-gradient(135deg, var(--azul), var(--roxo));
+            border-color: transparent;
+        }
+
+        .centro {
+            position: fixed;
+            left: 50%;
+            bottom: calc(14px + env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            z-index: 30;
+            display: none;
+            gap: 8px;
+        }
+
+        .centro.ativo { display: flex; }
+
+        .centro .botao { width: 60px; height: 30px; font-size: 7px; }
+    </style>
+</head>
+<body>
+
+<div id="gate">
+    <div class="caixa">
+        <p class="titulo">RETRÔ NFC</p>
+        <p class="texto">ENCOSTE A TAG DESTE CARTUCHO PARA ENTRAR NA PARTIDA.</p>
+        <p class="status" id="status">AGUARDANDO TAG...</p>
+    </div>
+</div>
+
+<div id="stage">
+    <video id="video" autoplay playsinline muted></video>
+</div>
+
+<div id="pad">
+    <div class="lado cruz">
+        <span></span>
+        <button class="botao" data-idx="4" type="button">▲</button>
+        <span></span>
+        <button class="botao" data-idx="6" type="button">◀</button>
+        <span></span>
+        <button class="botao" data-idx="7" type="button">▶</button>
+        <span></span>
+        <button class="botao" data-idx="5" type="button">▼</button>
+        <span></span>
+    </div>
+    <div class="lado faces">
+        <button class="botao" data-idx="9" type="button">X</button>
+        <button class="botao" data-idx="1" type="button">Y</button>
+        <span></span>
+        <button class="botao" data-idx="8" type="button">A</button>
+        <button class="botao" data-idx="0" type="button">B</button>
+        <span></span>
+    </div>
+</div>
+
+<div class="centro" id="centro">
+    <button class="botao" data-idx="2" type="button">SELECT</button>
+    <button class="botao" data-idx="3" type="button">START</button>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    const CFG       = window.RETRONFC_NETPLAY || {};
+    const WS_BASE   = CFG.ws        || 'wss://retronfc-netplay.SEUSUBDOMINIO.workers.dev/ws';
+    const VALIDADOR = CFG.validador || 'https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec';
+
+    const params = new URLSearchParams(location.search);
+    const sala   = (params.get('sala') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+
+    const gate    = document.getElementById('gate');
+    const status  = document.getElementById('status');
+    const stage   = document.getElementById('stage');
+    const video   = document.getElementById('video');
+    const pad     = document.getElementById('pad');
+    const centro  = document.getElementById('centro');
+
+    let ws = null;
+    let pc = null;
+    let canal = null;
+    let pronto = false;
+
+    function dizer(t) { status.textContent = t; }
+
+    function extrairUid(url) {
+        const m = String(url || '').match(/\/tag\/([A-Za-z0-9_-]{4,64})/);
+        return m ? m[1] : '';
+    }
+
+    async function validar(uid) {
+        dizer('VALIDANDO TAG...');
+        try {
+            const r = await fetch(VALIDADOR, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({
+                    origemRequisicao: 'SiteRetroNFC',
+                    tipo: 'ValidarTag',
+                    tag: uid,
+                    sala: sala
+                })
+            });
+            const j = await r.json();
+            if (!j || !j.ok || !j.token) {
+                dizer('TAG NÃO RECONHECIDA.');
+                return;
+            }
+            dizer('TAG OK. CONECTANDO...');
+            conectar(j.token);
+        } catch (e) {
+            dizer('SEM CONEXÃO. TENTE DE NOVO.');
+        }
+    }
+
+    async function lerTagNativa() {
+        if (!('NDEFReader' in window)) return false;
+        try {
+            const ndef = new NDEFReader();
+            await ndef.scan();
+            ndef.onreading = function (ev) {
+                for (const rec of ev.message.records) {
+                    if (rec.recordType !== 'url' && rec.recordType !== 'absolute-url') continue;
+                    const uid = extrairUid(new TextDecoder().decode(rec.data));
+                    if (uid) { validar(uid); return; }
+                }
+            };
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function enviar(obj) {
+        if (canal && canal.readyState === 'open') canal.send(JSON.stringify(obj));
+    }
+
+    function ligarBotoes() {
+        document.querySelectorAll('.botao[data-idx]').forEach(function (b) {
+            const idx = parseInt(b.getAttribute('data-idx'), 10);
+
+            function apertar(ev) {
+                ev.preventDefault();
+                b.classList.add('pressionado');
+                enviar({ b: [[idx, 1]] });
+            }
+
+            function soltar(ev) {
+                ev.preventDefault();
+                b.classList.remove('pressionado');
+                enviar({ b: [[idx, 0]] });
+            }
+
+            b.addEventListener('pointerdown', apertar);
+            b.addEventListener('pointerup', soltar);
+            b.addEventListener('pointercancel', soltar);
+            b.addEventListener('pointerleave', soltar);
+        });
+    }
+
+    const TECLAS = {
+        ArrowUp: 4, ArrowDown: 5, ArrowLeft: 6, ArrowRight: 7,
+        KeyZ: 0, KeyX: 8, KeyA: 1, KeyS: 9, Enter: 3, ShiftRight: 2, ShiftLeft: 2
+    };
+
+    function ligarTeclado() {
+        window.addEventListener('keydown', function (ev) {
+            const idx = TECLAS[ev.code];
+            if (idx === undefined) return;
+            ev.preventDefault();
+            enviar({ b: [[idx, 1]] });
+        });
+
+        window.addEventListener('keyup', function (ev) {
+            const idx = TECLAS[ev.code];
+            if (idx === undefined) return;
+            ev.preventDefault();
+            enviar({ b: [[idx, 0]] });
+        });
+    }
+
+    function montarPeer() {
+        pc = new RTCPeerConnection({
+            iceServers: [
+                { urls: 'stun:stun.cloudflare.com:3478' },
+                { urls: 'stun:stun.l.google.com:19302' }
+            ]
+        });
+
+        pc.ontrack = function (ev) {
+            video.srcObject = ev.streams[0];
+            video.play().catch(function () {});
+        };
+
+        pc.ondatachannel = function (ev) {
+            canal = ev.channel;
+        };
+
+        pc.onicecandidate = function (ev) {
+            if (ev.candidate) enviarSinal({ candidate: ev.candidate });
+        };
+
+        return pc;
+    }
+
+    function enviarSinal(dados) {
+        if (ws && ws.readyState === 1) ws.send(JSON.stringify({ t: 'sinal', dados: dados }));
+    }
+
+    async function receberSinal(dados) {
+        if (!dados || !pc) return;
+
+        if (dados.offer) {
+            await pc.setRemoteDescription(dados.offer);
+            const resposta = await pc.createAnswer();
+            await pc.setLocalDescription(resposta);
+            enviarSinal({ answer: pc.localDescription });
+            return;
+        }
+
+        if (dados.candidate) {
+            try { await pc.addIceCandidate(dados.candidate); } catch (e) {}
+        }
+    }
+
+    function conectar(token) {
+        if (pronto) return;
+        pronto = true;
+
+        ws = new WebSocket(WS_BASE + '?sala=' + sala);
+
+        ws.onopen = function () {
+            ws.send(JSON.stringify({ t: 'entrar', sala: sala, token: token, apelido: 'Convidado' }));
+        };
+
+        ws.onmessage = function (ev) {
+            let d;
+            try { d = JSON.parse(ev.data); } catch (e) { return; }
+
+            if (d.t === 'entrou') {
+                montarPeer();
+                dizer('CONECTANDO VÍDEO...');
+                return;
+            }
+
+            if (d.t === 'sinal') { receberSinal(d.dados).catch(function () {}); return; }
+
+            if (d.t === 'erro') {
+                dizer('NÃO FOI POSSÍVEL ENTRAR: ' + String(d.erro || '').toUpperCase());
+                return;
+            }
+
+            if (d.t === 'saiu') { dizer('O ANFITRIÃO SAIU.'); return; }
+        };
+
+        ws.onerror = function () { dizer('SEM CONEXÃO COM O SERVIDOR.'); };
+
+        video.addEventListener('playing', function () {
+            gate.classList.add('oculto');
+            stage.classList.add('ativo');
+            pad.classList.add('ativo');
+            centro.classList.add('ativo');
+        });
+    }
+
+    function iniciar() {
+        if (!sala) { dizer('CONVITE INVÁLIDO.'); return; }
+
+        ligarBotoes();
+        ligarTeclado();
+
+        const uidDaUrl = params.get('tag');
+        if (uidDaUrl) { validar(uidDaUrl); return; }
+
+        lerTagNativa().then(function (ok) {
+            if (!ok) dizer('APROXIME A TAG DO CELULAR.');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', iniciar);
+})();
+</script>
+</body>
+</html>

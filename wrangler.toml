@@ -1,0 +1,11 @@
+name = "retronfc-netplay"
+main = "netplay/worker.js"
+compatibility_date = "2026-11-01"
+
+[[durable_objects.bindings]]
+name = "SALAS"
+class_name = "SalaNetplay"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SalaNetplay"]

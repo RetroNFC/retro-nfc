@@ -2,6 +2,9 @@ name = "retronfc-netplay"
 main = "netplay/worker.js"
 compatibility_date = "2026-11-01"
 
+[vars]
+VALIDADOR_URL = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec"
+
 [[durable_objects.bindings]]
 name = "SALAS"
 class_name = "SalaNetplay"

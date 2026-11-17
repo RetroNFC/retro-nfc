@@ -60,12 +60,19 @@ function doPost(e) {
 
     switch (body.tipo) {
 
-      case "Acesso":
+     case "Acesso":
         if (jaProcessado(id)) return resposta("duplicado");
         var plAcesso = registrarLinha("Acesso", nomeLimpo(body.nome) + " — " + (body.jogos || ""), "");
-        var tgAcesso = enviarTelegram(montarAcesso(body), "acesso");
-        return resposta("ok", { planilha: plAcesso, telegram: !!tgAcesso });
+        return resposta("ok", { planilha: plAcesso, telegram: false });
 
+      case "Estante":
+        if (jaProcessado(id)) return resposta("duplicado");
+        var plEstante = registrarLinha("Estante", nomeLimpo(body.nome) + " — " + (body.jogos || ""), "");
+        var tgEstante = enviarTelegram(montarEstante(body), "estante");
+        return resposta("ok", { planilha: plEstante, telegram: !!tgEstante });
+
+      case "ValidarTag":
+        return validarTag(body);
       case "Compra":
         if (jaProcessado(id)) return resposta("duplicado");
         var plCompra = registrarLinha("Compra", nomeLimpo(body.nome) + " — " + (body.jogo || ""), "");
@@ -105,7 +112,7 @@ function jaProcessado(id) {
 // MENSAGENS — ACESSO E COMPRA
 // =====================================================
 
-function montarAcesso(body) {
+function montarEstante(body) {
   return "🛒 <b>ESTANTE ABERTA</b>\n" + SEP + "\n" +
     "👤 <b>Jogador</b> · " + esc(nomeLimpo(body.nome)) + "\n" +
     "🆔 <b>ID</b> · " + esc(body.jogador || "—") + "\n" +
@@ -382,8 +389,44 @@ function nomeLimpo(valor) {
 // RESPOSTAS
 // =====================================================
 
+// =====================================================
+// VALIDAÇÃO DA TAG (portão NFC do convidado)
+// =====================================================
+
+function validarTag(body) {
+  var tag  = String(body.tag || "").replace(/[^A-Za-z0-9_-]/g, "").substring(0, 64);
+  var sala = String(body.sala || "").replace(/[^A-Za-z0-9]/g, "").substring(0, 10);
+
+  if (!tag || !sala) return resposta("tag-invalida");
+
+  var cache = CacheService.getScriptCache();
+  var chave = "tag_" + tag;
+
+  if (!cache.get(chave)) {
+    Logger.log("Tag não cadastrada: " + tag);
+    return resposta("tag-invalida");
+  }
+
+  var token = Utilities.getUuid().replace(/-/g, "");
+  cache.put("tk_" + token, sala, 1800);
+
+  return resposta("ok", { token: token, sala: sala });
+}
+
+function validarToken(body) {
+  var token = String(body.token || "").replace(/[^A-Za-z0-9]/g, "").substring(0, 64);
+  var sala  = String(body.sala || "").replace(/[^A-Za-z0-9]/g, "").substring(0, 10);
+
+  if (!token || !sala) return resposta("token-invalido");
+
+  var guardado = CacheService.getScriptCache().get("tk_" + token);
+  if (!guardado || guardado !== sala) return resposta("token-invalido");
+
+  return resposta("ok");
+}
+
 function doGet(e) {
-  return resposta("ok", { versao: "v8" });
+  return resposta("ok", { versao: "v9" });
 }
 
 function resposta(status, extra) {

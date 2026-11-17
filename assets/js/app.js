@@ -873,9 +873,8 @@ async function loadGames() {
                     if (!nome) { btn.dataset.ocupado = ''; return; }
 
                     // Solo ou coop online (a TAG já foi validada em loadGames)
-                    // let modo = await escolherModoDeJogo();
-                    let modo = 'solo';
-
+                    let modo = await escolherModoDeJogo();
+                    
                     // Coop: acorda o servidor antes de abrir o emulador
                     if (modo === 'coop' && NETPLAY_ATIVO) {
                         const acordou = await acordarServidor();

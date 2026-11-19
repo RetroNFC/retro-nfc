@@ -1,5 +1,5 @@
 // =====================================================
-// RETRO NFC — conquistas.js (v2)
+// RETRO NFC — conquistas.js (v3)
 // Conquistas locais (localStorage). Sem backend, sem sync.
 // Falha de armazenamento nunca bloqueia nada.
 // Carregar ANTES de app.js no play.html.
@@ -60,6 +60,25 @@
         return Math.round((pb - pa) / 86400000);
     }
 
+    // --- Tempo legivel: horas e minutos, nunca milissegundos ---
+    function formatarDuracao(ms) {
+        var total = Math.max(0, Math.floor((ms || 0) / 60000));
+        var h = Math.floor(total / 60);
+        var m = total % 60;
+        if (h > 0) return h + ' H' + (m ? ' ' + m + ' MIN' : '');
+        return m + ' MIN';
+    }
+
+    // Progresso de uma conquista, ja formatado para a tela
+    function progressoTexto(a, v) {
+        if (!a) return '';
+        var valor = Math.max(0, v || 0);
+        if (a.tempo) {
+            return formatarDuracao(Math.min(valor, a.meta)) + ' / ' + formatarDuracao(a.meta);
+        }
+        return Math.min(valor, a.meta) + ' / ' + a.meta;
+    }
+
     // --- Presenca: roda uma vez por carga de pagina ---
     function registrarPresenca() {
         var hoje = hojeISO();
@@ -118,7 +137,6 @@
     }
 
     function iniciarMaratona() {
-        // Nova partida: zera o acumulado da maratona anterior.
         maratonaAcumulada = 0;
         maratonaInicio = 0;
         retomarMaratona();
@@ -188,17 +206,17 @@
         { id: 'cartucho_20', familia: 'colecao', nivel: 3, arte: 'vinte_cartuchos.webp', nome: 'VINTE CARTUCHOS',     desc: 'Vinte cartuchos na estante.',                 meta: 20,       valor: function (c) { return c.colecao; } },
         { id: 'cartucho_30', familia: 'colecao', nivel: 4, arte: 'estante_completa.webp', nome: 'ESTANTE COMPLETA',    desc: 'Os trinta cartuchos do catálogo.',            meta: 30,       valor: function (c) { return c.colecao; } },
 
-        { id: 'tempo_1h',    familia: 'tempo',   nivel: 1, arte: 'tempo.webp', nome: 'UMA HORA',            desc: 'Uma hora de jogo acumulada.',                 meta: HORA,     valor: function (c) { return c.tempo; } },
-        { id: 'tempo_10h',   familia: 'tempo',   nivel: 2, arte: 'dez_horas.webp', nome: 'DEZ HORAS',           desc: 'Dez horas de jogo acumuladas.',               meta: 10 * HORA, valor: function (c) { return c.tempo; } },
-        { id: 'tempo_100h',  familia: 'tempo',   nivel: 4, arte: 'cem_horas.webp', nome: 'CEM HORAS',           desc: 'Cem horas de jogo acumuladas.',               meta: 100 * HORA, valor: function (c) { return c.tempo; } },
+        { id: 'tempo_1h',    familia: 'tempo',   nivel: 1, tempo: true, arte: 'tempo.webp', nome: 'UMA HORA',            desc: 'Uma hora de jogo acumulada.',                 meta: HORA,     valor: function (c) { return c.tempo; } },
+        { id: 'tempo_10h',   familia: 'tempo',   nivel: 2, tempo: true, arte: 'dez_horas.webp', nome: 'DEZ HORAS',           desc: 'Dez horas de jogo acumuladas.',               meta: 10 * HORA, valor: function (c) { return c.tempo; } },
+        { id: 'tempo_100h',  familia: 'tempo',   nivel: 4, tempo: true, arte: 'cem_horas.webp', nome: 'CEM HORAS',           desc: 'Cem horas de jogo acumuladas.',               meta: 100 * HORA, valor: function (c) { return c.tempo; } },
 
         { id: 'dias_7',      familia: 'habito',  nivel: 2, arte: 'habito.webp', nome: 'SETE DIAS',           desc: 'Jogou em sete dias diferentes.',              meta: 7,        valor: function (c) { return c.dias; } },
         { id: 'dias_30',     familia: 'habito',  nivel: 3, arte: 'um_mes.webp', nome: 'UM MÊS',              desc: 'Jogou em trinta dias diferentes.',            meta: 30,       valor: function (c) { return c.dias; } },
         { id: 'saudade',     familia: 'habito',  nivel: 3, arte: 'saudade.webp', nome: 'SAUDADE',             desc: 'Voltou depois de trinta dias fora.',          meta: 1,        valor: function (c) { return c.flags.saudade ? 1 : 0; } },
 
         { id: 'madrugada',   familia: 'humor',   nivel: 2, arte: 'humor.webp', nome: 'MADRUGADA',           desc: 'Abriu um jogo entre meia-noite e cinco.',     meta: 1,        valor: function (c) { return c.flags.madrugada ? 1 : 0; } },
-        { id: 'maratona_1h', familia: 'humor',   nivel: 2, arte: 'maratona.webp', nome: 'MARATONA',            desc: 'Uma hora seguida no mesmo jogo.',             meta: HORA,     valor: function (c) { return c.maratona; } },
-        { id: 'maratona_5h', familia: 'humor',   nivel: 4, arte: 'maratona_epica.webp', nome: 'MARATONA ÉPICA',      desc: 'Cinco horas seguidas no mesmo jogo.',         meta: 5 * HORA, valor: function (c) { return c.maratona; } },
+        { id: 'maratona_1h', familia: 'humor',   nivel: 2, tempo: true, arte: 'maratona.webp', nome: 'MARATONA',            desc: 'Uma hora seguida no mesmo jogo.',             meta: HORA,     valor: function (c) { return c.maratona; } },
+        { id: 'maratona_5h', familia: 'humor',   nivel: 4, tempo: true, arte: 'maratona_epica.webp', nome: 'MARATONA ÉPICA',      desc: 'Cinco horas seguidas no mesmo jogo.',         meta: 5 * HORA, valor: function (c) { return c.maratona; } },
 
         { id: 'favorito_1',  familia: 'estante', nivel: 1, arte: 'estante.webp', nome: 'FAVORITO',            desc: 'Marcou um cartucho com a estrela.',           meta: 1,        valor: function (c) { return c.favs; } },
         { id: 'favorito_5',  familia: 'estante', nivel: 2, arte: 'cinco_favoritos.webp', nome: 'CINCO FAVORITOS',     desc: 'Marcou cinco cartuchos.',                     meta: 5,        valor: function (c) { return c.favs; } },
@@ -206,7 +224,6 @@
         { id: 'trilha',      familia: 'estante', nivel: 1, arte: 'no_embalo_da_trilha.webp', nome: 'NO EMBALO DA TRILHA', desc: 'Abriu a estante com música.',                 meta: 1,        valor: function (c) { return c.flags.trilha ? 1 : 0; } }
     ];
 
-    // Indice id -> conquista (evita varredura linear a cada consulta)
     var POR_ID = {};
     LISTA.forEach(function (a) { POR_ID[a.id] = a; });
 
@@ -223,7 +240,6 @@
         return desbloqueadas().map(function (d) { return d.id; });
     }
 
-    // Mapa id -> registro { id, em }, para consulta O(1)
     function mapaDesbloqueadas() {
         var m = {};
         desbloqueadas().forEach(function (d) { m[d.id] = d; });
@@ -330,7 +346,6 @@
         if (!mostrando) mostrarProximo();
     }
 
-    // Overlays do app.js que precisam terminar antes da conquista aparecer
     function outroOverlayAberto() {
         if (document.querySelector('.celebra.aberta')) return true;
         return !!document.querySelector(
@@ -341,7 +356,6 @@
     function mostrarProximo() {
         if (!fila.length) { mostrando = false; return; }
 
-        // Nao briga com a celebracao de cartucho novo nem com os dialogos do jogo
         if (outroOverlayAberto()) {
             setTimeout(mostrarProximo, 700);
             return;
@@ -436,9 +450,7 @@
         } else {
             var v = 0;
             try { v = a.valor(c) || 0; } catch (e) { v = 0; }
-            prog = (a.meta > 1)
-                ? 'PROGRESSO ' + Math.min(v, a.meta) + ' / ' + a.meta
-                : 'BLOQUEADA';
+            prog = (a.meta > 1) ? 'PROGRESSO ' + progressoTexto(a, v) : 'BLOQUEADA';
         }
         document.getElementById('cqDetProg').textContent = prog;
 
@@ -529,9 +541,7 @@
                 } else {
                     var v = 0;
                     try { v = a.valor(c) || 0; } catch (e) { v = 0; }
-                    prog = (a.meta > 1)
-                        ? Math.min(v, a.meta) + ' / ' + a.meta
-                        : 'BLOQUEADA';
+                    prog = (a.meta > 1) ? progressoTexto(a, v) : 'BLOQUEADA';
                 }
                 txt.appendChild(el('p', 'cq-item-prog', prog));
 
@@ -616,7 +626,8 @@
         montarFaixa: montarFaixa,
         pintarFaixa: pintarFaixa,
         abrirPainel: abrirPainel,
-        abrirDetalhe: abrirDetalhe
+        abrirDetalhe: abrirDetalhe,
+        formatarDuracao: formatarDuracao
     };
 
     global.Conquistas = API;

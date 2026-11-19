@@ -78,7 +78,7 @@ body {
 }
 
 #title {
-    font-size: 20px;
+    font-size: 24px;
     line-height: 1.5;
     color: #ffffff;
     margin-bottom: 10px;
@@ -87,7 +87,7 @@ body {
 }
 
 #subtitle {
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.5;
     color: #00CFFF;
     margin-bottom: 16px;
@@ -100,17 +100,17 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-    max-width: 340px;
+    max-width: 360px;
 }
 
 .info p {
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.4;
     color: #E4DDF5;
     background: rgba(255, 255, 255, .07);
     border: 1px solid rgba(255, 255, 255, .14);
     border-radius: 999px;
-    padding: 7px 12px;
+    padding: 8px 14px;
 }
 
 .info p:empty {
@@ -182,8 +182,8 @@ body {
 /* Botão da tela principal (abaixo do JOGAR) */
 #btnEstante {
     margin-top: 16px;
-    padding: 14px 28px;
-    font-size: 12px;
+    padding: 15px 30px;
+    font-size: 15px;
     box-shadow: 0 0 16px rgba(160, 32, 240, .3);
 }
 
@@ -193,8 +193,8 @@ body {
     bottom: 18%;
     left: 50%;
     transform: translateX(-50%);
-    padding: 18px 35px;
-    font-size: 14px;
+    padding: 19px 36px;
+    font-size: 17px;
     white-space: nowrap;
     box-shadow: 0 6px 24px rgba(160, 32, 240, .5);
 }
@@ -291,7 +291,7 @@ body {
 
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
-    font-size: 36px;
+    font-size: 40px;
     line-height: 1.2;
     margin-bottom: 8px;
     letter-spacing: 2px;
@@ -305,7 +305,7 @@ body {
 
 .bootConsole {
     font-family: 'Pretendo', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     color: #ffffff;
     letter-spacing: 2px;
     text-shadow: 1px 1px 0px #ffffff, -1px 0px 0px #ffffff, 2px 2px 4px rgba(0,0,0,0.9);
@@ -324,7 +324,7 @@ body {
 }
 
 .bootLine {
-    font-size: 13px;
+    font-size: 15px;
     color: #B7C3D6;
     line-height: 1.5;
     letter-spacing: .5px;
@@ -501,9 +501,10 @@ body {
         grid-column: 2;
     }
 
-    #title    { font-size: 17px; margin-bottom: 6px; }
-    #subtitle { font-size: 13px; margin-bottom: 10px; }
+    #title    { font-size: 20px; margin-bottom: 6px; }
+    #subtitle { font-size: 15px; margin-bottom: 10px; }
     .info     { max-width: 100%; }
+    .info p   { font-size: 14px; padding: 6px 11px; }
 
     #btnJogar, #startButton {
         width: 200px;
@@ -514,5 +515,6 @@ body {
     #btnEstante {
         margin-top: 8px;
         padding: 12px 22px;
+        font-size: 14px;
     }
 }

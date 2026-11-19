@@ -7,12 +7,6 @@
     <meta name="theme-color" content="#0B0714">
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'Pretendo';
-            src: url('assets/fonts/Pretendo.ttf') format('truetype');
-            font-display: swap;
-        }
-
         :root {
             --bg: #0B0714;
             --texto: #ece8f7;
@@ -34,6 +28,7 @@
             overflow: hidden;
         }
 
+        /* ---------- Tela de espera ---------- */
         #gate {
             position: fixed;
             inset: 0;
@@ -51,9 +46,9 @@
 
         .caixa {
             width: 100%;
-            max-width: 340px;
+            max-width: 360px;
             text-align: center;
-            padding: 28px 22px;
+            padding: 30px 24px;
             border: 2px solid transparent;
             border-radius: 16px;
             background:
@@ -63,10 +58,12 @@
         }
 
         .titulo {
-            font-family: 'Pretendo', sans-serif;
-            font-size: 20px;
-            letter-spacing: 1px;
-            margin: 0 0 16px;
+            font-family: 'Pixelify Sans', monospace;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 2px;
+            line-height: 1.3;
+            margin: 0 0 18px;
             background: var(--marca);
             -webkit-background-clip: text;
             background-clip: text;
@@ -75,19 +72,44 @@
         }
 
         .texto {
-            font-size: 11px;
+            font-size: 14px;
             line-height: 1.7;
             color: var(--texto);
             margin: 0 0 18px;
         }
 
         .status {
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.7;
             color: var(--dim);
-            min-height: 16px;
+            min-height: 20px;
+            margin: 0;
         }
 
+        /* ---------- Tela cheia ---------- */
+        #fs {
+            position: fixed;
+            top: calc(10px + env(safe-area-inset-top));
+            right: 10px;
+            z-index: 60;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(11,7,20,.72);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        #fs:active { transform: scale(.94); }
+
+        /* ---------- Palco ---------- */
         #stage {
             position: fixed;
             inset: 0;
@@ -105,46 +127,32 @@
             display: block;
         }
 
+        /* ---------- Teclado ---------- */
         #pad {
             position: fixed;
             left: 0;
             right: 0;
-            bottom: calc(8px + env(safe-area-inset-bottom));
+            bottom: calc(10px + env(safe-area-inset-bottom));
             z-index: 30;
             display: none;
             justify-content: space-between;
             align-items: flex-end;
-            padding: 0 10px;
+            gap: 8px;
+            padding: 0 12px;
             pointer-events: none;
         }
 
         #pad.ativo { display: flex; }
 
-        .lado {
-            display: grid;
-            gap: 6px;
-            pointer-events: auto;
-        }
-
-        .cruz {
-            grid-template-columns: repeat(3, 44px);
-            grid-template-rows: repeat(3, 44px);
-        }
-
-        .faces {
-            grid-template-columns: repeat(3, 44px);
-            grid-template-rows: repeat(2, 44px);
-        }
-
         .botao {
-            width: 44px;
-            height: 44px;
+            width: 46px;
+            height: 46px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,.22);
             background: rgba(11,7,20,.62);
             color: #fff;
             font-family: inherit;
-            font-size: 10px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,6 +160,7 @@
             -webkit-backdrop-filter: blur(6px);
             touch-action: none;
             user-select: none;
+            -webkit-user-select: none;
         }
 
         .botao.pressionado {
@@ -159,22 +168,81 @@
             border-color: transparent;
         }
 
-        .centro {
-            position: fixed;
-            left: 50%;
-            bottom: calc(14px + env(safe-area-inset-bottom));
-            transform: translateX(-50%);
-            z-index: 30;
-            display: none;
-            gap: 8px;
+        .cruz {
+            display: grid;
+            grid-template-columns: repeat(3, 46px);
+            grid-template-rows: repeat(3, 46px);
+            grid-template-areas:
+                ". cima ."
+                "esq . dir"
+                ". baixo .";
+            gap: 4px;
+            pointer-events: auto;
         }
 
-        .centro.ativo { display: flex; }
+        .cruz [data-idx="4"] { grid-area: cima; }
+        .cruz [data-idx="6"] { grid-area: esq; }
+        .cruz [data-idx="7"] { grid-area: dir; }
+        .cruz [data-idx="5"] { grid-area: baixo; }
 
-        .centro .botao { width: 60px; height: 30px; font-size: 9px; }
+        .faces {
+            display: grid;
+            grid-template-columns: repeat(2, 46px);
+            grid-template-rows: repeat(2, 46px);
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        .centro {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: auto;
+            padding-bottom: 2px;
+        }
+
+        .centro .botao {
+            width: 76px;
+            height: 30px;
+            font-size: 11px;
+        }
+
+        /* ---------- Celular na horizontal ---------- */
+        @media (orientation: landscape) and (max-height: 520px) {
+            .cruz {
+                grid-template-columns: repeat(3, 40px);
+                grid-template-rows: repeat(3, 40px);
+            }
+
+            .faces {
+                grid-template-columns: repeat(2, 40px);
+                grid-template-rows: repeat(2, 40px);
+            }
+
+            .botao { width: 40px; height: 40px; font-size: 11px; }
+
+            .centro .botao { width: 66px; height: 26px; font-size: 10px; }
+
+            #pad {
+                bottom: calc(6px + env(safe-area-inset-bottom));
+                padding: 0 8px;
+            }
+
+            .caixa { padding: 20px 18px; max-width: 420px; }
+            .titulo { font-size: 20px; margin-bottom: 12px; }
+            .texto { font-size: 13px; margin-bottom: 12px; }
+        }
     </style>
 </head>
 <body>
+
+<button id="fs" type="button" aria-label="Tela cheia">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+              fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</button>
 
 <div id="gate">
     <div class="caixa">
@@ -189,30 +257,24 @@
 </div>
 
 <div id="pad">
-    <div class="lado cruz">
-        <span></span>
-        <button class="botao" data-idx="4" type="button">▲</button>
-        <span></span>
-        <button class="botao" data-idx="6" type="button">◀</button>
-        <span></span>
-        <button class="botao" data-idx="7" type="button">▶</button>
-        <span></span>
-        <button class="botao" data-idx="5" type="button">▼</button>
-        <span></span>
+    <div class="cruz">
+        <button class="botao" data-idx="4" type="button" aria-label="Cima">▲</button>
+        <button class="botao" data-idx="6" type="button" aria-label="Esquerda">◀</button>
+        <button class="botao" data-idx="7" type="button" aria-label="Direita">▶</button>
+        <button class="botao" data-idx="5" type="button" aria-label="Baixo">▼</button>
     </div>
-    <div class="lado faces">
+
+    <div class="centro">
+        <button class="botao" data-idx="2" type="button">SELECT</button>
+        <button class="botao" data-idx="3" type="button">START</button>
+    </div>
+
+    <div class="faces">
         <button class="botao" data-idx="9" type="button">X</button>
         <button class="botao" data-idx="1" type="button">Y</button>
-        <span></span>
         <button class="botao" data-idx="8" type="button">A</button>
         <button class="botao" data-idx="0" type="button">B</button>
-        <span></span>
     </div>
-</div>
-
-<div class="centro" id="centro">
-    <button class="botao" data-idx="2" type="button">SELECT</button>
-    <button class="botao" data-idx="3" type="button">START</button>
 </div>
 
 <script>
@@ -231,7 +293,7 @@
     const stage   = document.getElementById('stage');
     const video   = document.getElementById('video');
     const pad     = document.getElementById('pad');
-    const centro  = document.getElementById('centro');
+    const btnFs   = document.getElementById('fs');
 
     let ws = null;
     let pc = null;
@@ -240,6 +302,38 @@
 
     function dizer(t) { status.textContent = t; }
 
+    /* ---------- Tela cheia ---------- */
+    function travarPaisagem() {
+        try {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(function () {});
+            }
+        } catch (e) {}
+    }
+
+    function alternarTelaCheia() {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        const sair = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        const ativo = document.fullscreenElement || document.webkitFullscreenElement;
+
+        if (ativo) {
+            if (sair) { try { sair.call(document); } catch (e) {} }
+            return;
+        }
+
+        if (!req) { dizer('TELA CHEIA NÃO DISPONÍVEL NESTE NAVEGADOR.'); return; }
+
+        try {
+            const p = req.call(el);
+            if (p && p.then) p.then(travarPaisagem).catch(function () {});
+            else travarPaisagem();
+        } catch (e) {}
+    }
+
+    btnFs.addEventListener('click', alternarTelaCheia);
+
+    /* ---------- Tag ---------- */
     function extrairUid(url) {
         const m = String(url || '').match(/\/tag\/([A-Za-z0-9_-]{4,64})/);
         return m ? m[1] : '';
@@ -288,6 +382,7 @@
         }
     }
 
+    /* ---------- Controles ---------- */
     function enviar(obj) {
         if (canal && canal.readyState === 'open') canal.send(JSON.stringify(obj));
     }
@@ -336,6 +431,7 @@
         });
     }
 
+    /* ---------- WebRTC ---------- */
     function montarPeer() {
         pc = new RTCPeerConnection({
             iceServers: [
@@ -426,7 +522,6 @@
             gate.classList.add('oculto');
             stage.classList.add('ativo');
             pad.classList.add('ativo');
-            centro.classList.add('ativo');
         });
     }
 

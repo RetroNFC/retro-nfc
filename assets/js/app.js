@@ -403,7 +403,7 @@ function pedirNome() {
 
         const overlay = document.createElement('div');
         overlay.id = 'nomeOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
         const caixa = document.createElement('div');
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:28px 22px;max-width:340px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
@@ -493,7 +493,7 @@ function escolherModoDeJogo() {
 
         const overlay = document.createElement('div');
         overlay.id = 'modoOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(7,4,15,.94);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(7,4,15,.94);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
         const caixa = document.createElement('div');
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
@@ -592,7 +592,7 @@ function mostrarSalaCriada(dados, gerarNovo) {
 
         const overlay = document.createElement('div');
         overlay.id = 'salaOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
         const caixa = document.createElement('div');
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
@@ -717,7 +717,7 @@ function avisarCoopFalhou(erro) {
     return new Promise(function (resolve) {
         const overlay = document.createElement('div');
         overlay.id = 'coopErroOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
         const caixa = document.createElement('div');
         caixa.style.cssText = 'border:2px solid #FF8C00;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:#0F0A1C;';
@@ -760,7 +760,7 @@ function acordarServidor() {
     return new Promise(function (resolve) {
         const overlay = document.createElement('div');
         overlay.id = 'servidorOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
         const caixa = document.createElement('div');
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
@@ -870,7 +870,7 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
 
     const overlay = document.createElement('div');
     overlay.id = 'erroOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(4,7,12,.96);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;font-family:"Press Start 2P",monospace;';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(4,7,12,.96);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;font-family:"Pixelify Sans",monospace;';
 
     const caixa = document.createElement('div');
     caixa.style.cssText = 'background:linear-gradient(160deg,#111a26,#0a0f16);border:2px solid #22D3EE;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;';
@@ -1039,24 +1039,19 @@ async function loadGames() {
                     // Solo ou coop online (a TAG já foi validada em loadGames)
                     let modo = await escolherModoDeJogo();
                     
-                    // Coop: cria a sala e mostra o convite antes de abrir o emulador
+                    // Coop: cria a sala direto — o Cloudflare não tem cold start
                     if (modo === 'coop' && NETPLAY_ATIVO) {
-                        const acordou = await acordarServidor();
-                        if (!acordou) {
-                            modo = 'solo';
-                        } else {
-                            try {
-                                if (!window.Netplay || typeof window.Netplay.abrirSala !== 'function') {
-                                    throw new Error('host.js nao carregou');
-                                }
-                                const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
-                                await mostrarSalaCriada(sala, function () {
-                                    return window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
-                                });
-                            } catch (e) {
-                                await avisarCoopFalhou(e);
-                                modo = 'solo';
+                        try {
+                            if (!window.Netplay || typeof window.Netplay.abrirSala !== 'function') {
+                                throw new Error('host.js não carregou');
                             }
+                            const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
+                            await mostrarSalaCriada(sala, function () {
+                                return window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
+                            });
+                        } catch (e) {
+                            await avisarCoopFalhou(e);
+                            modo = 'solo';
                         }
                     }
 

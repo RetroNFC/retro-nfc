@@ -582,9 +582,14 @@ function escolherModoDeJogo() {
         });
 }
 
-// --- Netplay: popup da sala criada (codigo e link para o convidado) ---
-function mostrarSalaCriada(dados) {
+// --- Netplay: sala criada. Aguarda o convidado entrar (link vale 60s) ---
+function mostrarSalaCriada(dados, gerarNovo) {
     return new Promise(function (resolve) {
+        const VALIDADE = 60;
+        let restante = VALIDADE;
+        let timer = null;
+        let entrou = false;
+
         const overlay = document.createElement('div');
         overlay.id = 'salaOverlay';
         overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Press Start 2P",monospace;';
@@ -593,39 +598,83 @@ function mostrarSalaCriada(dados) {
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
-        titulo.textContent = 'Sala criada';
+        titulo.textContent = 'Convide o amigo';
         titulo.style.cssText = 'font-size:12px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const sub = document.createElement('p');
-        sub.textContent = 'Envie o link para o outro jogador. Ele precisa encostar a tag deste cartucho para entrar.';
+        sub.textContent = 'Envie o link e fique nesta tela até o amigo entrar. A partida começa sozinha.';
         sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;text-align:left;';
 
-        const rotulo = document.createElement('div');
-        rotulo.textContent = 'Código da sala';
-        rotulo.style.cssText = 'color:#8b9bb0;font-size:7px;line-height:2;margin-bottom:6px;';
-
-        const codigo = document.createElement('div');
-        codigo.textContent = dados.sala;
-        codigo.style.cssText = 'color:#00CFFF;font-size:16px;letter-spacing:6px;margin-bottom:16px;';
+        const estado = document.createElement('div');
+        estado.style.cssText = 'color:#FFD700;font-size:8px;line-height:2;margin-bottom:16px;';
 
         const bCopiar = document.createElement('button');
         bCopiar.type = 'button';
-        bCopiar.textContent = 'Copiar link do convite';
+        bCopiar.textContent = 'Copiar link';
         bCopiar.style.cssText = 'width:100%;background:transparent;color:#00CFFF;border:1px solid #00CFFF;border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:pointer;';
 
-        const bComecar = document.createElement('button');
-        bComecar.type = 'button';
-        bComecar.textContent = 'Começar partida';
-        bComecar.style.cssText = 'width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+        const bNovo = document.createElement('button');
+        bNovo.type = 'button';
+        bNovo.textContent = 'Gerar novo link';
+        bNovo.style.cssText = 'display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;';
+
+        const bSolo = document.createElement('button');
+        bSolo.type = 'button';
+        bSolo.textContent = 'Jogar sozinho';
+        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:8px;padding:10px;cursor:pointer;';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
-        caixa.appendChild(rotulo);
-        caixa.appendChild(codigo);
+        caixa.appendChild(estado);
         caixa.appendChild(bCopiar);
-        caixa.appendChild(bComecar);
+        caixa.appendChild(bNovo);
+        caixa.appendChild(bSolo);
         overlay.appendChild(caixa);
         document.body.appendChild(overlay);
+
+        function minuto(s) { return '0:' + (s < 10 ? '0' : '') + s; }
+
+        function atualizar() {
+            if (entrou) return;
+            if (restante > 0) {
+                estado.style.color = '#FFD700';
+                estado.textContent = 'Aguardando o amigo... link vale ' + minuto(restante);
+                bCopiar.style.display = '';
+                bNovo.style.display = 'none';
+            } else {
+                clearInterval(timer);
+                estado.style.color = '#FF8C00';
+                estado.textContent = 'O link expirou.';
+                bCopiar.style.display = 'none';
+                bNovo.style.display = '';
+            }
+        }
+
+        function iniciarContagem() {
+            restante = VALIDADE;
+            clearInterval(timer);
+            atualizar();
+            timer = setInterval(function () { restante--; atualizar(); }, 1000);
+        }
+
+        function limpar() {
+            clearInterval(timer);
+            window.removeEventListener('netplay-convidado', aoEntrar);
+            overlay.remove();
+        }
+
+        function aoEntrar() {
+            entrou = true;
+            clearInterval(timer);
+            estado.style.color = '#00CFFF';
+            estado.textContent = 'Amigo conectado! BORA!';
+            bCopiar.style.display = 'none';
+            bNovo.style.display = 'none';
+            bSolo.style.display = 'none';
+            setTimeout(function () { limpar(); resolve(true); }, 1200);
+        }
+
+        window.addEventListener('netplay-convidado', aoEntrar);
 
         bCopiar.addEventListener('click', function () {
             const texto = dados.link;
@@ -639,10 +688,28 @@ function mostrarSalaCriada(dados) {
             }
         });
 
-        bComecar.addEventListener('click', function () {
-            overlay.remove();
+        bNovo.addEventListener('click', function () {
+            bNovo.disabled = true;
+            bNovo.textContent = 'Gerando...';
+            try { window.Netplay.fechar(); } catch (e) {}
+            gerarNovo().then(function (nd) {
+                dados = nd;
+                bNovo.disabled = false;
+                bNovo.textContent = 'Gerar novo link';
+                bCopiar.textContent = 'Copiar link';
+                iniciarContagem();
+            }).catch(function () {
+                bNovo.disabled = false;
+                bNovo.textContent = 'Tentar de novo';
+            });
+        });
+
+        bSolo.addEventListener('click', function () {
+            limpar();
             resolve(true);
         });
+
+        iniciarContagem();
     });
 }
 // --- Netplay: aviso quando o coop nao consegue abrir a sala ---
@@ -983,7 +1050,9 @@ async function loadGames() {
                                     throw new Error('host.js nao carregou');
                                 }
                                 const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
-                                await mostrarSalaCriada(sala);
+                                await mostrarSalaCriada(sala, function () {
+                                    return window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
+                                });
                             } catch (e) {
                                 await avisarCoopFalhou(e);
                                 modo = 'solo';

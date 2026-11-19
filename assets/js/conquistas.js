@@ -1,5 +1,5 @@
 // =====================================================
-// RETRO NFC — conquistas.js
+// RETRO NFC — conquistas.js (v2)
 // Conquistas locais (localStorage). Sem backend, sem sync.
 // Falha de armazenamento nunca bloqueia nada.
 // Carregar ANTES de app.js no play.html.
@@ -60,7 +60,7 @@
         return Math.round((pb - pa) / 86400000);
     }
 
-    // --- Presença: roda uma vez por carga de página ---
+    // --- Presenca: roda uma vez por carga de pagina ---
     function registrarPresenca() {
         var hoje = hojeISO();
         var ultima = get(CH.ultima);
@@ -94,9 +94,11 @@
         set('retronfc_' + nome, '1');
     }
 
-    // --- Maratona: só conta com a aba visível ---
+    // --- Maratona: so conta com a aba visivel ---
+    // Reiniciada a cada partida: "horas seguidas no mesmo jogo".
     var maratonaAcumulada = 0;
     var maratonaInicio = 0;
+    var ultimoTick = 0;
     var ticker = null;
 
     function maratonaAgora() {
@@ -112,23 +114,35 @@
     function retomarMaratona() {
         if (maratonaInicio) return;
         maratonaInicio = Date.now();
+        ultimoTick = maratonaInicio;
     }
 
     function iniciarMaratona() {
+        // Nova partida: zera o acumulado da maratona anterior.
+        maratonaAcumulada = 0;
+        maratonaInicio = 0;
         retomarMaratona();
+
         if (ticker) return;
+
         ticker = setInterval(function () {
-            if (document.visibilityState === 'visible') {
-                somarTempo(30000);
-                avaliar();
-            }
+            var agora = Date.now();
+            var delta = agora - ultimoTick;
+            ultimoTick = agora;
+
+            if (document.visibilityState !== 'visible') return;
+            if (delta > 0 && delta < 120000) somarTempo(delta);
+            avaliar();
         }, 30000);
     }
 
     document.addEventListener('visibilitychange', function () {
         if (!ticker) return;
-        if (document.visibilityState === 'hidden') pausarMaratona();
-        else retomarMaratona();
+        if (document.visibilityState === 'hidden') {
+            pausarMaratona();
+        } else {
+            retomarMaratona();
+        }
     });
 
     // --- Contexto avaliado pelas regras ---
@@ -192,6 +206,10 @@
         { id: 'trilha',      familia: 'estante', nivel: 1, arte: 'no_embalo_da_trilha.webp', nome: 'NO EMBALO DA TRILHA', desc: 'Abriu a estante com música.',                 meta: 1,        valor: function (c) { return c.flags.trilha ? 1 : 0; } }
     ];
 
+    // Indice id -> conquista (evita varredura linear a cada consulta)
+    var POR_ID = {};
+    LISTA.forEach(function (a) { POR_ID[a.id] = a; });
+
     // --- Estado gravado ---
     function desbloqueadas() {
         var l = lista(CH.conquistas), out = [];
@@ -205,32 +223,47 @@
         return desbloqueadas().map(function (d) { return d.id; });
     }
 
-    function porId(id) {
-        for (var i = 0; i < LISTA.length; i++) if (LISTA[i].id === id) return LISTA[i];
-        return null;
+    // Mapa id -> registro { id, em }, para consulta O(1)
+    function mapaDesbloqueadas() {
+        var m = {};
+        desbloqueadas().forEach(function (d) { m[d.id] = d; });
+        return m;
     }
 
+    function porId(id) {
+        return POR_ID[id] || null;
+    }
+
+    var _avaliando = false;
+
     function avaliar() {
-        var c = contexto();
-        var feitos = idsDesbloqueados();
-        var guardar = desbloqueadas();
-        var novos = [];
+        if (_avaliando) return [];
+        _avaliando = true;
 
-        LISTA.forEach(function (a) {
-            if (feitos.indexOf(a.id) !== -1) return;
-            var v = 0;
-            try { v = a.valor(c) || 0; } catch (e) { v = 0; }
-            if (v >= a.meta) {
-                guardar.push({ id: a.id, em: Date.now() });
-                novos.push(a);
+        try {
+            var c = contexto();
+            var feitos = idsDesbloqueados();
+            var guardar = desbloqueadas();
+            var novos = [];
+
+            LISTA.forEach(function (a) {
+                if (feitos.indexOf(a.id) !== -1) return;
+                var v = 0;
+                try { v = a.valor(c) || 0; } catch (e) { v = 0; }
+                if (v >= a.meta) {
+                    guardar.push({ id: a.id, em: Date.now() });
+                    novos.push(a);
+                }
+            });
+
+            if (novos.length) {
+                set(CH.conquistas, JSON.stringify(guardar));
+                enfileirar(novos);
             }
-        });
-
-        if (novos.length) {
-            set(CH.conquistas, JSON.stringify(guardar));
-            enfileirar(novos);
+            return novos;
+        } finally {
+            _avaliando = false;
         }
-        return novos;
     }
 
     // --- DOM ---
@@ -249,6 +282,7 @@
 
     var overlay = null, painel = null, faixa = null, detalhe = null;
     var fila = [], mostrando = false;
+    var focoAnterior = null;
 
     function montarOverlay() {
         if (overlay) return;
@@ -256,9 +290,13 @@
         overlay.id = 'cqOverlay';
         overlay.setAttribute('role', 'dialog');
         overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'cqTitulo');
 
         var caixa = el('div', 'cq-caixa');
-        caixa.appendChild(el('p', 'cq-titulo', 'CONQUISTA DESBLOQUEADA!'));
+
+        var titulo = el('p', 'cq-titulo', 'CONQUISTA DESBLOQUEADA!');
+        titulo.id = 'cqTitulo';
+        caixa.appendChild(titulo);
 
         var selo = el('img', 'cq-selo');
         selo.id = 'cqSelo';
@@ -292,11 +330,19 @@
         if (!mostrando) mostrarProximo();
     }
 
+    // Overlays do app.js que precisam terminar antes da conquista aparecer
+    function outroOverlayAberto() {
+        if (document.querySelector('.celebra.aberta')) return true;
+        return !!document.querySelector(
+            '#modoOverlay, #salaOverlay, #nomeOverlay, #coopErroOverlay, #erroOverlay'
+        );
+    }
+
     function mostrarProximo() {
         if (!fila.length) { mostrando = false; return; }
 
-        // Não briga com a celebração de cartucho novo
-        if (document.querySelector('.celebra.aberta')) {
+        // Nao briga com a celebracao de cartucho novo nem com os dialogos do jogo
+        if (outroOverlayAberto()) {
             setTimeout(mostrarProximo, 700);
             return;
         }
@@ -312,6 +358,7 @@
         document.getElementById('cqDesc').textContent = a.desc;
         document.getElementById('cqContador').textContent = feitos + ' DE ' + LISTA.length;
 
+        focoAnterior = document.activeElement;
         overlay.classList.add('aberta');
         document.getElementById('cqBtn').focus();
     }
@@ -319,17 +366,26 @@
     function fecharOverlay() {
         if (!overlay) return;
         overlay.classList.remove('aberta');
+        if (focoAnterior && typeof focoAnterior.focus === 'function') {
+            try { focoAnterior.focus(); } catch (e) {}
+        }
+        focoAnterior = null;
         setTimeout(mostrarProximo, 220);
     }
+
     function montarDetalhe() {
         if (detalhe) return;
         detalhe = el('div', 'cq-overlay cq-detalhe');
         detalhe.id = 'cqDetalhe';
         detalhe.setAttribute('role', 'dialog');
         detalhe.setAttribute('aria-modal', 'true');
+        detalhe.setAttribute('aria-labelledby', 'cqDetTitulo');
 
         var caixa = el('div', 'cq-caixa');
-        caixa.appendChild(el('p', 'cq-titulo', 'CONQUISTA'));
+
+        var titulo = el('p', 'cq-titulo', 'CONQUISTA');
+        titulo.id = 'cqDetTitulo';
+        caixa.appendChild(titulo);
 
         var selo = el('img', 'cq-selo');
         selo.id = 'cqDetSelo';
@@ -364,8 +420,8 @@
         if (!a) return;
         montarDetalhe();
 
-        var feitos = idsDesbloqueados();
-        var aberta = feitos.indexOf(a.id) !== -1;
+        var mapa = mapaDesbloqueadas();
+        var reg = mapa[a.id];
         var c = contexto();
 
         document.getElementById('cqDetSelo').src = arte(a);
@@ -373,9 +429,8 @@
         document.getElementById('cqDetDesc').textContent = a.desc;
 
         var prog = '';
-        if (aberta) {
-            var reg = desbloqueadas().filter(function (d) { return d.id === a.id; })[0];
-            prog = (reg && reg.em)
+        if (reg) {
+            prog = reg.em
                 ? 'OBTIDA EM ' + new Date(reg.em).toLocaleDateString('pt-BR')
                 : 'DESBLOQUEADA';
         } else {
@@ -393,16 +448,20 @@
     function fecharDetalhe() {
         if (detalhe) detalhe.classList.remove('aberta');
     }
-    
+
     function montarPainel() {
         if (painel) return;
         painel = el('div', 'cq-painel');
         painel.id = 'cqPainel';
         painel.setAttribute('role', 'dialog');
         painel.setAttribute('aria-modal', 'true');
+        painel.setAttribute('aria-labelledby', 'cqPainelTitulo');
 
         var caixa = el('div', 'cq-painel-caixa');
-        caixa.appendChild(el('p', 'cq-painel-titulo', 'CONQUISTAS'));
+
+        var titulo = el('p', 'cq-painel-titulo', 'CONQUISTAS');
+        titulo.id = 'cqPainelTitulo';
+        caixa.appendChild(titulo);
 
         var sub = el('p', 'cq-painel-sub');
         sub.id = 'cqPainelSub';
@@ -424,6 +483,7 @@
     function pintarPainel() {
         montarPainel();
         var feitos = idsDesbloqueados();
+        var mapa = mapaDesbloqueadas();
         var c = contexto();
 
         document.getElementById('cqPainelSub').textContent =
@@ -439,8 +499,8 @@
             corpo.appendChild(el('p', 'cq-grupo', FAMILIAS[fam].titulo));
 
             itens.forEach(function (a) {
-                var aberta = feitos.indexOf(a.id) !== -1;
-                var reg = desbloqueadas().filter(function (d) { return d.id === a.id; })[0];
+                var reg = mapa[a.id];
+                var aberta = !!reg;
 
                 var linha = el('div', 'cq-item clicavel' + (aberta ? ' aberta' : ''));
                 linha.setAttribute('role', 'button');
@@ -464,16 +524,14 @@
                 txt.appendChild(el('p', 'cq-item-desc', a.desc));
 
                 var prog = '';
-                if (aberta && reg && reg.em) {
+                if (aberta && reg.em) {
                     prog = new Date(reg.em).toLocaleDateString('pt-BR');
                 } else {
                     var v = 0;
                     try { v = a.valor(c) || 0; } catch (e) { v = 0; }
-                    if (a.meta > 1) {
-                        prog = Math.min(v, a.meta) + ' / ' + a.meta;
-                    } else {
-                        prog = 'BLOQUEADA';
-                    }
+                    prog = (a.meta > 1)
+                        ? Math.min(v, a.meta) + ' / ' + a.meta
+                        : 'BLOQUEADA';
                 }
                 txt.appendChild(el('p', 'cq-item-prog', prog));
 
@@ -536,6 +594,14 @@
             selos.appendChild(img);
         });
     }
+
+    // --- Teclado: ESC fecha o dialogo do topo ---
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Escape') return;
+        if (detalhe && detalhe.classList.contains('aberta')) { fecharDetalhe(); return; }
+        if (painel && painel.classList.contains('aberta')) { fecharPainel(); return; }
+        if (overlay && overlay.classList.contains('aberta')) { fecharOverlay(); }
+    });
 
     // --- API ---
     var API = {

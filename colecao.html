@@ -880,7 +880,7 @@
     <div class="celebra" id="partilha" role="dialog" aria-modal="true" aria-labelledby="partilhaTitulo">
         <div class="celebra-caixa partilha-caixa">
             <p class="celebra-titulo" id="partilhaTitulo">SUA ESTANTE EM UMA IMAGEM</p>
-            <img class="partilha-img" id="partilhaImg" alt="Previa do card da sua estante">
+            <img class="partilha-img" id="partilhaImg" alt="Prévia do card da sua estante">
             <div class="partilha-acoes">
                 <button class="btn-partilha" id="partilhaEnviar" type="button">COMPARTILHAR</button>
                 <button class="btn-partilha secundario" id="partilhaBaixar" type="button">BAIXAR</button>
@@ -1579,16 +1579,16 @@
 
             const aviso = document.getElementById('avisoErro');
             aviso.textContent =
-                'FALHA AO ATUALIZAR O CATALOGO. ' +
-                'TENTE RECARREGAR A PAGINA.';
+                'FALHA AO ATUALIZAR O CATÁLOGO. ' +
+                'TENTE RECARREGAR A PÁGINA.';
             aviso.style.display = 'block';
 
             if (estado.games.length === 0) {
                 const vazio = document.createElement('div');
                 vazio.className = 'vazio';
                 vazio.textContent =
-                    'ERRO AO CARREGAR O CATALOGO. ' +
-                    'MAS SUA COLECAO ESTA A SALVO.';
+                    'ERRO AO CARREGAR O CATÁLOGO. ' +
+                    'MAS SUA COLEÇÃO ESTÁ A SALVO.';
 
                 const conteudo = document.getElementById('conteudo');
                 conteudo.replaceChildren(vazio);
@@ -1968,9 +1968,9 @@
                 }
 
                 if (meusCartuchosNaOrdem().length === 0) {
-                    aviso.textContent = 'SUA ESTANTE AINDA ESTA VAZIA. ENCOSTE UM CARTUCHO RETRO NFC.';
+                    aviso.textContent = 'SUA ESTANTE AINDA ESTÁ VAZIA. ENCOSTE UM CARTUCHO RETRÔ NFC.';
                     setTimeout(function () {
-                        if (aviso.textContent.indexOf('AINDA ESTA VAZIA') !== -1) {
+                        if (aviso.textContent.indexOf('AINDA ESTÁ VAZIA') !== -1) {
                             aviso.textContent = '';
                         }
                     }, 5000);
@@ -1994,7 +1994,7 @@
 
                 aviso.textContent = '';
             } catch (e) {
-                aviso.textContent = 'NAO FOI POSSIVEL MONTAR A IMAGEM. TENTE DE NOVO.';
+                aviso.textContent = 'NÃO FOI POSSÍVEL MONTAR A IMAGEM. TENTE DE NOVO.';
             } finally {
                 botao.dataset.ocupado = '0';
                 botao.disabled = false;
@@ -2018,7 +2018,7 @@
                 // AbortError = a pessoa fechou o menu nativo. Não é falha.
                 if (e && e.name === 'AbortError') return;
 
-                aviso.textContent = 'NAO FOI POSSIVEL COMPARTILHAR. USE O BOTAO BAIXAR.';
+                aviso.textContent = 'NÃO FOI POSSÍVEL COMPARTILHAR. USE O BOTÃO BAIXAR.';
                 setTimeout(function () { aviso.textContent = ''; }, 6000);
             }
         }

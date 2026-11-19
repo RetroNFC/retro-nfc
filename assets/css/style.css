@@ -1,5 +1,5 @@
 /* Importa a fonte retrô */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
 @font-face {
     font-family: 'Pretendo';
@@ -27,7 +27,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Jersey Retro', 'Press Start 2P', monospace;
+    font-family: 'Jersey Retro', 'Pixelify Sans', monospace;
 }
 
 body {
@@ -171,7 +171,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    font-family: 'Jersey Retro', 'Press Start 2P', monospace;
+    font-family: 'Jersey Retro', 'Pixelify Sans', monospace;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;

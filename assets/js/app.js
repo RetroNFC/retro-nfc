@@ -1,12 +1,12 @@
 // =====================================================
-// RETRO NFC — app.js (v9.2)
+// RETRO NFC — app.js (v9.3)
 // Frontend envia apenas campos estruturados; o Apps Script monta o texto.
 // Falha de armazenamento ou de telemetria nunca bloqueia o jogo.
 // =====================================================
 
 const URL_BACKEND = "https://script.google.com/macros/s/AKfycbw2aJCwpgq1OJ1fVSXUz8hUMCK7M2Ho1l7HdUKGf8hF4rbS2FFEDGiyBW6FA03yRTz_/exec";
 
-const APP_VERSAO = "9.2";
+const APP_VERSAO = "9.3";
 
 // --- Netplay (coop online) ---------------------------------------------
 // Deixe vazio para desativar o coop: o botao aparece como INDISPONIVEL.
@@ -27,10 +27,10 @@ const CHAVE_PENDENTES = 'retronfc_pendentes';
 const CHAVE_RECENTES  = 'retronfc_recentes';
 const CHAVE_MODO      = 'retronfc_modo_jogo';
 
-// Identificador único desta sessão de jogo (o backend edita a mesma mensagem)
+// Identificador unico desta sessao de jogo (o backend edita a mesma mensagem)
 const SESSAO_ID = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-// --- Armazenamento seguro (se o localStorage falhar, usa a memória) ---
+// --- Armazenamento seguro (se o localStorage falhar, usa a memoria) ---
 const _memoria = {};
 
 function lsGet(chave) {
@@ -55,7 +55,7 @@ function lerColecao() {
 
 function contarCartuchos() { return lerColecao().length; }
 
-// --- Jogados recentemente: o mais recente fica na frente (máx. 8) ---
+// --- Jogados recentemente: o mais recente fica na frente (max. 8) ---
 function registrarRecente(key) {
     try {
         let lista = JSON.parse(lsGet(CHAVE_RECENTES) || '[]');
@@ -66,7 +66,7 @@ function registrarRecente(key) {
     } catch (e) {}
 }
 
-// --- Visita: conta UMA vez por sessão do navegador ---
+// --- Visita: conta UMA vez por sessao do navegador ---
 let VISITAS_ATUAIS = 0;
 (function contarVisita() {
     let v = parseInt(lsGet(CHAVE_VISITAS) || "0", 10) || 0;
@@ -84,7 +84,7 @@ function classificarVisita() {
     return VISITAS_ATUAIS <= 1 ? "Primeira visita" : "Recorrente";
 }
 
-// --- Catálogo (games.json) com cache que atualiza em segundo plano ---
+// --- Catalogo (games.json) com cache que atualiza em segundo plano ---
 let _jogosMemoria = null;
 
 function lerCacheJogos() {
@@ -105,7 +105,7 @@ async function buscarJogosDaRede() {
         const r = await fetch("games.json?ts=" + Date.now(), ctrl ? { signal: ctrl.signal } : undefined);
         if (!r.ok) throw new Error("HTTP " + r.status);
         const data = await r.json();
-        if (!data || !Array.isArray(data.games)) throw new Error("games.json inválido");
+        if (!data || !Array.isArray(data.games)) throw new Error("games.json invalido");
         _jogosMemoria = data.games;
         salvarCacheJogos(data.games);
         return data.games;
@@ -114,8 +114,8 @@ async function buscarJogosDaRede() {
     }
 }
 
-// Usa o cache se ele já contém as chaves pedidas; senão busca na rede.
-// estrito = true: se a rede falhar, lança erro em vez de devolver cache incompleto.
+// Usa o cache se ele ja contem as chaves pedidas; senao busca na rede.
+// estrito = true: se a rede falhar, lanca erro em vez de devolver cache incompleto.
 async function obterJogos(chaves, estrito) {
     const cache = _jogosMemoria || lerCacheJogos();
     if (cache && (!chaves || chaves.every(c => cache.some(g => g.key === c)))) return cache;
@@ -131,7 +131,7 @@ function atualizarCatalogoEmSegundoPlano() {
     buscarJogosDaRede().catch(() => {});
 }
 
-// --- Envio de eventos com confirmação, fila e reenvio ---
+// --- Envio de eventos com confirmacao, fila e reenvio ---
 function novoEventoId() {
     return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
@@ -194,7 +194,7 @@ async function tentarEnviar(obj, keepalive) {
     return false;
 }
 
-// Guarda na fila ANTES de enviar; só remove quando o backend confirma.
+// Guarda na fila ANTES de enviar; so remove quando o backend confirma.
 async function enviarComConfirmacao(obj, opcoes) {
     try {
         opcoes = opcoes || {};
@@ -219,7 +219,7 @@ async function reenviarPendentes() {
     }
 }
 
-// Envio rápido para saída da página (sem confirmação possível)
+// Envio rapido para saida da pagina (sem confirmacao possivel)
 function enviarLeve(obj) {
     try {
         const corpo = JSON.stringify(obj);
@@ -234,6 +234,8 @@ function enviarLeve(obj) {
 }
 
 // --- Rastreamento do clique na estante ---
+let _estanteEmCurso = false;
+
 function marcarCarregandoEstante() {
     ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
         const b = document.getElementById(id);
@@ -245,7 +247,8 @@ function marcarCarregandoEstante() {
     });
 }
 
-// Ao voltar da estante, devolve os botões ao estado normal
+// Ao voltar da estante, devolve os botoes ao estado normal
+// e libera a trava para que a estante possa ser aberta de novo.
 function restaurarBotoesEstante() {
     ['btnEstante', 'btnEstanteErro'].forEach(function (id) {
         const b = document.getElementById(id);
@@ -254,14 +257,13 @@ function restaurarBotoesEstante() {
         b.removeAttribute('aria-busy');
         if (b.dataset.textoOriginal) b.innerText = b.dataset.textoOriginal;
     });
+    _estanteEmCurso = false;
 }
 window.addEventListener('pageshow', restaurarBotoesEstante);
 
-let _estanteEmCurso = false;
-
 function rastrearCliqueColecao(origem, evento) {
-    // Só dispara com clique real no botão da estante.
-    // Chamada programática, disparo no load ou repetição são ignorados.
+    // So dispara com clique real no botao da estante.
+    // Chamada programatica, disparo no load ou repeticao sao ignorados.
     if (!evento || evento.isTrusted !== true) return;
     if (_estanteEmCurso) return;
     _estanteEmCurso = true;
@@ -313,7 +315,7 @@ function ligarBotoesEstante() {
     });
 }
 
-// --- Verificação de domínio ---
+// --- Verificacao de dominio ---
 const DOMINIOS_PERMITIDOS = [
     "retronfc.github.io",
     "retro-nfc.pages.dev"
@@ -324,12 +326,12 @@ const ehDominioOficial = DOMINIOS_PERMITIDOS.some(d => hostAtual === d || hostAt
 const ehArquivoLocal   = window.location.protocol === "file:";
 
 if (!ehLocalhost && !ehDominioOficial && !ehArquivoLocal) {
-    document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Não Autorizado</h1></div>";
-    throw new Error("Execução bloqueada por segurança.");
+    document.body.innerHTML = "<div style='background:#111; color:#ff4444; height:100vh; display:flex; justify-content:center; align-items:center;'><h1>Acesso Nao Autorizado</h1></div>";
+    throw new Error("Execucao bloqueada por seguranca.");
 }
 
 // --- Estado global ---
-// A chave real é guardada aqui: o play.html troca o ?k= da URL por um texto falso.
+// A chave real e guardada aqui: o play.html troca o ?k= da URL por um texto falso.
 const PARAMS   = new URLSearchParams(window.location.search);
 const GAME_KEY = PARAMS.get("k");
 let CURRENT_GAME = null;
@@ -337,11 +339,11 @@ let IS_VALID     = false;
 const clickSound = new Audio('assets/life.mp3');
 
 let tempoInicio  = 0;
-let ocultoDesde  = 0;   // momento em que a página saiu de foco (0 = em foco)
-let ocultoTotal  = 0;   // tempo total fora de foco (não conta como jogado)
+let ocultoDesde  = 0;   // momento em que a pagina saiu de foco (0 = em foco)
+let ocultoTotal  = 0;   // tempo total fora de foco (nao conta como jogado)
 let dadosSessao  = { local: "—", ip: "—", rede: "—", inicio: "" };
 
-// --- Utilitários ---
+// --- Utilitarios ---
 function obterIdCurto() {
     let id = lsGet(CHAVE_ID);
     if (!id) {
@@ -395,7 +397,7 @@ function limparNome(txt) {
     return s.replace(/\s+/g, ' ').trim().substring(0, 20);
 }
 
-// Modal criado por JS: não exige alteração em play.html nem em style.css
+// Modal criado por JS: nao exige alteracao em play.html nem em style.css
 function pedirNome() {
     return new Promise(function (resolve) {
         const jaTem = obterNome();
@@ -410,18 +412,18 @@ function pedirNome() {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'RETRÔ NFC';
-        titulo.style.cssText = 'font-size:14px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:18px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const texto = document.createElement('p');
         texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
-        texto.style.cssText = 'color:#ece8f7;font-size:9px;line-height:1.9;margin:0 0 18px;';
+        texto.style.cssText = 'color:#ece8f7;font-size:12px;line-height:1.9;margin:0 0 18px;';
 
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = 20;
         input.autocomplete = 'nickname';
         input.placeholder = 'SEU NOME';
-        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:10px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:12px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
 
         input.addEventListener('focus', function () {
             input.style.borderColor = '#00CFFF';
@@ -433,12 +435,12 @@ function pedirNome() {
         });
 
         const erro = document.createElement('div');
-        erro.style.cssText = 'color:#FFD700;font-size:8px;line-height:1.6;min-height:14px;margin-top:10px;';
+        erro.style.cssText = 'color:#FFD700;font-size:10px;line-height:1.6;min-height:14px;margin-top:10px;';
 
         const botao = document.createElement('button');
         botao.type = 'button';
         botao.textContent = 'COMEÇAR';
-        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);transition:transform .15s,filter .15s;';
+        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);transition:transform .15s,filter .15s;';
 
         botao.addEventListener('pointerdown', function () { botao.style.transform = 'scale(.97)'; });
         botao.addEventListener('pointerup', function () { botao.style.transform = 'scale(1)'; });
@@ -472,9 +474,9 @@ function pedirNome() {
     });
 }
 
-// --- Netplay: ID numérico estável por jogo ---
-// EJS_gameID precisa ser número e único por jogo no servidor inteiro.
-// Derivamos do UUID do games.json (FNV-1a 32 bits), então o mesmo jogo
+// --- Netplay: ID numerico estavel por jogo ---
+// EJS_gameID precisa ser numero e unico por jogo no servidor inteiro.
+// Derivamos do UUID do games.json (FNV-1a 32 bits), entao o mesmo jogo
 // sempre gera o mesmo ID, em qualquer aparelho, sem precisar editar o JSON.
 function idNumericoDoJogo(key) {
     let h = 2166136261;
@@ -487,7 +489,7 @@ function idNumericoDoJogo(key) {
 }
 
 // --- Netplay: escolha do modo de jogo (solo ou coop online) ---
-// Criado por JS: não exige alteração em play.html nem em style.css.
+// Criado por JS: nao exige alteracao em play.html nem em style.css.
 function escolherModoDeJogo() {
     return new Promise(function (resolve) {
 
@@ -500,44 +502,44 @@ function escolherModoDeJogo() {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'MODO DE JOGO';
-        titulo.style.cssText = 'font-size:12px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:16px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         // ---------- Tela 1: escolha ----------
         const tela1 = document.createElement('div');
 
         const sub1 = document.createElement('p');
         sub1.textContent = 'Como você quer jogar agora?';
-        sub1.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;';
+        sub1.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 16px;';
 
         const bSolo = document.createElement('button');
         bSolo.type = 'button';
         bSolo.textContent = 'JOGAR SOZINHO';
-        bSolo.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+        bSolo.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
 
         const bCoop = document.createElement('button');
         bCoop.type = 'button';
-        bCoop.textContent = NETPLAY_ATIVO ? 'COOP ONLINE' : 'COOP INDISPONIVEL';
+        bCoop.textContent = NETPLAY_ATIVO ? 'COOP ONLINE' : 'COOP INDISPONÍVEL';
         bCoop.disabled = !NETPLAY_ATIVO;
-        bCoop.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:' + (NETPLAY_ATIVO ? '#00CFFF' : '#4a4560') + ';border:1px solid ' + (NETPLAY_ATIVO ? '#00CFFF' : '#2a2142') + ';border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
+        bCoop.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:' + (NETPLAY_ATIVO ? '#00CFFF' : '#4a4560') + ';border:1px solid ' + (NETPLAY_ATIVO ? '#00CFFF' : '#2a2142') + ';border-radius:50px;font-family:inherit;font-size:12px;padding:14px;cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
 
         tela1.appendChild(sub1);
         tela1.appendChild(bSolo);
         tela1.appendChild(bCoop);
-        
+
         // ---------- Tela 2: instrucoes do coop ----------
         const tela2 = document.createElement('div');
         tela2.style.display = 'none';
 
         const sub2 = document.createElement('p');
-        sub2.textContent = 'Os dois aparelhos precisam ter escaneado a TAG deste cartucho. Um cria a sala e o outro entra com o codigo.';
-        sub2.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 14px;text-align:left;';
+        sub2.textContent = 'Os dois aparelhos precisam ter escaneado a TAG deste cartucho. Um cria a sala e o outro entra com o código.';
+        sub2.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 14px;text-align:left;';
 
         const passos = document.createElement('div');
-        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:7px;line-height:2.1;margin:0 0 18px;';
+        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:10px;line-height:2.1;margin:0 0 18px;';
 
         ['1. Toque em INICIAR COOP nos dois aparelhos.',
          '2. Abra o menu do emulador e escolha NETPLAY.',
-         '3. Um cria a sala, o outro entra com o codigo.',
+         '3. Um cria a sala, o outro entra com o código.',
          '4. Os dois jogam o mesmo jogo, em tempo real.'
         ].forEach(function (t) {
             const l = document.createElement('div');
@@ -548,12 +550,12 @@ function escolherModoDeJogo() {
         const bIniciar = document.createElement('button');
         bIniciar.type = 'button';
         bIniciar.textContent = 'INICIAR COOP';
-        bIniciar.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+        bIniciar.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
 
         const bVoltar = document.createElement('button');
         bVoltar.type = 'button';
         bVoltar.textContent = 'VOLTAR';
-        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:8px;padding:13px;cursor:pointer;';
+        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:11px;padding:13px;cursor:pointer;';
 
         tela2.appendChild(sub2);
         tela2.appendChild(passos);
@@ -562,7 +564,6 @@ function escolherModoDeJogo() {
 
         caixa.appendChild(titulo);
         caixa.appendChild(tela1);
-        //caixa.appendChild(tela2);
         overlay.appendChild(caixa);
         document.body.appendChild(overlay);
 
@@ -579,13 +580,13 @@ function escolherModoDeJogo() {
         });
         bIniciar.addEventListener('click', function () { fechar('coop'); });
 
-        });
+    });
 }
 
-// --- Netplay: sala criada. Aguarda o convidado entrar (link vale 60s) ---
+// --- Netplay: sala criada. Aguarda o convidado entrar (link vale 120s) ---
 function mostrarSalaCriada(dados, gerarNovo) {
     return new Promise(function (resolve) {
-        const VALIDADE = 60;
+        const VALIDADE = 120;
         let restante = VALIDADE;
         let timer = null;
         let entrou = false;
@@ -598,30 +599,30 @@ function mostrarSalaCriada(dados, gerarNovo) {
         caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
-        titulo.textContent = 'Convide o amigo';
-        titulo.style.cssText = 'font-size:12px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.textContent = 'CONVIDE O AMIGO';
+        titulo.style.cssText = 'font-size:16px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Envie o link e fique nesta tela até o amigo entrar. A partida começa sozinha.';
-        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 16px;text-align:left;';
+        sub.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 16px;text-align:left;';
 
         const estado = document.createElement('div');
-        estado.style.cssText = 'color:#FFD700;font-size:8px;line-height:2;margin-bottom:16px;';
+        estado.style.cssText = 'color:#FFD700;font-size:12px;line-height:2;margin-bottom:16px;';
 
         const bCopiar = document.createElement('button');
         bCopiar.type = 'button';
-        bCopiar.textContent = 'Copiar link';
-        bCopiar.style.cssText = 'width:100%;background:transparent;color:#00CFFF;border:1px solid #00CFFF;border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:pointer;';
+        bCopiar.textContent = 'COPIAR LINK';
+        bCopiar.style.cssText = 'width:100%;background:transparent;color:#00CFFF;border:1px solid #00CFFF;border-radius:50px;font-family:inherit;font-size:12px;padding:14px;cursor:pointer;';
 
         const bNovo = document.createElement('button');
         bNovo.type = 'button';
-        bNovo.textContent = 'Gerar novo link';
-        bNovo.style.cssText = 'display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:10px;padding:15px;cursor:pointer;';
+        bNovo.textContent = 'GERAR NOVO LINK';
+        bNovo.style.cssText = 'display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;';
 
         const bSolo = document.createElement('button');
         bSolo.type = 'button';
-        bSolo.textContent = 'Jogar sozinho';
-        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:8px;padding:10px;cursor:pointer;';
+        bSolo.textContent = 'JOGAR SOZINHO';
+        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:11px;padding:10px;cursor:pointer;';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
@@ -632,19 +633,23 @@ function mostrarSalaCriada(dados, gerarNovo) {
         overlay.appendChild(caixa);
         document.body.appendChild(overlay);
 
-        function minuto(s) { return '0:' + (s < 10 ? '0' : '') + s; }
+        function minuto(s) {
+            const m = Math.floor(s / 60);
+            const r = s % 60;
+            return m + ':' + (r < 10 ? '0' : '') + r;
+        }
 
         function atualizar() {
             if (entrou) return;
             if (restante > 0) {
                 estado.style.color = '#FFD700';
-                estado.textContent = 'Aguardando o amigo... link vale ' + minuto(restante);
+                estado.textContent = 'AGUARDANDO O AMIGO... LINK VALE ' + minuto(restante);
                 bCopiar.style.display = '';
                 bNovo.style.display = 'none';
             } else {
                 clearInterval(timer);
                 estado.style.color = '#FF8C00';
-                estado.textContent = 'O link expirou.';
+                estado.textContent = 'O LINK EXPIROU.';
                 bCopiar.style.display = 'none';
                 bNovo.style.display = '';
             }
@@ -667,7 +672,7 @@ function mostrarSalaCriada(dados, gerarNovo) {
             entrou = true;
             clearInterval(timer);
             estado.style.color = '#00CFFF';
-            estado.textContent = 'Amigo conectado! BORA!';
+            estado.textContent = 'AMIGO CONECTADO! BORA!';
             bCopiar.style.display = 'none';
             bNovo.style.display = 'none';
             bSolo.style.display = 'none';
@@ -678,7 +683,7 @@ function mostrarSalaCriada(dados, gerarNovo) {
 
         bCopiar.addEventListener('click', function () {
             const texto = dados.link;
-            function feito() { bCopiar.textContent = 'Link copiado'; }
+            function feito() { bCopiar.textContent = 'LINK COPIADO'; }
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(texto).then(feito).catch(function () {
                     window.prompt('Copie o link:', texto);
@@ -690,17 +695,17 @@ function mostrarSalaCriada(dados, gerarNovo) {
 
         bNovo.addEventListener('click', function () {
             bNovo.disabled = true;
-            bNovo.textContent = 'Gerando...';
+            bNovo.textContent = 'GERANDO...';
             try { window.Netplay.fechar(); } catch (e) {}
             gerarNovo().then(function (nd) {
                 dados = nd;
                 bNovo.disabled = false;
-                bNovo.textContent = 'Gerar novo link';
-                bCopiar.textContent = 'Copiar link';
+                bNovo.textContent = 'GERAR NOVO LINK';
+                bCopiar.textContent = 'COPIAR LINK';
                 iniciarContagem();
             }).catch(function () {
                 bNovo.disabled = false;
-                bNovo.textContent = 'Tentar de novo';
+                bNovo.textContent = 'TENTAR DE NOVO';
             });
         });
 
@@ -712,6 +717,7 @@ function mostrarSalaCriada(dados, gerarNovo) {
         iniciarContagem();
     });
 }
+
 // --- Netplay: aviso quando o coop nao consegue abrir a sala ---
 function avisarCoopFalhou(erro) {
     return new Promise(function (resolve) {
@@ -723,21 +729,21 @@ function avisarCoopFalhou(erro) {
         caixa.style.cssText = 'border:2px solid #FF8C00;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:#0F0A1C;';
 
         const titulo = document.createElement('div');
-        titulo.textContent = 'Coop indisponível';
-        titulo.style.cssText = 'font-size:11px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
+        titulo.textContent = 'COOP INDISPONÍVEL';
+        titulo.style.cssText = 'font-size:14px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Não foi possível abrir a sala agora.';
-        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 12px;';
+        sub.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 12px;';
 
         const detalhe = document.createElement('p');
-        detalhe.textContent = (erro && erro.message) ? erro.message : 'erro desconhecido';
-        detalhe.style.cssText = 'color:#8b9bb0;font-size:7px;line-height:2;margin:0 0 18px;word-break:break-word;';
+        detalhe.textContent = (erro && erro.message) ? erro.message : 'ERRO DESCONHECIDO';
+        detalhe.style.cssText = 'color:#8b9bb0;font-size:10px;line-height:2;margin:0 0 18px;word-break:break-word;';
 
         const bOk = document.createElement('button');
         bOk.type = 'button';
-        bOk.textContent = 'Jogar sozinho';
-        bOk.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:9px;padding:14px;cursor:pointer;';
+        bOk.textContent = 'JOGAR SOZINHO';
+        bOk.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:12px;padding:14px;cursor:pointer;';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
@@ -752,102 +758,8 @@ function avisarCoopFalhou(erro) {
         });
     });
 }
-// --- Netplay: acordar o servidor (o Render free dorme por inatividade) ---
-// Mostra LIGANDO SERVIDOR com contador e barra ate o servico responder.
-// Resolve true quando a sala pode ser criada, false se o jogador desistir
-// ou se o limite de espera acabar.
-function acordarServidor() {
-    return new Promise(function (resolve) {
-        const overlay = document.createElement('div');
-        overlay.id = 'servidorOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9997;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Pixelify Sans",monospace;';
 
-        const caixa = document.createElement('div');
-        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
-
-        const titulo = document.createElement('div');
-        titulo.textContent = 'LIGANDO SERVIDOR';
-        titulo.style.cssText = 'font-size:11px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
-
-        const sub = document.createElement('p');
-        sub.textContent = 'Aguarde ate 1 minuto para que a sala seja criada.';
-        sub.style.cssText = 'color:#ece8f7;font-size:8px;line-height:2;margin:0 0 18px;';
-
-        const trilho = document.createElement('div');
-        trilho.style.cssText = 'width:100%;height:6px;border-radius:50px;background:#1d1730;overflow:hidden;margin-bottom:12px;';
-
-        const barra = document.createElement('div');
-        barra.style.cssText = 'width:0%;height:100%;border-radius:50px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);transition:width .25s linear;';
-        trilho.appendChild(barra);
-
-        const contador = document.createElement('div');
-        contador.textContent = '0s';
-        contador.style.cssText = 'color:#8b9bb0;font-size:8px;line-height:1.8;margin-bottom:18px;';
-
-        const bSolo = document.createElement('button');
-        bSolo.type = 'button';
-        bSolo.textContent = 'JOGAR SOZINHO';
-        bSolo.style.cssText = 'width:100%;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:8px;padding:13px;cursor:pointer;';
-
-        caixa.appendChild(titulo);
-        caixa.appendChild(sub);
-        caixa.appendChild(trilho);
-        caixa.appendChild(contador);
-        caixa.appendChild(bSolo);
-        overlay.appendChild(caixa);
-        document.body.appendChild(overlay);
-
-        let encerrado = false;
-        const inicio  = Date.now();
-        const LIMITE  = 75000;
-
-        function finalizar(ok) {
-            if (encerrado) return;
-            encerrado = true;
-            clearInterval(relogio);
-            overlay.remove();
-            resolve(ok);
-        }
-
-        const relogio = setInterval(function () {
-            const passado = Date.now() - inicio;
-            contador.textContent = Math.floor(passado / 1000) + 's';
-            barra.style.width = Math.min(100, (passado / LIMITE) * 100) + '%';
-            if (passado >= LIMITE) finalizar(false);
-        }, 250);
-
-        function agendar() {
-            if (encerrado) return;
-            setTimeout(tentar, 2500);
-        }
-
-        function tentar() {
-            if (encerrado) return;
-            const ctrl  = ('AbortController' in window) ? new AbortController() : null;
-            const timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 6000) : null;
-
-            fetch(NETPLAY_SERVIDOR + '/?ts=' + Date.now(), ctrl
-                ? { signal: ctrl.signal, cache: 'no-store' }
-                : { cache: 'no-store' })
-                .then(function (r) { return r.ok ? r.json() : null; })
-                .then(function (j) {
-                    if (timer) clearTimeout(timer);
-                    if (j && j.ok) { finalizar(true); return; }
-                    agendar();
-                })
-                .catch(function () {
-                    if (timer) clearTimeout(timer);
-                    agendar();
-                });
-        }
-
-        bSolo.addEventListener('click', function () { finalizar(false); });
-
-        tentar();
-    });
-}
-
-// --- Erro recuperável (nunca deixa a tela preta) ---
+// --- Erro recuperavel (nunca deixa a tela preta) ---
 function recarregarComChave() {
     const base = window.location.pathname;
     const url  = GAME_KEY ? base + "?k=" + encodeURIComponent(GAME_KEY) : base;
@@ -870,23 +782,23 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
 
     const overlay = document.createElement('div');
     overlay.id = 'erroOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(4,7,12,.96);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;font-family:"Pixelify Sans",monospace;';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;font-family:"Pixelify Sans",monospace;';
 
     const caixa = document.createElement('div');
-    caixa.style.cssText = 'background:linear-gradient(160deg,#111a26,#0a0f16);border:2px solid #22D3EE;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;';
+    caixa.style.cssText = 'background:linear-gradient(160deg,#1a1230,#0F0A1C);border:2px solid #00CFFF;border-radius:14px;padding:26px 20px;max-width:340px;width:100%;text-align:center;';
 
     const t = document.createElement('div');
     t.textContent = titulo;
-    t.style.cssText = 'color:#22D3EE;font-size:11px;line-height:1.8;margin-bottom:14px;';
+    t.style.cssText = 'color:#00CFFF;font-size:14px;line-height:1.8;margin-bottom:14px;';
 
     const m = document.createElement('p');
     m.textContent = mensagem;
-    m.style.cssText = 'color:#e6edf5;font-size:8px;line-height:2;margin:0 0 18px;';
+    m.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 18px;';
 
     const b1 = document.createElement('button');
     b1.type = 'button';
     b1.textContent = 'TENTAR NOVAMENTE';
-    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:9px;padding:15px;cursor:pointer;';
+    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;';
     b1.addEventListener('click', recarregarComChave);
 
     caixa.appendChild(t);
@@ -897,7 +809,7 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
         const b2 = document.createElement('button');
         b2.type = 'button';
         b2.textContent = opcoes.secundario.texto;
-        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:8px;padding:13px;cursor:pointer;';
+        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:11px;padding:13px;cursor:pointer;';
         b2.addEventListener('click', function () {
             overlay.remove();
             try { opcoes.secundario.acao(); } catch (e) {}
@@ -909,7 +821,7 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
     document.body.appendChild(overlay);
 }
 
-// --- Sessão de jogo (Apps Script → Telegram) ---
+// --- Sessao de jogo (Apps Script -> Telegram) ---
 function corpoSessao(acao, extra) {
     return Object.assign({
         origemRequisicao: "SiteRetroNFC",
@@ -958,7 +870,7 @@ function registrarLogAcessoImediato() {
         });
 }
 
-// Saiu da tela / trocou de app: registra o tempo até aqui (estimado)
+// Saiu da tela / trocou de app: registra o tempo ate aqui (estimado)
 function sinalizarSaida() {
     if (!CURRENT_GAME || tempoInicio === 0 || ocultoDesde) return;
     const agoraMs = Date.now();
@@ -982,7 +894,7 @@ document.addEventListener('visibilitychange', function () {
 window.addEventListener('pagehide', sinalizarSaida);
 window.addEventListener('pageshow', function (ev) { if (ev.persisted) sinalizarRetorno(); });
 
-// --- Carregamento do jogo (retorna true se está pronto para o boot) ---
+// --- Carregamento do jogo (retorna true se esta pronto para o boot) ---
 async function loadGames() {
     try {
         if (!GAME_KEY) { mostrarTelaErro(); return false; }
@@ -1036,14 +948,14 @@ async function loadGames() {
                     const nome = await pedirNome();
                     if (!nome) { btn.dataset.ocupado = ''; return; }
 
-                    // Solo ou coop online (a TAG já foi validada em loadGames)
+                    // Solo ou coop online (a TAG ja foi validada em loadGames)
                     let modo = await escolherModoDeJogo();
-                    
-                    // Coop: cria a sala direto — o Cloudflare não tem cold start
+
+                    // Coop: cria a sala direto — o Cloudflare nao tem cold start
                     if (modo === 'coop' && NETPLAY_ATIVO) {
                         try {
                             if (!window.Netplay || typeof window.Netplay.abrirSala !== 'function') {
-                                throw new Error('host.js não carregou');
+                                throw new Error('host.js nao carregou');
                             }
                             const sala = await window.Netplay.abrirSala(CURRENT_GAME.title, obterNome());
                             await mostrarSalaCriada(sala, function () {
@@ -1055,7 +967,7 @@ async function loadGames() {
                         }
                     }
 
-                    // Alimenta a seção "Jogados recentemente" da estante
+                    // Alimenta a secao "Jogados recentemente" da estante
                     registrarRecente(CURRENT_GAME.key);
                     try { Conquistas.registrarJogo(CURRENT_GAME.key); } catch (e) {}
                     try { registrarLogAcessoImediato(); } catch (e) {}
@@ -1096,7 +1008,7 @@ function falhaEmulador(motivo) {
 }
 
 function iniciarEmulador(modo) {
-    if (!CURRENT_GAME) throw new Error("Jogo não carregado");
+    if (!CURRENT_GAME) throw new Error("Jogo nao carregado");
 
     document.getElementById("gameScreen").style.display = "none";
     const emulatorScreen = document.getElementById("emulatorScreen");
@@ -1104,7 +1016,7 @@ function iniciarEmulador(modo) {
     emulatorScreen.classList.add("crt-turnon");
     setTimeout(function () { emulatorScreen.classList.remove("crt-turnon"); }, 1200);
     try { Conquistas.iniciarMaratona(); } catch (e) {}
-    
+
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#000000";
 
@@ -1140,20 +1052,19 @@ function iniciarEmulador(modo) {
     window.EJS_gameUrl       = CURRENT_GAME.romUrl;
     window.EJS_startOnLoaded = true;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
-    window.EJS_onGameStart   = function () { jogoIniciou = true; };
 
-    // ID numérico estável: separa saves por jogo e é exigido pelo netplay
+    // ID numerico estavel: separa saves por jogo e e exigido pelo netplay
     window.EJS_onGameStart   = function () {
         jogoIniciou = true;
         if (coopAtivo && window.Netplay) window.Netplay.renegociar();
     };
 
     // Configura o servidor apenas no modo coop
-window.EJS_netplayServer = coopAtivo ? NETPLAY_SERVIDOR : '';
+    window.EJS_netplayServer = coopAtivo ? NETPLAY_SERVIDOR : '';
 
     const script = document.createElement('script');
     script.src     = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-    script.onerror = function () { falhaEmulador("loader.js não carregou"); };
+    script.onerror = function () { falhaEmulador("loader.js nao carregou"); };
     document.body.appendChild(script);
 
     // Aviso se o jogo demorar demais para iniciar
@@ -1175,7 +1086,7 @@ function mostrarTelaErro() {
     if (inv) inv.style.display = "block";
 }
 
-// --- Inicialização: o boot começa quando os dados estão prontos ---
+// --- Inicializacao: o boot comeca quando os dados estao prontos ---
 document.addEventListener("DOMContentLoaded", () => {
     ligarBotoesEstante();
     document.getElementById("gameScreen").style.display   = "none";
@@ -1193,6 +1104,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pronto && IS_VALID && typeof startBoot === "function") startBoot();
     }).catch(() => {});
 
-    // Reenvia registros que não foram confirmados antes
+    // Reenvia registros que nao foram confirmados antes
     setTimeout(() => { reenviarPendentes().catch(() => {}); }, 3000);
 });

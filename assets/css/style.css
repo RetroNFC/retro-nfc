@@ -27,7 +27,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Jersey Retro', 'Pixelify Sans', monospace;
+    font-family: 'Pixelify Sans', monospace;
 }
 
 body {
@@ -78,7 +78,7 @@ body {
 }
 
 #title {
-    font-size: 17px;
+    font-size: 20px;
     line-height: 1.5;
     color: #ffffff;
     margin-bottom: 10px;
@@ -87,7 +87,7 @@ body {
 }
 
 #subtitle {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.5;
     color: #00CFFF;
     margin-bottom: 16px;
@@ -104,7 +104,7 @@ body {
 }
 
 .info p {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.4;
     color: #E4DDF5;
     background: rgba(255, 255, 255, .07);
@@ -171,7 +171,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    font-family: 'Jersey Retro', 'Pixelify Sans', monospace;
+    font-family: 'Pixelify Sans', monospace;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;
@@ -183,7 +183,7 @@ body {
 #btnEstante {
     margin-top: 16px;
     padding: 14px 28px;
-    font-size: 10px;
+    font-size: 12px;
     box-shadow: 0 0 16px rgba(160, 32, 240, .3);
 }
 
@@ -194,7 +194,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     padding: 18px 35px;
-    font-size: 12px;
+    font-size: 14px;
     white-space: nowrap;
     box-shadow: 0 6px 24px rgba(160, 32, 240, .5);
 }
@@ -324,7 +324,7 @@ body {
 }
 
 .bootLine {
-    font-size: 11px;
+    font-size: 13px;
     color: #B7C3D6;
     line-height: 1.5;
     letter-spacing: .5px;
@@ -501,8 +501,8 @@ body {
         grid-column: 2;
     }
 
-    #title    { font-size: 14px; margin-bottom: 6px; }
-    #subtitle { font-size: 10px; margin-bottom: 10px; }
+    #title    { font-size: 17px; margin-bottom: 6px; }
+    #subtitle { font-size: 13px; margin-bottom: 10px; }
     .info     { max-width: 100%; }
 
     #btnJogar, #startButton {

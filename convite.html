@@ -179,8 +179,8 @@
 <div id="gate">
     <div class="caixa">
         <p class="titulo">RETRÔ NFC</p>
-        <p class="texto">ENCOSTE A TAG DESTE CARTUCHO PARA ENTRAR NA PARTIDA.</p>
-        <p class="status" id="status">AGUARDANDO TAG...</p>
+        <p class="texto">Você foi convidado para jogar! Aguarde a conexão com o anfitrião.</p>
+        <p class="status" id="status">Conectando...</p>
     </div>
 </div>
 
@@ -368,6 +368,11 @@
         if (!dados || !pc) return;
 
         if (dados.offer) {
+            if (pc.remoteDescription) {
+                try { pc.close(); } catch (e) {}
+                canal = null;
+                montarPeer();
+            }
             await pc.setRemoteDescription(dados.offer);
             const resposta = await pc.createAnswer();
             await pc.setLocalDescription(resposta);
@@ -396,18 +401,23 @@
 
             if (d.t === 'entrou') {
                 montarPeer();
-                dizer('CONECTANDO VÍDEO...');
+                dizer('Conectado! Aguarde o anfitrião abrir o jogo...');
                 return;
             }
 
             if (d.t === 'sinal') { receberSinal(d.dados).catch(function () {}); return; }
 
             if (d.t === 'erro') {
-                dizer('NÃO FOI POSSÍVEL ENTRAR: ' + String(d.erro || '').toUpperCase());
+                const msgs = {
+                    'link-expirado': 'Este link expirou. Peça um novo ao anfitrião.',
+                    'sala-fechada': 'Esta sala não existe mais. Peça um novo link.',
+                    'sala-cheia': 'Esta sala já tem outro jogador.'
+                };
+                dizer(msgs[d.erro] || 'Não foi possível entrar.');
                 return;
             }
 
-            if (d.t === 'saiu') { dizer('O ANFITRIÃO SAIU.'); return; }
+            if (d.t === 'saiu') { dizer('O anfitrião saiu.'); return; }
         };
 
         ws.onerror = function () { dizer('SEM CONEXÃO COM O SERVIDOR.'); };
@@ -421,17 +431,12 @@
     }
 
     function iniciar() {
-        if (!sala) { dizer('CONVITE INVÁLIDO.'); return; }
+        if (!sala) { dizer('Convite inválido.'); return; }
 
         ligarBotoes();
         ligarTeclado();
-
-        const uidDaUrl = params.get('tag');
-        if (uidDaUrl) { validar(uidDaUrl); return; }
-
-        lerTagNativa().then(function (ok) {
-            if (!ok) dizer('APROXIME A TAG DO CELULAR.');
-        });
+        dizer('Entrando na sala...');
+        conectar('');
     }
 
     document.addEventListener('DOMContentLoaded', iniciar);

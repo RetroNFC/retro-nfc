@@ -412,18 +412,18 @@ function pedirNome() {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'RETRÔ NFC';
-        titulo.style.cssText = 'font-size:18px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:20px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const texto = document.createElement('p');
         texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
-        texto.style.cssText = 'color:#ece8f7;font-size:12px;line-height:1.9;margin:0 0 18px;';
+        texto.style.cssText = 'color:#ece8f7;font-size:14px;line-height:1.9;margin:0 0 18px;';
 
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = 20;
         input.autocomplete = 'nickname';
         input.placeholder = 'SEU NOME';
-        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:12px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:14px;padding:13px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
 
         input.addEventListener('focus', function () {
             input.style.borderColor = '#00CFFF';
@@ -435,7 +435,7 @@ function pedirNome() {
         });
 
         const erro = document.createElement('div');
-        erro.style.cssText = 'color:#FFD700;font-size:10px;line-height:1.6;min-height:14px;margin-top:10px;';
+        erro.style.cssText = 'color:#FFD700;font-size:12px;line-height:1.6;min-height:14px;margin-top:10px;';
 
         const botao = document.createElement('button');
         botao.type = 'button';
@@ -502,14 +502,14 @@ function escolherModoDeJogo() {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'MODO DE JOGO';
-        titulo.style.cssText = 'font-size:16px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:20px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         // ---------- Tela 1: escolha ----------
         const tela1 = document.createElement('div');
 
         const sub1 = document.createElement('p');
         sub1.textContent = 'Como você quer jogar agora?';
-        sub1.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 16px;';
+        sub1.style.cssText = 'color:#ece8f7;font-size:13px;line-height:2;margin:0 0 16px;';
 
         const bSolo = document.createElement('button');
         bSolo.type = 'button';
@@ -532,10 +532,10 @@ function escolherModoDeJogo() {
 
         const sub2 = document.createElement('p');
         sub2.textContent = 'Os dois aparelhos precisam ter escaneado a TAG deste cartucho. Um cria a sala e o outro entra com o código.';
-        sub2.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 14px;text-align:left;';
+        sub2.style.cssText = 'color:#ece8f7;font-size:13px;line-height:2;margin:0 0 14px;text-align:left;';
 
         const passos = document.createElement('div');
-        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:10px;line-height:2.1;margin:0 0 18px;';
+        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:12px;line-height:2.1;margin:0 0 18px;';
 
         ['1. Toque em INICIAR COOP nos dois aparelhos.',
          '2. Abra o menu do emulador e escolha NETPLAY.',
@@ -555,7 +555,7 @@ function escolherModoDeJogo() {
         const bVoltar = document.createElement('button');
         bVoltar.type = 'button';
         bVoltar.textContent = 'VOLTAR';
-        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:11px;padding:13px;cursor:pointer;';
+        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:13px;padding:13px;cursor:pointer;';
 
         tela2.appendChild(sub2);
         tela2.appendChild(passos);
@@ -600,11 +600,11 @@ function mostrarSalaCriada(dados, gerarNovo) {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'CONVIDE O AMIGO';
-        titulo.style.cssText = 'font-size:16px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:18px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Envie o link e fique nesta tela até o amigo entrar. A partida começa sozinha.';
-        sub.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 16px;text-align:left;';
+        sub.style.cssText = 'color:#ece8f7;font-size:13px;line-height:2;margin:0 0 16px;text-align:left;';
 
         const estado = document.createElement('div');
         estado.style.cssText = 'color:#FFD700;font-size:12px;line-height:2;margin-bottom:16px;';
@@ -622,7 +622,7 @@ function mostrarSalaCriada(dados, gerarNovo) {
         const bSolo = document.createElement('button');
         bSolo.type = 'button';
         bSolo.textContent = 'JOGAR SOZINHO';
-        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:11px;padding:10px;cursor:pointer;';
+        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:13px;padding:10px;cursor:pointer;';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
@@ -730,15 +730,15 @@ function avisarCoopFalhou(erro) {
 
         const titulo = document.createElement('div');
         titulo.textContent = 'COOP INDISPONÍVEL';
-        titulo.style.cssText = 'font-size:14px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
+        titulo.style.cssText = 'font-size:16px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Não foi possível abrir a sala agora.';
-        sub.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 12px;';
+        sub.style.cssText = 'color:#ece8f7;font-size:13px;line-height:2;margin:0 0 12px;';
 
         const detalhe = document.createElement('p');
         detalhe.textContent = (erro && erro.message) ? erro.message : 'ERRO DESCONHECIDO';
-        detalhe.style.cssText = 'color:#8b9bb0;font-size:10px;line-height:2;margin:0 0 18px;word-break:break-word;';
+        detalhe.style.cssText = 'color:#8b9bb0;font-size:12px;line-height:2;margin:0 0 18px;word-break:break-word;';
 
         const bOk = document.createElement('button');
         bOk.type = 'button';
@@ -789,16 +789,16 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
 
     const t = document.createElement('div');
     t.textContent = titulo;
-    t.style.cssText = 'color:#00CFFF;font-size:14px;line-height:1.8;margin-bottom:14px;';
+    t.style.cssText = 'color:#00CFFF;font-size:16px;line-height:1.8;margin-bottom:14px;';
 
     const m = document.createElement('p');
     m.textContent = mensagem;
-    m.style.cssText = 'color:#ece8f7;font-size:11px;line-height:2;margin:0 0 18px;';
+    m.style.cssText = 'color:#ece8f7;font-size:13px;line-height:2;margin:0 0 18px;';
 
     const b1 = document.createElement('button');
     b1.type = 'button';
     b1.textContent = 'TENTAR NOVAMENTE';
-    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12px;padding:15px;cursor:pointer;';
+    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:14px;padding:15px;cursor:pointer;';
     b1.addEventListener('click', recarregarComChave);
 
     caixa.appendChild(t);
@@ -809,7 +809,7 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
         const b2 = document.createElement('button');
         b2.type = 'button';
         b2.textContent = opcoes.secundario.texto;
-        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:11px;padding:13px;cursor:pointer;';
+        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:13px;padding:13px;cursor:pointer;';
         b2.addEventListener('click', function () {
             overlay.remove();
             try { opcoes.secundario.acao(); } catch (e) {}

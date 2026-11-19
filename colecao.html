@@ -827,6 +827,43 @@
             }
         }
 
+        /* =========================================
+           TIPOGRAFIA — Pixelify Sans em toda a estante
+           ========================================= */
+        body,
+        .busca,
+        .chip,
+        .btn-comprar,
+        .btn-voltar,
+        .btn-celebra,
+        .btn-compartilhar,
+        .btn-partilha {
+            font-family: 'Pixelify Sans', monospace;
+        }
+
+        p.sub                 { font-size: 13px; }
+        .progresso-texto      { font-size: 13px; }
+        .busca                { font-size: 13px; }
+        .chip                 { font-size: 12px; }
+        .secao-titulo         { font-size: 12px; }
+        .vazio                { font-size: 13px; }
+        .dica-recentes        { font-size: 11px; }
+        .recente span         { font-size: 12px; }
+        .cartucho h3          { font-size: 12px; }
+        .cartucho h3.misterio { font-size: 14px; }
+        .btn-comprar          { font-size: 12px; }
+        .etiqueta-ok          { font-size: 11px; }
+        .btn-voltar           { font-size: 12px; }
+        .aviso-erro           { font-size: 13px; }
+        .celebra-titulo       { font-size: 15px; }
+        .celebra-nome         { font-size: 13px; }
+        .celebra-extra        { font-size: 12px; }
+        .btn-celebra          { font-size: 13px; }
+        .btn-compartilhar     { font-size: 12px; }
+        .compartilhar-aviso   { font-size: 12px; }
+        .btn-partilha         { font-size: 12px; }
+        .grid.favoritos .cartucho h3 { font-size: 13px; }
+        
     </style>
 </head>
 <body>
@@ -1674,7 +1711,7 @@
         /* ---------- Item 14: card compartilhavel da estante ---------- */
         const CARD_LARGURA = 1080;
         const CARD_ALTURA  = 1350;
-        const CARD_FONTE   = '"Jersey Retro", "Pixelify Sans", monospace';
+        const CARD_FONTE   = '"Pixelify Sans", monospace';
 
         let cardBlobAtual = null;
         let cardUrlAtual  = null;
@@ -1744,7 +1781,7 @@
         async function gerarCardEstante() {
             if (document.fonts) {
                 try {
-                    await document.fonts.load('40px "Jersey Retro"');
+                    await document.fonts.load('40px "Pixelify Sans"');
                     await document.fonts.ready;
                 } catch (e) {}
             }

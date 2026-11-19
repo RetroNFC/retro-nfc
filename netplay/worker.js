@@ -138,38 +138,24 @@ export class SalaNetplay {
     const meta = await this.meta();
     if (!meta) { ws.send(JSON.stringify({ t: 'erro', erro: 'sala-fechada' })); return; }
 
-    const token = String(d.token || '');
-    if (token.length < 16) {
-      ws.send(JSON.stringify({ t: 'erro', erro: 'tag-obrigatoria' }));
+    // Convite vale 60s a partir da criação (só vale para quem ainda não entrou)
+    if (!meta.convidadoEm && Date.now() - meta.criadaEm > 60 * 1000) {
+      ws.send(JSON.stringify({ t: 'erro', erro: 'link-expirado' }));
       return;
     }
 
-    const usados = (await this.state.storage.get('tokens')) || [];
-    if (usados.indexOf(token) !== -1) {
-      ws.send(JSON.stringify({ t: 'erro', erro: 'tag-ja-usada' }));
-      return;
-    }
-
-    if (this.env.VALIDADOR_URL) {
-      try {
-        const r = await fetch(this.env.VALIDADOR_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ origemRequisicao: 'SiteRetroNFC', tipo: 'ValidarToken', sala: meta.sala, token: token })
-        });
-        const j = await r.json();
-        if (!j || !j.ok) {
-          ws.send(JSON.stringify({ t: 'erro', erro: 'tag-invalida' }));
-          return;
-        }
-      } catch (e) {
-        ws.send(JSON.stringify({ t: 'erro', erro: 'tag-invalida' }));
+    // Só 1 convidado por vez
+    for (const w of this.state.getWebSockets()) {
+      if (w !== ws && this.papel(w) === 'convidado') {
+        ws.send(JSON.stringify({ t: 'erro', erro: 'sala-cheia' }));
         return;
       }
     }
 
-    usados.push(token);
-    await this.state.storage.put('tokens', usados.slice(-20));
+    if (!meta.convidadoEm) {
+      meta.convidadoEm = Date.now();
+      await this.state.storage.put('meta', meta);
+    }
 
     ws.serializeAttachment({ papel: 'convidado', apelido: String(d.apelido || 'Convidado').slice(0, 20) });
     ws.send(JSON.stringify({ t: 'entrou', sala: meta.sala, jogo: meta.jogo }));

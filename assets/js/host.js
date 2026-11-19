@@ -186,9 +186,13 @@
                 
                 if (d.t === 'convidado') {
                     convidadoPresente = true;
-                    oferecer().catch(function () {});
+                    window.dispatchEvent(new CustomEvent('netplay-convidado'));
+                    const emu = window.EJS_emulator;
+                    const jogoRodando = emu && (emu.canvas || (emu.Module && emu.Module.canvas));
+                    if (jogoRodando) oferecer().catch(function () {});
                     return;
                 }
+                
                 if (d.t === 'sinal')    { receberSinal(d.dados).catch(function () {}); return; }
                 if (d.t === 'saiu')     { try { if (pc) pc.close(); } catch (e) {} pc = null; canal = null; return; }
             };

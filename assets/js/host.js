@@ -1,5 +1,5 @@
 // =====================================================
-// RETRO NFC — host.js
+// RETRO NFC — host.js (v2)
 // Anfitriao: captura o canvas do EmulatorJS e serve por WebRTC.
 // O convidado nao roda emulador: recebe video/audio e devolve botoes.
 // =====================================================
@@ -17,6 +17,9 @@
     let fila = [];
     let convidadoPresente = false;
     let destinoAudio = null;
+    let streamAtual = null;
+    let oferecendo = false;
+    let limiteSala = null;
 
     function codigoSala() {
         const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -34,6 +37,13 @@
 
     function drenar() {
         while (fila.length && ws && ws.readyState === 1) ws.send(fila.shift());
+    }
+
+    // Avisa o app.js sem acoplar: ele escuta e decide o que mostrar
+    function avisar(nome, detalhe) {
+        try {
+            window.dispatchEvent(new CustomEvent(nome, { detail: detalhe || null }));
+        } catch (e) {}
     }
 
     // Captura o audio do emulador desviando o connect para um destino de midia.
@@ -75,6 +85,15 @@
         return stream;
     }
 
+    // Encerra apenas o video: a faixa de audio e reaproveitada na renegociacao
+    function pararStream() {
+        if (!streamAtual) return;
+        try {
+            streamAtual.getVideoTracks().forEach(function (t) { t.stop(); });
+        } catch (e) {}
+        streamAtual = null;
+    }
+
     function aplicarEntrada(lista) {
         const e = window.EJS_emulator;
         const gm = e && e.gameManager;
@@ -99,8 +118,11 @@
             ]
         });
 
-        const stream = streamDoEmulador();
-        if (stream) stream.getTracks().forEach(function (t) { pc.addTrack(t, stream); });
+        pararStream();
+        streamAtual = streamDoEmulador();
+        if (streamAtual) {
+            streamAtual.getTracks().forEach(function (t) { pc.addTrack(t, streamAtual); });
+        }
 
         canal = pc.createDataChannel('entrada', { ordered: false, maxRetransmits: 0 });
         canal.onmessage = function (ev) {
@@ -115,10 +137,13 @@
         };
 
         pc.onconnectionstatechange = function () {
-            if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                try { pc.close(); } catch (e) {}
+            const estado = pc ? pc.connectionState : 'closed';
+            if (estado === 'failed' || estado === 'disconnected' || estado === 'closed') {
+                try { if (pc) pc.close(); } catch (e) {}
                 pc = null;
                 canal = null;
+                pararStream();
+                avisar('netplay-caiu', { estado: estado });
             }
         };
 
@@ -126,10 +151,16 @@
     }
 
     async function oferecer() {
-        const peer = montarPeer();
-        const oferta = await peer.createOffer();
-        await peer.setLocalDescription(oferta);
-        enviar({ t: 'sinal', dados: { offer: peer.localDescription } });
+        if (oferecendo) return;
+        oferecendo = true;
+        try {
+            const peer = montarPeer();
+            const oferta = await peer.createOffer();
+            await peer.setLocalDescription(oferta);
+            enviar({ t: 'sinal', dados: { offer: peer.localDescription } });
+        } finally {
+            oferecendo = false;
+        }
     }
 
     async function receberSinal(dados) {
@@ -159,9 +190,17 @@
             sala = codigoSala();
             ws = new WebSocket(WS_BASE + '?sala=' + sala);
 
-            const limite = setTimeout(function () {
+            let resolvido = false;
+
+            limiteSala = setTimeout(function () {
+                if (resolvido) return;
+                resolvido = true;
                 reject(new Error('tempo esgotado ao abrir a sala'));
             }, 15000);
+
+            function encerrarLimite() {
+                if (limiteSala) { clearTimeout(limiteSala); limiteSala = null; }
+            }
 
             ws.onopen = function () {
                 enviar({ t: 'criar', sala: sala, jogo: jogo, apelido: apelido || 'Anfitriao' });
@@ -173,45 +212,75 @@
                 try { d = JSON.parse(ev.data); } catch (e) { return; }
 
                 if (d.t === 'criado') {
-                    clearTimeout(limite);
+                    encerrarLimite();
+                    if (resolvido) return;
+                    resolvido = true;
                     resolve({ sala: d.sala, link: LINK_BASE + '?sala=' + d.sala });
                     return;
                 }
 
                 if (d.t === 'erro') {
-                    clearTimeout(limite);
+                    encerrarLimite();
+                    if (resolvido) { avisar('netplay-erro', { erro: d.erro }); return; }
+                    resolvido = true;
                     reject(new Error(d.erro || 'erro ao abrir a sala'));
                     return;
                 }
-                
+
                 if (d.t === 'convidado') {
                     convidadoPresente = true;
-                    window.dispatchEvent(new CustomEvent('netplay-convidado'));
+                    avisar('netplay-convidado');
                     const emu = window.EJS_emulator;
                     const jogoRodando = emu && (emu.canvas || (emu.Module && emu.Module.canvas));
                     if (jogoRodando) oferecer().catch(function () {});
                     return;
                 }
-                
-                if (d.t === 'sinal')    { receberSinal(d.dados).catch(function () {}); return; }
-                if (d.t === 'saiu')     { try { if (pc) pc.close(); } catch (e) {} pc = null; canal = null; return; }
+
+                if (d.t === 'sinal') { receberSinal(d.dados).catch(function () {}); return; }
+
+                if (d.t === 'saiu') {
+                    convidadoPresente = false;
+                    try { if (canal) canal.close(); } catch (e) {}
+                    try { if (pc) pc.close(); } catch (e) {}
+                    pc = null;
+                    canal = null;
+                    pararStream();
+                    avisar('netplay-saiu');
+                    return;
+                }
             };
 
             ws.onerror = function () {
-                clearTimeout(limite);
+                encerrarLimite();
+                if (resolvido) { avisar('netplay-erro', { erro: 'conexao' }); return; }
+                resolvido = true;
                 reject(new Error('falha de conexao com o servidor'));
+            };
+
+            ws.onclose = function () {
+                encerrarLimite();
+                if (!resolvido) {
+                    resolvido = true;
+                    reject(new Error('conexao encerrada'));
+                    return;
+                }
+                avisar('netplay-saiu');
             };
         });
     }
+
     function renegociar() {
         if (!ws || !sala || !convidadoPresente) return;
         try { if (canal) canal.close(); } catch (e) {}
         try { if (pc) pc.close(); } catch (e) {}
-        pc = null; canal = null;
+        pc = null;
+        canal = null;
+        pararStream();
         oferecer().catch(function () {});
     }
 
     function fechar() {
+        if (limiteSala) { clearTimeout(limiteSala); limiteSala = null; }
         try { if (canal) canal.close(); } catch (e) {}
         try { if (pc) pc.close(); } catch (e) {}
         try { if (ws) ws.close(); } catch (e) {}
@@ -222,14 +291,17 @@
         sala = null;
         fila = [];
         convidadoPresente = false;
+        oferecendo = false;
+        pararStream();
     }
-    
+
     window.Netplay = {
         abrirSala: abrirSala,
         fechar: fechar,
         renegociar: renegociar,
         instalarCapturaDeAudio: instalarCapturaDeAudio,
-        salaAtual: function () { return sala; }
+        salaAtual: function () { return sala; },
+        convidadoPresente: function () { return convidadoPresente; }
     };
 
 })();

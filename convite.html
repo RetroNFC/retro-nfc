@@ -5,17 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Retrô NFC — Convite</title>
     <meta name="theme-color" content="#0B0714">
+
+    <!-- Prévia ao compartilhar o link -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Retrô NFC">
+    <meta property="og:title" content="Retrô NFC — Jogue comigo!">
+    <meta property="og:description" content="Você foi convidado para jogar cooperativo online. Toque no link e entre na partida.">
+    <meta property="og:image" content="https://retro-nfc.pages.dev/og-convite.png">
+    <meta property="og:image:width" content="2048">
+    <meta property="og:image:height" content="1152">
+    <meta property="og:url" content="https://retro-nfc.pages.dev/convite.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Retrô NFC — Jogue comigo!">
+    <meta name="twitter:description" content="Você foi convidado para jogar cooperativo online.">
+    <meta name="twitter:image" content="https://retro-nfc.pages.dev/og-convite.png">
+
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0B0714;
             --texto: #ece8f7;
-            --dim: #9a90b5;
+            --dim: #b4abd0;
             --azul: #00CFFF;
             --roxo: #A020F0;
             --laranja: #FF8C00;
             --amarelo: #FFD700;
             --marca: linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
+            --cinza: rgba(128,128,128,.55);
+            --cinza-borda: rgba(255,255,255,.28);
+            --d: 156px;   /* tamanho da cruz */
+            --f: 60px;    /* diametro dos botoes de face */
         }
 
         * { box-sizing: border-box; }
@@ -48,7 +67,7 @@
 
         .caixa {
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             text-align: center;
             padding: 30px 24px;
             border: 2px solid transparent;
@@ -61,12 +80,11 @@
 
         .titulo {
             font-family: 'VT323', monospace;
-            font-weight: 700;
-            font-size: 26px;
-            letter-spacing: 2px;
-            line-height: 1.3;
-            margin: 0 0 18px;
-            background: var(--marca);
+            font-size: 44px;
+            letter-spacing: 3px;
+            line-height: 1.1;
+            margin: 0 0 16px;
+            background: linear-gradient(90deg, var(--laranja), var(--amarelo));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -74,44 +92,43 @@
         }
 
         .texto {
-            font-size: 16px;
-            line-height: 1.7;
+            font-size: 24px;
+            line-height: 1.35;
             color: var(--texto);
-            margin: 0 0 18px;
+            margin: 0 0 16px;
         }
 
         .status {
-            font-size: 15px;
-            line-height: 1.7;
+            font-size: 24px;
+            line-height: 1.3;
             color: var(--amarelo);
-            min-height: 22px;
+            min-height: 32px;
             margin: 0;
         }
 
         .cta {
             width: 100%;
             margin-top: 18px;
-            background: linear-gradient(135deg, var(--azul), var(--roxo));
-            color: #fff;
+            background: linear-gradient(135deg, var(--laranja), var(--amarelo));
+            color: #1a1230;
             border: none;
             border-radius: 50px;
             font-family: inherit;
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: .5px;
-            padding: 16px;
+            font-size: 26px;
+            letter-spacing: 1px;
+            padding: 12px 16px;
             cursor: pointer;
-            box-shadow: 0 0 18px rgba(160,32,240,.5);
+            box-shadow: 0 0 18px rgba(255,140,0,.45);
             transition: transform .12s;
         }
 
         .cta:active { transform: scale(.97); }
 
         .dica {
-            font-size: 13px;
-            line-height: 1.7;
+            font-size: 20px;
+            line-height: 1.3;
             color: var(--dim);
-            margin: 12px 0 0;
+            margin: 14px 0 0;
         }
 
         /* ---------- Botões de topo ---------- */
@@ -119,8 +136,8 @@
             position: fixed;
             top: calc(10px + env(safe-area-inset-top));
             z-index: 60;
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             padding: 0;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,.22);
@@ -136,7 +153,7 @@
         }
 
         #fs { right: 10px; }
-        #padToggle { right: 64px; }
+        #padToggle { right: 66px; }
 
         #fs:active, #padToggle:active { transform: scale(.94); }
 
@@ -160,143 +177,150 @@
             display: block;
         }
 
-        /* ---------- Controles ---------- */
+        /* ---------- Controles (layout igual ao EmulatorJS) ---------- */
         #pad {
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: calc(20px + env(safe-area-inset-bottom));
+            inset: 0;
             z-index: 30;
             display: none;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: end;
-            gap: 12px;
-            padding: 0 16px;
             pointer-events: none;
             touch-action: none;
         }
 
-        #pad.ativo { display: grid; }
+        #pad.ativo { display: block; }
 
         body.sem-pad #pad { display: none !important; }
 
         .botao {
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,.22);
-            background: rgba(11,7,20,.62);
-            color: #fff;
+            padding: 0;
+            border: 1px solid var(--cinza-borda);
+            background: var(--cinza);
+            color: rgba(255,255,255,.88);
             font-family: inherit;
-            font-size: 14px;
+            font-size: 34px;
+            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
+            pointer-events: auto;
         }
 
         .botao.pressionado {
-            background: linear-gradient(135deg, var(--azul), var(--roxo));
-            border-color: transparent;
+            background: rgba(255,255,255,.55);
+            color: #000;
         }
 
-        /* Cruz direcional: quadrado fixo, setas em posicao absoluta */
+        /* Cruz: uma peça só em formato de "+" */
         .cruz {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            justify-self: start;
-            pointer-events: auto;
+            position: absolute;
+            width: var(--d);
+            height: var(--d);
+            left: calc(14px + env(safe-area-inset-left));
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
         }
 
         .cruz .botao {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            font-size: 16px;
+            width: calc(var(--d) / 3);
+            height: calc(var(--d) / 3);
+            font-size: 22px;
+            border-radius: 8px;
+            color: rgba(0,0,0,.55);
         }
 
-        .cruz [data-idx="4"] { left: 50px; top: 0; }
-        .cruz [data-idx="6"] { left: 0;    top: 50px; }
-        .cruz [data-idx="7"] { left: 100px; top: 50px; }
-        .cruz [data-idx="5"] { left: 50px; top: 100px; }
+        .cruz::before, .cruz::after {
+            content: '';
+            position: absolute;
+            background: var(--cinza);
+            border-radius: 8px;
+            pointer-events: none;
+        }
 
-        /* Faces: 2x2, igual ao EmulatorJS */
+        .cruz::before { left: calc(var(--d) / 3); top: 0; width: calc(var(--d) / 3); height: var(--d); }
+        .cruz::after  { left: 0; top: calc(var(--d) / 3); width: var(--d); height: calc(var(--d) / 3); }
+
+        .cruz .botao { background: transparent; border-color: transparent; z-index: 2; }
+        .cruz .botao.pressionado { background: rgba(255,255,255,.5); }
+
+        .cruz [data-idx="4"] { left: calc(var(--d) / 3); top: 0; }
+        .cruz [data-idx="6"] { left: 0; top: calc(var(--d) / 3); }
+        .cruz [data-idx="7"] { left: calc(var(--d) * 2 / 3); top: calc(var(--d) / 3); }
+        .cruz [data-idx="5"] { left: calc(var(--d) / 3); top: calc(var(--d) * 2 / 3); }
+
+        /* Faces em losango: X cima, Y esquerda, A direita, B baixo */
         .faces {
-            display: grid;
-            grid-template-columns: repeat(2, 56px);
-            grid-template-rows: repeat(2, 56px);
-            gap: 10px;
-            justify-self: end;
-            pointer-events: auto;
+            position: absolute;
+            width: calc(var(--f) * 2.5);
+            height: calc(var(--f) * 2.5);
+            right: calc(14px + env(safe-area-inset-right));
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
         }
 
         .faces .botao {
-            width: 56px;
-            height: 56px;
-            font-size: 16px;
-            font-weight: 700;
+            position: absolute;
+            width: var(--f);
+            height: var(--f);
+            border-radius: 50%;
         }
 
-        /* Select e Start no centro, empilhados */
+        .faces [data-idx="9"] { left: calc(var(--f) * 0.75); top: 0; }
+        .faces [data-idx="1"] { left: 0; top: calc(var(--f) * 0.75); }
+        .faces [data-idx="8"] { right: 0; top: calc(var(--f) * 0.75); }
+        .faces [data-idx="0"] { left: calc(var(--f) * 0.75); bottom: 0; }
+
+        /* Select e Start lado a lado, embaixo no centro */
         .centro {
+            position: absolute;
+            left: 50%;
+            bottom: calc(14px + env(safe-area-inset-bottom));
+            transform: translateX(-50%);
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            justify-self: center;
-            align-self: end;
-            pointer-events: auto;
-            padding-bottom: 4px;
+            gap: 14px;
+            pointer-events: none;
         }
 
         .centro .botao {
-            width: 84px;
-            height: 34px;
-            font-size: 13px;
-            letter-spacing: .5px;
+            width: 96px;
+            height: 42px;
+            border-radius: 10px;
+            font-size: 24px;
         }
 
-        /* ---------- Celular na horizontal ---------- */
+        /* ---------- Celular em pé: controles descem ---------- */
+        @media (orientation: portrait) {
+            .cruz, .faces { top: auto; bottom: calc(90px + env(safe-area-inset-bottom)); transform: none; }
+        }
+
+        /* ---------- Celular deitado e baixo ---------- */
         @media (orientation: landscape) and (max-height: 520px) {
-            #pad {
-                bottom: calc(12px + env(safe-area-inset-bottom));
-                padding: 0 12px;
-                gap: 8px;
-            }
+            :root { --d: 138px; --f: 54px; }
 
-            .cruz { width: 126px; height: 126px; }
-            .cruz .botao { width: 42px; height: 42px; font-size: 14px; }
-            .cruz [data-idx="4"] { left: 42px; top: 0; }
-            .cruz [data-idx="6"] { left: 0;    top: 42px; }
-            .cruz [data-idx="7"] { left: 84px; top: 42px; }
-            .cruz [data-idx="5"] { left: 42px; top: 84px; }
-
-            .faces {
-                grid-template-columns: repeat(2, 48px);
-                grid-template-rows: repeat(2, 48px);
-                gap: 8px;
-            }
-
-            .faces .botao { width: 48px; height: 48px; font-size: 15px; }
-
-            .centro .botao { width: 74px; height: 30px; font-size: 12px; }
-
-            #fs, #padToggle { width: 40px; height: 40px; }
+            #fs, #padToggle { width: 42px; height: 42px; }
             #fs { right: 8px; }
-            #padToggle { right: 56px; }
+            #padToggle { right: 58px; }
 
-            .caixa { padding: 20px 18px; max-width: 440px; }
-            .titulo { font-size: 22px; margin-bottom: 12px; }
-            .texto { font-size: 15px; margin-bottom: 12px; }
+            .centro .botao { width: 88px; height: 38px; font-size: 22px; }
+
+            .caixa { padding: 18px 18px; max-width: 460px; }
+            .titulo { font-size: 36px; margin-bottom: 8px; }
+            .texto { font-size: 22px; margin-bottom: 8px; }
+            .status { font-size: 22px; }
+            .cta { margin-top: 10px; font-size: 24px; padding: 8px 16px; }
+            .dica { font-size: 18px; margin-top: 8px; }
         }
     </style>
 </head>
 <body>
 
 <button id="fs" type="button" data-fs aria-label="Tela cheia" aria-pressed="false">
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <path id="fsIcone" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
               fill="none" stroke="currentColor" stroke-width="2.2"
               stroke-linecap="round" stroke-linejoin="round"/>
@@ -304,7 +328,7 @@
 </button>
 
 <button id="padToggle" type="button" aria-label="Mostrar ou esconder os botões" aria-pressed="true">
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"
               fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round"/>
@@ -335,8 +359,8 @@
     </div>
 
     <div class="centro">
-        <button class="botao" data-idx="2" type="button">SELECT</button>
-        <button class="botao" data-idx="3" type="button">START</button>
+        <button class="botao" data-idx="2" type="button">Select</button>
+        <button class="botao" data-idx="3" type="button">Start</button>
     </div>
 
     <div class="faces">

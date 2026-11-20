@@ -78,8 +78,9 @@ body {
 }
 
 #title {
-    font-size: 24px;
-    line-height: 1.5;
+    font-size: 36px !important;
+    font-weight: 400;
+    line-height: 1.15;
     color: #ffffff;
     margin-bottom: 10px;
     text-transform: uppercase;
@@ -87,8 +88,9 @@ body {
 }
 
 #subtitle {
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 26px !important;
+    font-weight: 400;
+    line-height: 1.2;
     color: #00CFFF;
     margin-bottom: 16px;
     text-shadow: 0 0 10px rgba(0, 207, 255, .35);
@@ -104,8 +106,8 @@ body {
 }
 
 .info p {
-    font-size: 15px;
-    line-height: 1.4;
+    font-size: 23px !important;
+    line-height: 1.2;
     color: #E4DDF5;
     background: rgba(255, 255, 255, .07);
     border: 1px solid rgba(255, 255, 255, .14);
@@ -172,6 +174,8 @@ body {
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'VT323', monospace;
+    font-weight: 400;
+    line-height: 1.2;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;
@@ -183,7 +187,7 @@ body {
 #btnEstante {
     margin-top: 16px;
     padding: 15px 30px;
-    font-size: 15px;
+    font-size: 25px !important;
     box-shadow: 0 0 16px rgba(160, 32, 240, .3);
 }
 
@@ -194,7 +198,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     padding: 19px 36px;
-    font-size: 17px;
+    font-size: 27px !important;
     white-space: nowrap;
     box-shadow: 0 6px 24px rgba(160, 32, 240, .5);
 }
@@ -215,6 +219,7 @@ body {
     display: block;
     width: 22px;
     height: 18px;
+    flex-shrink: 0;
     background-image: url('../img/fita.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -274,7 +279,10 @@ body {
 #bootScreen::before {
     content: "";
     position: absolute;
-    top: -15px; left: -15px; right: -15px; bottom: -15px;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
     background: url('../img/retronfc.webp') center/100% no-repeat;
     opacity: 0.30;
     filter: blur(4px);
@@ -287,7 +295,10 @@ body {
     to { opacity: 0.30; filter: blur(4px); }
 }
 
-.header { text-align: center; margin-bottom: 30px; }
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
 
 .bootLogo {
     font-family: 'Pretendo', sans-serif;
@@ -324,9 +335,9 @@ body {
 }
 
 .bootLine {
-    font-size: 15px;
+    font-size: 25px !important;
     color: #B7C3D6;
-    line-height: 1.5;
+    line-height: 1.25;
     letter-spacing: .5px;
     transition: color .3s ease;
 }
@@ -397,8 +408,10 @@ body {
 #invalidScreen {
     display: none;
     position: fixed !important;
-    top: 0 !important; left: 0 !important;
-    width: 100vw !important; height: 100dvh !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
     background: #000 url('../img/invalido.webp') no-repeat center center !important;
     background-size: contain !important;
     z-index: 9999999 !important;
@@ -429,8 +442,15 @@ body {
 }
 
 @media (max-width: 768px) {
-    #splashScreen img { content: url('../img/retronfc_mobile.webp'); object-fit: cover; }
-    #bootScreen::before { background-image: url('../img/retronfc_mobile.webp') !important; background-size: cover !important; }
+    #splashScreen img {
+        content: url('../img/retronfc_mobile.webp');
+        object-fit: cover;
+    }
+
+    #bootScreen::before {
+        background-image: url('../img/retronfc_mobile.webp') !important;
+        background-size: cover !important;
+    }
 }
 
 @keyframes fadeLogo {
@@ -509,10 +529,24 @@ body {
         grid-column: 2;
     }
 
-    #title    { font-size: 20px; margin-bottom: 6px; }
-    #subtitle { font-size: 15px; margin-bottom: 10px; }
-    .info     { max-width: 100%; }
-    .info p   { font-size: 14px; padding: 6px 11px; }
+    #title {
+        font-size: 30px !important;
+        margin-bottom: 6px;
+    }
+
+    #subtitle {
+        font-size: 23px !important;
+        margin-bottom: 10px;
+    }
+
+    .info {
+        max-width: 100%;
+    }
+
+    .info p {
+        font-size: 21px !important;
+        padding: 6px 11px;
+    }
 
     #btnJogar, #startButton {
         width: 200px;
@@ -523,6 +557,32 @@ body {
     #btnEstante {
         margin-top: 8px;
         padding: 12px 22px;
-        font-size: 14px;
+        font-size: 23px !important;
+    }
+}
+
+@media (min-width: 769px) {
+    #title {
+        font-size: 42px !important;
+    }
+
+    #subtitle {
+        font-size: 28px !important;
+    }
+
+    .info p {
+        font-size: 25px !important;
+    }
+
+    #btnEstante {
+        font-size: 27px !important;
+    }
+
+    #btnEstanteErro {
+        font-size: 29px !important;
+    }
+
+    .bootLine {
+        font-size: 28px !important;
     }
 }

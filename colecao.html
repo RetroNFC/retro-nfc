@@ -933,7 +933,7 @@
         /*
          * Música exclusiva desta página.
          *
-         * O botão VER MEUS CARTUCHOS deve abrir:
+         * O botão VER MEUS CARTUCHOS e abrir:
          * colecao.html?musica=1
          *
          * A autorização vale somente para este documento.
@@ -1209,17 +1209,17 @@
         function inicializarMusica() {
             if (!entradaMusical) return;
 
-            document.addEventListener('click', tentarMusicaNaInteracao, true);
-            document.addEventListener('touchend', tentarMusicaNaInteracao, {
+            document.adentListener('click', tentarMusicaNaInteracao, true);
+            document.adentListener('touchend', tentarMusicaNaInteracao, {
                 capture: true,
                 passive: true
             });
-            document.addEventListener('keydown', tentarMusicaNaInteracao, true);
+            document.adentListener('keydown', tentarMusicaNaInteracao, true);
 
             iniciarMusica();
         }
 
-        document.addEventListener('visibilitychange', function () {
+        document.adentListener('visibilitychange', function () {
             if (document.hidden) {
                 pausarMusica();
             } else {
@@ -1923,7 +1923,7 @@
             ctx.fillStyle = linha;
             ctx.fillRect(margem, linhaY, CARD_LARGURA - margem * 2, 3);
 
-            textoCard(ctx, 'RETRO-NFC.PAGES.DEV', 540, 1226, 900, 34, '#ffffff');
+            textoCard(ctx, 'RETRO-NFC.PAGES.DEV/COLECAO', 540, 1226, 900, 34, '#ffffff');
             textoCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 540, 1276, 900, 24, '#a99fc4');
 
             return canvas;

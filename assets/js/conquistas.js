@@ -1,5 +1,5 @@
 // =====================================================
-// RETRO NFC — conquistas.js (v3)
+// RETRO NFC — conquistas.js (v4)
 // Conquistas locais (localStorage). Sem backend, sem sync.
 // Falha de armazenamento nunca bloqueia nada.
 // Carregar ANTES de app.js no play.html.
@@ -77,6 +77,13 @@
             return formatarDuracao(Math.min(valor, a.meta)) + ' / ' + formatarDuracao(a.meta);
         }
         return Math.min(valor, a.meta) + ' / ' + a.meta;
+    }
+
+    // Percentual de 0 a 100, usado nas barras
+    function progressoPct(a, v) {
+        if (!a || !a.meta) return 0;
+        var valor = Math.max(0, v || 0);
+        return Math.max(0, Math.min(100, Math.round((valor / a.meta) * 100)));
     }
 
     // --- Presenca: roda uma vez por carga de pagina ---
@@ -418,6 +425,12 @@
         prog.id = 'cqDetProg';
         caixa.appendChild(prog);
 
+        var barra = el('div', 'cq-detalhe-barra');
+        var fill = el('div', 'cq-detalhe-barra-fill');
+        fill.id = 'cqDetBarra';
+        barra.appendChild(fill);
+        caixa.appendChild(barra);
+
         var btn = el('button', 'cq-btn', 'VOLTAR');
         btn.type = 'button';
         btn.addEventListener('click', fecharDetalhe);
@@ -443,6 +456,8 @@
         document.getElementById('cqDetDesc').textContent = a.desc;
 
         var prog = '';
+        var pct = 100;
+
         if (reg) {
             prog = reg.em
                 ? 'OBTIDA EM ' + new Date(reg.em).toLocaleDateString('pt-BR')
@@ -450,9 +465,19 @@
         } else {
             var v = 0;
             try { v = a.valor(c) || 0; } catch (e) { v = 0; }
+            pct = progressoPct(a, v);
             prog = (a.meta > 1) ? 'PROGRESSO ' + progressoTexto(a, v) : 'BLOQUEADA';
         }
+
         document.getElementById('cqDetProg').textContent = prog;
+
+        var fill = document.getElementById('cqDetBarra');
+        if (fill) {
+            fill.style.width = '0';
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () { fill.style.width = pct + '%'; });
+            });
+        }
 
         detalhe.classList.add('aberta');
     }
@@ -536,14 +561,24 @@
                 txt.appendChild(el('p', 'cq-item-desc', a.desc));
 
                 var prog = '';
+                var pct = 100;
+
                 if (aberta && reg.em) {
                     prog = new Date(reg.em).toLocaleDateString('pt-BR');
                 } else {
                     var v = 0;
                     try { v = a.valor(c) || 0; } catch (e) { v = 0; }
+                    pct = aberta ? 100 : progressoPct(a, v);
                     prog = (a.meta > 1) ? progressoTexto(a, v) : 'BLOQUEADA';
                 }
+
                 txt.appendChild(el('p', 'cq-item-prog', prog));
+
+                var barra = el('div', 'cq-item-barra');
+                var fill = el('div', 'cq-item-barra-fill');
+                fill.style.width = pct + '%';
+                barra.appendChild(fill);
+                txt.appendChild(barra);
 
                 linha.appendChild(txt);
                 corpo.appendChild(linha);

@@ -405,25 +405,25 @@ function pedirNome() {
 
         const overlay = document.createElement('div');
         overlay.id = 'nomeOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.92);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"VT323",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.92);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;font-family:"VT323",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:28px 22px;max-width:360px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:28px 22px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'RETRÔ NFC';
-        titulo.style.cssText = 'font-size:22px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:36px;letter-spacing:2px;line-height:1.2;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const texto = document.createElement('p');
         texto.textContent = 'Insira seu nome ou apelido para ter acesso à sua coleção';
-        texto.style.cssText = 'color:#ece8f7;font-size:16px;line-height:1.9;margin:0 0 18px;';
+        texto.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 18px;';
 
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = 20;
         input.autocomplete = 'nickname';
         input.placeholder = 'SEU NOME';
-        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:16px;padding:14px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
+        input.style.cssText = 'width:100%;box-sizing:border-box;background:#0B0714;border:1px solid #2a2142;border-radius:8px;color:#fff;font-family:inherit;font-size:26px;padding:14px;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s;';
 
         input.addEventListener('focus', function () {
             input.style.borderColor = '#00CFFF';
@@ -435,12 +435,12 @@ function pedirNome() {
         });
 
         const erro = document.createElement('div');
-        erro.style.cssText = 'color:#FFD700;font-size:14px;line-height:1.6;min-height:16px;margin-top:10px;';
+        erro.style.cssText = 'color:#FFD700;font-size:22px;line-height:1.35;min-height:26px;margin-top:10px;';
 
         const botao = document.createElement('button');
         botao.type = 'button';
         botao.textContent = 'COMEÇAR';
-        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:15px;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);transition:transform .15s,filter .15s;';
+        botao.style.cssText = 'width:100%;margin-top:12px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:26px;line-height:1.2;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);transition:transform .15s,filter .15s;';
 
         botao.addEventListener('pointerdown', function () { botao.style.transform = 'scale(.97)'; });
         botao.addEventListener('pointerup', function () { botao.style.transform = 'scale(1)'; });
@@ -495,32 +495,37 @@ function escolherModoDeJogo() {
 
         const overlay = document.createElement('div');
         overlay.id = 'modoOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(7,4,15,.94);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"VT323",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(7,4,15,.94);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;font-family:"VT323",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:380px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'MODO DE JOGO';
-        titulo.style.cssText = 'font-size:22px;letter-spacing:2px;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:36px;letter-spacing:2px;line-height:1.2;margin-bottom:18px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         // ---------- Tela 1: escolha ----------
         const tela1 = document.createElement('div');
 
         const sub1 = document.createElement('p');
         sub1.textContent = 'Como você quer jogar agora?';
-        sub1.style.cssText = 'color:#ece8f7;font-size:15px;line-height:2;margin:0 0 16px;';
+        sub1.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 20px;';
 
         const bSolo = document.createElement('button');
         bSolo.type = 'button';
         bSolo.textContent = 'JOGAR SOZINHO';
-        bSolo.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:15px;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+        bSolo.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:26px;line-height:1.2;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
 
         const bCoop = document.createElement('button');
         bCoop.type = 'button';
-        bCoop.textContent = NETPLAY_ATIVO ? 'COOP ONLINE' : 'COOP INDISPONÍVEL';
+        bCoop.textContent = NETPLAY_ATIVO ? 'Cooperativo Online' : 'Cooperativo indisponível';
         bCoop.disabled = !NETPLAY_ATIVO;
-        bCoop.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:' + (NETPLAY_ATIVO ? '#00CFFF' : '#4a4560') + ';border:1px solid ' + (NETPLAY_ATIVO ? '#00CFFF' : '#2a2142') + ';border-radius:50px;font-family:inherit;font-size:15px;padding:15px;cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
+        bCoop.style.cssText = 'width:100%;margin-top:14px;background:' +
+            (NETPLAY_ATIVO ? 'linear-gradient(135deg,#FF8C00,#FFD700)' : '#292335') +
+            ';color:' + (NETPLAY_ATIVO ? '#211025' : '#8d849c') +
+            ';border:none;border-radius:50px;font-family:inherit;font-size:28px;line-height:1.2;padding:16px;box-shadow:' +
+            (NETPLAY_ATIVO ? '0 0 20px rgba(255,140,0,.3)' : 'none') +
+            ';cursor:' + (NETPLAY_ATIVO ? 'pointer' : 'not-allowed') + ';';
 
         tela1.appendChild(sub1);
         tela1.appendChild(bSolo);
@@ -532,10 +537,10 @@ function escolherModoDeJogo() {
 
         const sub2 = document.createElement('p');
         sub2.textContent = 'Os dois aparelhos precisam ter escaneado a TAG deste cartucho. Um cria a sala e o outro entra com o código.';
-        sub2.style.cssText = 'color:#ece8f7;font-size:15px;line-height:2;margin:0 0 14px;text-align:left;';
+        sub2.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 14px;text-align:left;';
 
         const passos = document.createElement('div');
-        passos.style.cssText = 'text-align:left;color:#8b9bb0;font-size:14px;line-height:2.1;margin:0 0 18px;';
+        passos.style.cssText = 'text-align:left;color:#b4abd0;font-size:23px;line-height:1.4;margin:0 0 18px;';
 
         ['1. Toque em INICIAR COOP nos dois aparelhos.',
          '2. Abra o menu do emulador e escolha NETPLAY.',
@@ -550,12 +555,12 @@ function escolherModoDeJogo() {
         const bIniciar = document.createElement('button');
         bIniciar.type = 'button';
         bIniciar.textContent = 'INICIAR COOP';
-        bIniciar.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:15px;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
+        bIniciar.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:26px;line-height:1.2;padding:16px;cursor:pointer;box-shadow:0 0 18px rgba(160,32,240,.5);';
 
         const bVoltar = document.createElement('button');
         bVoltar.type = 'button';
         bVoltar.textContent = 'VOLTAR';
-        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:15px;padding:14px;cursor:pointer;';
+        bVoltar.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#b4abd0;border:1px solid #2b3a4d;border-radius:50px;font-family:inherit;font-size:25px;line-height:1.2;padding:14px;cursor:pointer;';
 
         tela2.appendChild(sub2);
         tela2.appendChild(passos);
@@ -593,43 +598,37 @@ function mostrarSalaCriada(dados, gerarNovo) {
 
         const overlay = document.createElement('div');
         overlay.id = 'salaOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"VT323",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9996;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;font-family:"VT323",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:380px;width:100%;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
+        caixa.style.cssText = 'border:2px solid transparent;border-radius:14px;padding:26px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;background:linear-gradient(160deg,#1a1230,#0F0A1C) padding-box,linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700) border-box;box-shadow:0 0 34px rgba(160,32,240,.45);';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'CONVIDE O AMIGO';
-        titulo.style.cssText = 'font-size:20px;letter-spacing:2px;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
+        titulo.style.cssText = 'font-size:34px;letter-spacing:2px;line-height:1.2;margin-bottom:16px;background:linear-gradient(90deg,#00CFFF,#A020F0,#FF8C00,#FFD700);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Envie o link e fique nesta tela até o amigo entrar. A partida começa sozinha.';
-        sub.style.cssText = 'color:#ece8f7;font-size:15px;line-height:2;margin:0 0 16px;text-align:left;';
+        sub.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 20px;text-align:left;';
 
         const estado = document.createElement('div');
-        estado.style.cssText = 'color:#FFD700;font-size:14px;line-height:2;margin-bottom:16px;';
+        estado.style.cssText = 'color:#FFD700;font-size:24px;line-height:1.35;margin-bottom:22px;';
 
         const bCopiar = document.createElement('button');
         bCopiar.type = 'button';
         bCopiar.textContent = 'COPIAR LINK';
-        bCopiar.style.cssText = 'width:100%;background:transparent;color:#00CFFF;border:1px solid #00CFFF;border-radius:50px;font-family:inherit;font-size:15px;padding:15px;cursor:pointer;';
+        bCopiar.style.cssText = 'width:100%;background:linear-gradient(135deg,#FF8C00,#FFD700);color:#211025;border:none;border-radius:50px;font-family:inherit;font-size:28px;line-height:1.2;padding:16px;cursor:pointer;box-shadow:0 0 20px rgba(255,140,0,.3);';
 
         const bNovo = document.createElement('button');
         bNovo.type = 'button';
         bNovo.textContent = 'GERAR NOVO LINK';
-        bNovo.style.cssText = 'display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:15px;padding:16px;cursor:pointer;';
-
-        const bSolo = document.createElement('button');
-        bSolo.type = 'button';
-        bSolo.textContent = 'JOGAR SOZINHO';
-        bSolo.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:none;font-family:inherit;font-size:15px;padding:10px;cursor:pointer;';
+        bNovo.style.cssText = 'display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#FF8C00,#FFD700);color:#211025;border:none;border-radius:50px;font-family:inherit;font-size:26px;line-height:1.2;padding:16px;cursor:pointer;box-shadow:0 0 20px rgba(255,140,0,.3);';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
         caixa.appendChild(estado);
         caixa.appendChild(bCopiar);
         caixa.appendChild(bNovo);
-        caixa.appendChild(bSolo);
         overlay.appendChild(caixa);
         document.body.appendChild(overlay);
 
@@ -677,7 +676,6 @@ function mostrarSalaCriada(dados, gerarNovo) {
             estado.textContent = 'AMIGO CONECTADO! BORA!';
             bCopiar.style.display = 'none';
             bNovo.style.display = 'none';
-            bSolo.style.display = 'none';
             setTimeout(function () { limpar(); resolve(true); }, 1200);
         }
 
@@ -723,11 +721,6 @@ function mostrarSalaCriada(dados, gerarNovo) {
             });
         });
 
-        bSolo.addEventListener('click', function () {
-            limpar();
-            resolve(true);
-        });
-
         iniciarContagem();
     });
 }
@@ -737,27 +730,27 @@ function avisarCoopFalhou(erro) {
     return new Promise(function (resolve) {
         const overlay = document.createElement('div');
         overlay.id = 'coopErroOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;font-family:"VT323",monospace;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;font-family:"VT323",monospace;';
 
         const caixa = document.createElement('div');
-        caixa.style.cssText = 'border:2px solid #FF8C00;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;background:#0F0A1C;';
+        caixa.style.cssText = 'border:2px solid #FF8C00;border-radius:14px;padding:26px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;background:#0F0A1C;';
 
         const titulo = document.createElement('div');
         titulo.textContent = 'COOP INDISPONÍVEL';
-        titulo.style.cssText = 'font-size:18px;letter-spacing:2px;margin-bottom:16px;color:#FF8C00;';
+        titulo.style.cssText = 'font-size:32px;letter-spacing:2px;line-height:1.2;margin-bottom:16px;color:#FF8C00;';
 
         const sub = document.createElement('p');
         sub.textContent = 'Não foi possível abrir a sala agora.';
-        sub.style.cssText = 'color:#ece8f7;font-size:15px;line-height:2;margin:0 0 12px;';
+        sub.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 12px;';
 
         const detalhe = document.createElement('p');
         detalhe.textContent = (erro && erro.message) ? erro.message : 'ERRO DESCONHECIDO';
-        detalhe.style.cssText = 'color:#8b9bb0;font-size:14px;line-height:2;margin:0 0 18px;word-break:break-word;';
+        detalhe.style.cssText = 'color:#b4abd0;font-size:22px;line-height:1.35;margin:0 0 18px;word-break:break-word;';
 
         const bOk = document.createElement('button');
         bOk.type = 'button';
         bOk.textContent = 'JOGAR SOZINHO';
-        bOk.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:15px;padding:15px;cursor:pointer;';
+        bOk.style.cssText = 'width:100%;background:linear-gradient(135deg,#00CFFF,#A020F0);color:#fff;border:none;border-radius:50px;font-family:inherit;font-size:26px;line-height:1.2;padding:15px;cursor:pointer;';
 
         caixa.appendChild(titulo);
         caixa.appendChild(sub);
@@ -796,23 +789,23 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
 
     const overlay = document.createElement('div');
     overlay.id = 'erroOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;font-family:"VT323",monospace;';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(7,4,15,.96);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto;font-family:"VT323",monospace;';
 
     const caixa = document.createElement('div');
-    caixa.style.cssText = 'background:linear-gradient(160deg,#1a1230,#0F0A1C);border:2px solid #00CFFF;border-radius:14px;padding:26px 20px;max-width:360px;width:100%;text-align:center;';
+    caixa.style.cssText = 'background:linear-gradient(160deg,#1a1230,#0F0A1C);border:2px solid #00CFFF;border-radius:14px;padding:26px 20px;max-width:440px;width:100%;max-height:100%;overflow:auto;text-align:center;';
 
     const t = document.createElement('div');
     t.textContent = titulo;
-    t.style.cssText = 'color:#00CFFF;font-size:18px;line-height:1.8;margin-bottom:14px;';
+    t.style.cssText = 'color:#00CFFF;font-size:32px;line-height:1.2;margin-bottom:14px;';
 
     const m = document.createElement('p');
     m.textContent = mensagem;
-    m.style.cssText = 'color:#ece8f7;font-size:15px;line-height:2;margin:0 0 18px;';
+    m.style.cssText = 'color:#ece8f7;font-size:25px;line-height:1.35;margin:0 0 18px;';
 
     const b1 = document.createElement('button');
     b1.type = 'button';
     b1.textContent = 'TENTAR NOVAMENTE';
-    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:16px;padding:16px;cursor:pointer;';
+    b1.style.cssText = 'width:100%;background:linear-gradient(90deg,#A020F0,#00CFFF);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:26px;line-height:1.2;padding:16px;cursor:pointer;';
     b1.addEventListener('click', recarregarComChave);
 
     caixa.appendChild(t);
@@ -823,7 +816,7 @@ function mostrarErroRecuperavel(titulo, mensagem, opcoes) {
         const b2 = document.createElement('button');
         b2.type = 'button';
         b2.textContent = opcoes.secundario.texto;
-        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#8b9bb0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:15px;padding:14px;cursor:pointer;';
+        b2.style.cssText = 'width:100%;margin-top:10px;background:transparent;color:#b4abd0;border:1px solid #2b3a4d;border-radius:8px;font-family:inherit;font-size:25px;line-height:1.2;padding:14px;cursor:pointer;';
         b2.addEventListener('click', function () {
             overlay.remove();
             try { opcoes.secundario.acao(); } catch (e) {}

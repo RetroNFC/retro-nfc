@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Cartuchos - Retrô NFC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/conquistas.css">
     <style>
@@ -14,24 +16,16 @@
             src: url('assets/fonts/Pretendo.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-        }
-
-@font-face {
-            font-family: 'Jersey Retro';
-            src: url('assets/fonts/Jersey10.ttf') format('truetype');
-            font-weight: 400 700;
-            font-style: normal;
             font-display: swap;
-            size-adjust: 200%;
         }
 
-                :root {
+        :root {
             --bg:        #0B0714;
             --card:      #151026;
             --card-2:    #0F0A1C;
             --linha:     #2a2142;
             --texto:     #ece8f7;
-            --texto-dim: #9a90b5;
+            --texto-dim: #a99fc4;
             --azul:      #00CFFF;
             --roxo:      #A020F0;
             --laranja:   #FF8C00;
@@ -39,15 +33,18 @@
             --marca:     linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
         }
 
+        html { -webkit-text-size-adjust: 100%; }
+
         body {
             background:
                 radial-gradient(900px 500px at 50% -10%, rgba(160,32,240,.22), transparent 70%),
                 radial-gradient(700px 400px at 90% 110%, rgba(0,207,255,.12), transparent 70%),
                 var(--bg);
             color: var(--texto);
-            font-family: 'Jersey Retro', 'VT323', monospace;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
             text-align: center;
-            padding: 84px 18px 112px;
+            padding: 92px 18px 124px;
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
@@ -72,13 +69,13 @@
             position: relative;
             z-index: 1;
             font-family: 'Pretendo', sans-serif;
-            font-size: 26px;
-            margin: 0 0 14px;
-            line-height: 1.5;
+            font-size: 34px;
+            margin: 0 0 16px;
+            line-height: 1.35;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
             letter-spacing: 1px;
         }
 
@@ -91,37 +88,37 @@
             filter: drop-shadow(0 0 14px rgba(160,32,240,.5));
         }
 
-        .icone-trofeu { font-size: 26px; position: relative; top: -3px; }
+        .icone-trofeu { font-size: 30px; position: relative; top: -2px; }
 
         p.sub {
             position: relative;
             z-index: 1;
-            font-size: 10px;
+            font-size: 18px;
             color: var(--texto-dim);
-            margin: 0 auto 22px;
-            line-height: 1.9;
-            max-width: 420px;
+            margin: 0 auto 26px;
+            line-height: 1.7;
+            max-width: 460px;
         }
 
         /* --- Progresso --- */
         .progresso {
             position: relative;
             z-index: 1;
-            max-width: 420px;
-            margin: 0 auto 22px;
+            max-width: 460px;
+            margin: 0 auto 26px;
         }
 
         .progresso-texto {
-            font-size: 11px;
+            font-size: 18px;
             color: var(--texto);
             margin-bottom: 10px;
-            line-height: 1.8;
+            line-height: 1.6;
         }
 
         .progresso-texto b { color: var(--amarelo); font-weight: normal; }
 
         .barra {
-            height: 12px;
+            height: 14px;
             border-radius: 99px;
             background: #1b1430;
             border: 1px solid var(--linha);
@@ -141,18 +138,18 @@
         .ferramentas {
             position: relative;
             z-index: 1;
-            max-width: 620px;
-            margin: 0 auto 26px;
+            max-width: 660px;
+            margin: 0 auto 30px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .busca {
             width: 100%;
-            padding: 13px 16px;
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 11px;
+            padding: 14px 18px;
+            font-family: 'VT323', monospace;
+            font-size: 18px;
             color: var(--texto);
             background: rgba(255,255,255,.04);
             border: 1px solid var(--linha);
@@ -161,7 +158,7 @@
             transition: border-color .2s, box-shadow .2s;
         }
 
-        .busca::placeholder { color: #6f6590; }
+        .busca::placeholder { color: #7d7299; }
 
         .busca:focus {
             border-color: var(--azul);
@@ -170,21 +167,21 @@
 
         .linha-filtros {
             display: flex;
-            gap: 8px;
+            gap: 9px;
             justify-content: center;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .chip {
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 10px;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
             letter-spacing: .5px;
-            color: #cfc7e6;
+            color: #d8d0ee;
             background: rgba(255,255,255,.04);
             border: 1px solid var(--linha);
             border-radius: 50px;
-            padding: 10px 14px;
+            padding: 11px 16px;
             cursor: pointer;
             transition: background .2s, border-color .2s, color .2s, transform .12s;
         }
@@ -208,10 +205,10 @@
         .secao-titulo {
             position: relative;
             z-index: 1;
-            max-width: 620px;
-            margin: 6px auto 16px;
+            max-width: 660px;
+            margin: 8px auto 18px;
             text-align: left;
-            font-size: 10px;
+            font-size: 17px;
             color: var(--texto);
             display: flex;
             align-items: center;
@@ -235,23 +232,23 @@
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
-            max-width: 620px;
-            margin: 0 auto 30px;
+            max-width: 660px;
+            margin: 0 auto 34px;
         }
 
         @media (min-width: 560px) {
-            .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+            .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
         }
 
         .vazio {
             position: relative;
             z-index: 1;
-            max-width: 420px;
-            margin: 0 auto 30px;
-            font-size: 11px;
-            line-height: 2;
+            max-width: 460px;
+            margin: 0 auto 34px;
+            font-size: 18px;
+            line-height: 1.8;
             color: var(--texto-dim);
-            padding: 22px 16px;
+            padding: 24px 18px;
             border: 1px dashed var(--linha);
             border-radius: 12px;
         }
@@ -262,9 +259,9 @@
             z-index: 1;
             display: flex;
             gap: 14px;
-            max-width: 620px;
-            margin: 0 auto 30px;
-            padding: 4px 4px 12px;
+            max-width: 660px;
+            margin: 0 auto 34px;
+            padding: 4px 4px 14px;
             overflow-x: auto;
             scroll-snap-type: x proximity;
             -webkit-overflow-scrolling: touch;
@@ -273,14 +270,14 @@
         }
 
         .recente {
-            flex: 0 0 132px;
+            flex: 0 0 148px;
             scroll-snap-align: start;
             cursor: default;
             color: #fff;
             background: linear-gradient(165deg, var(--card), var(--card-2));
             border: 1px solid rgba(255,215,0,.45);
             border-radius: 12px;
-            padding: 8px;
+            padding: 9px;
             box-shadow: 0 0 14px rgba(255,215,0,.10);
             animation: entrarCartucho .42s cubic-bezier(.2,.8,.3,1) backwards;
         }
@@ -288,11 +285,11 @@
         .dica-recentes {
             position: relative;
             z-index: 1;
-            max-width: 620px;
-            margin: -6px auto 12px;
+            max-width: 660px;
+            margin: -8px auto 14px;
             text-align: left;
-            font-size: 10px;
-            line-height: 1.9;
+            font-size: 16px;
+            line-height: 1.7;
             color: var(--texto-dim);
         }
 
@@ -308,10 +305,10 @@
 
         .recente span {
             display: block;
-            font-size: 11px;
-            line-height: 1.6;
+            font-size: 17px;
+            line-height: 1.5;
             color: #e6dff5;
-            min-height: 28px;
+            min-height: 34px;
             overflow: hidden;
         }
 
@@ -319,7 +316,7 @@
             position: relative;
             border-radius: 12px;
             background: linear-gradient(165deg, var(--card), var(--card-2));
-            padding: 12px;
+            padding: 13px;
             border: 1px solid var(--linha);
             display: flex;
             flex-direction: column;
@@ -336,7 +333,7 @@
         .sem-anim .cartucho,
         .sem-anim .recente { animation: none; }
 
-        .capa { position: relative; margin-bottom: 10px; }
+        .capa { position: relative; margin-bottom: 11px; }
 
         .capa img {
             width: 100%;
@@ -351,8 +348,8 @@
             position: absolute;
             top: 7px;
             right: 7px;
-            width: 27px;
-            height: 27px;
+            width: 29px;
+            height: 29px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -382,15 +379,15 @@
             position: absolute;
             top: 5px;
             left: 5px;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             padding: 0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #cfc7e6;
+            color: #d8d0ee;
             background: rgba(11,7,20,.76);
             border: 1px solid rgba(255,255,255,.28);
             backdrop-filter: blur(6px);
@@ -419,16 +416,16 @@
         .btn-fav.ativo svg { fill: currentColor; }
 
         .cartucho h3 {
-            font-size: 11px;
-            color: #c9c1e0;
-            line-height: 1.6;
-            margin: 0 0 10px;
-            min-height: 36px;
+            font-size: 18px;
+            color: #d3cbe8;
+            line-height: 1.45;
+            margin: 0 0 11px;
+            min-height: 44px;
         }
 
         .cartucho h3.misterio {
-            color: #6f6590;
-            font-size: 12px;
+            color: #7d7299;
+            font-size: 20px;
             letter-spacing: 7px;
             text-indent: 7px;
             text-shadow: 0 0 10px rgba(160,32,240,.3);
@@ -455,13 +452,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 8px;
             background: rgba(255,255,255,.04);
             color: #e6dff5;
             border: 1px solid #3a2f58;
-            padding: 10px;
-            font-size: 10px;
-            font-family: 'Jersey Retro', 'VT323', monospace;
+            padding: 11px;
+            font-size: 17px;
+            font-family: 'VT323', monospace;
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
@@ -500,7 +497,7 @@
         .etiqueta-ok {
             background: linear-gradient(135deg, #00CFFF, #A020F0);
             color: #fff;
-            font-size: 9px;
+            font-size: 16px;
             padding: 9px 4px;
             border-radius: 10px;
             width: 100%;
@@ -514,14 +511,14 @@
             border-radius: 12px;
             background: linear-gradient(165deg, var(--card), var(--card-2));
             border: 1px solid var(--linha);
-            padding: 12px;
+            padding: 13px;
             overflow: hidden;
             position: relative;
         }
 
         .esqueleto .bloco { background: #1c1532; border-radius: 6px; margin-bottom: 10px; }
         .esqueleto .bloco.capa { aspect-ratio: 690 / 490; width: 100%; }
-        .esqueleto .bloco.linha { height: 10px; width: 80%; margin-left: auto; margin-right: auto; }
+        .esqueleto .bloco.linha { height: 12px; width: 80%; margin-left: auto; margin-right: auto; }
         .esqueleto .bloco.linha.curta { width: 55%; }
 
         .esqueleto::after {
@@ -544,9 +541,9 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 18px 8px 8px;
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 11px;
+            padding: 8px 20px 8px 8px;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
             letter-spacing: 1px;
             color: #fff;
             cursor: pointer;
@@ -560,8 +557,8 @@
         }
 
         .btn-voltar .seta {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -588,9 +585,9 @@
             position: relative;
             z-index: 1;
             color: #ff9a9a;
-            font-size: 11px;
-            line-height: 1.9;
-            margin-top: 24px;
+            font-size: 18px;
+            line-height: 1.7;
+            margin-top: 26px;
         }
 
         /* --- Celebração de novo cartucho --- */
@@ -615,9 +612,9 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            max-width: 320px;
+            max-width: 360px;
             text-align: center;
-            padding: 26px 20px 22px;
+            padding: 28px 22px 24px;
             border-radius: 18px;
             border: 2px solid transparent;
             background:
@@ -633,8 +630,8 @@
         }
 
         .celebra-titulo {
-            font-size: 11px;
-            line-height: 1.7;
+            font-size: 22px;
+            line-height: 1.5;
             margin: 0 0 18px;
             background: var(--marca);
             -webkit-background-clip: text;
@@ -660,24 +657,24 @@
         }
 
         .celebra-nome {
-            font-size: 10px;
+            font-size: 19px;
             color: #fff;
-            line-height: 1.7;
+            line-height: 1.5;
             margin: 0 0 8px;
         }
 
         .celebra-extra {
-            font-size: 10px;
+            font-size: 17px;
             color: var(--texto-dim);
-            line-height: 1.8;
+            line-height: 1.6;
             margin: 0 0 18px;
         }
 
         .btn-celebra {
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 10px;
+            font-family: 'VT323', monospace;
+            font-size: 19px;
             color: #fff;
-            padding: 13px 24px;
+            padding: 13px 26px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -704,7 +701,7 @@
             100% { opacity: 1; transform: translateY(105vh) rotate(720deg); }
         }
 
-        /* --- Item 14: compartilhar estante (flutuante) --- */
+        /* --- Compartilhar estante (flutuante) --- */
         .btn-compartilhar {
             position: fixed;
             right: 16px;
@@ -713,12 +710,12 @@
             display: inline-flex;
             align-items: center;
             gap: 9px;
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 11px;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
             letter-spacing: 1px;
             color: #fff;
             cursor: pointer;
-            padding: 11px 18px 11px 12px;
+            padding: 11px 20px 11px 12px;
             border: 2px solid transparent;
             border-radius: 999px;
             background:
@@ -729,8 +726,8 @@
         }
 
         .btn-compartilhar .icone {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -749,12 +746,12 @@
         .compartilhar-aviso {
             position: fixed;
             right: 16px;
-            bottom: calc(78px + env(safe-area-inset-bottom));
+            bottom: calc(84px + env(safe-area-inset-bottom));
             z-index: 60;
-            max-width: 250px;
+            max-width: 270px;
             text-align: right;
-            font-size: 10px;
-            line-height: 1.7;
+            font-size: 16px;
+            line-height: 1.6;
             color: var(--texto-dim);
             margin: 0;
             pointer-events: none;
@@ -762,7 +759,7 @@
 
         .compartilhar-aviso:empty { display: none; }
 
-        .partilha-caixa { max-width: 340px; }
+        .partilha-caixa { max-width: 360px; }
 
         .partilha-img {
             width: 100%;
@@ -781,8 +778,8 @@
 
         .btn-partilha {
             flex: 1 1 0;
-            font-family: 'Jersey Retro', 'VT323', monospace;
-            font-size: 10px;
+            font-family: 'VT323', monospace;
+            font-size: 17px;
             letter-spacing: .5px;
             color: #fff;
             padding: 12px 10px;
@@ -814,62 +811,37 @@
         .btn-partilha:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
 
         /* --- Favoritos: cartuchos em destaque --- */
-        .grid.favoritos { gap: 10px; }
+        .grid.favoritos { gap: 12px; }
 
-        .grid.favoritos .cartucho { padding: 10px; }
+        .grid.favoritos .cartucho { padding: 11px; }
 
-        .grid.favoritos .cartucho h3 { font-size: 12px; min-height: 32px; }
+        .grid.favoritos .cartucho h3 { font-size: 19px; min-height: 40px; }
 
         @media (min-width: 560px) {
             .grid.favoritos {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 16px;
+                gap: 18px;
             }
         }
 
-        /* =========================================
-           TIPOGRAFIA — Pixelify Sans em toda a estante
-           ========================================= */
-        body,
-        .busca,
-        .chip,
-        .btn-comprar,
-        .btn-voltar,
-        .btn-celebra,
-        .btn-compartilhar,
-        .btn-partilha {
-            font-family: 'VT323', monospace;
+        /* --- Telas pequenas --- */
+        @media (max-width: 380px) {
+            body { padding: 88px 14px 118px; }
+            h1 { font-size: 28px; }
+            .cartucho h3 { font-size: 17px; }
+            .btn-compartilhar { font-size: 16px; padding: 10px 16px 10px 10px; }
         }
 
-        p.sub                 { font-size: 13px; }
-        .progresso-texto      { font-size: 13px; }
-        .busca                { font-size: 13px; }
-        .chip                 { font-size: 12px; }
-        .secao-titulo         { font-size: 12px; }
-        .vazio                { font-size: 13px; }
-        .dica-recentes        { font-size: 11px; }
-        .recente span         { font-size: 12px; }
-        .cartucho h3          { font-size: 12px; }
-        .cartucho h3.misterio { font-size: 14px; }
-        .btn-comprar          { font-size: 12px; }
-        .etiqueta-ok          { font-size: 11px; }
-        .btn-voltar           { font-size: 12px; }
-        .aviso-erro           { font-size: 13px; }
-        .celebra-titulo       { font-size: 15px; }
-        .celebra-nome         { font-size: 13px; }
-        .celebra-extra        { font-size: 12px; }
-        .btn-celebra          { font-size: 13px; }
-        .btn-compartilhar     { font-size: 12px; }
-        .compartilhar-aviso   { font-size: 12px; }
-        .btn-partilha         { font-size: 12px; }
-        .grid.favoritos .cartucho h3 { font-size: 13px; }
-        
+        @media (prefers-reduced-motion: reduce) {
+            .cartucho, .recente, .celebra-caixa, .celebra-capa,
+            .esqueleto::after, .confete { animation: none !important; }
+        }
     </style>
 </head>
 <body>
     <button class="btn-voltar" type="button" onclick="voltar()" aria-label="Voltar">
         <span class="seta">
-            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
                 <path d="M15 5l-7 7 7 7" fill="none" stroke="#fff"
                       stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -905,7 +877,7 @@
 
     <button class="btn-compartilhar" id="btnCompartilhar" type="button">
         <span class="icone">
-            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
                 <path d="M12 16V4M12 4l-4 4M12 4l4 4" fill="none" stroke="#fff"
                       stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11A1.5 1.5 0 0 0 19 18.5V14"
@@ -948,7 +920,7 @@
         const CHAVE_SOM      = 'retronfc_som';
         const CHAVE_FAVS     = 'retronfc_favoritos';
         const CHAVE_RECENTES = 'retronfc_recentes';
-        const APP_VERSAO     = "9.1";
+        const APP_VERSAO     = "9.2";
 
         const VOLUME_NORMAL     = 0.04;   // 4%
         const VOLUME_CELEBRACAO = 0.015;  // 1,5%
@@ -1108,23 +1080,23 @@
         }
 
         const SELO_LOCK = '<span class="selo selo-lock" aria-hidden="true">' +
-            '<svg viewBox="0 0 24 24" width="13" height="13">' +
+            '<svg viewBox="0 0 24 24" width="14" height="14">' +
             '<rect x="4.5" y="10.5" width="15" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="2"/>' +
             '<path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
             '</svg></span>';
 
         const SELO_OK = '<span class="selo selo-ok" aria-hidden="true">' +
-            '<svg viewBox="0 0 24 24" width="13" height="13">' +
+            '<svg viewBox="0 0 24 24" width="14" height="14">' +
             '<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
             '</svg></span>';
 
-        const ICONE_CARRINHO = '<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true">' +
+        const ICONE_CARRINHO = '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">' +
             '<path d="M3 4h2.2l2.4 10.2h9.6L19 7H6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
             '<circle cx="9.5" cy="19" r="1.6" fill="currentColor"/>' +
             '<circle cx="17" cy="19" r="1.6" fill="currentColor"/>' +
             '</svg>';
 
-        const ICONE_ESTRELA = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">' +
+        const ICONE_ESTRELA = '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">' +
             '<polygon points="12,2.8 14.9,8.9 21.5,9.7 16.6,14.3 17.9,20.9 12,17.6 6.1,20.9 7.4,14.3 2.5,9.7 9.1,8.9"/>' +
             '</svg>';
 
@@ -1141,7 +1113,7 @@
             salvarLista(CHAVE_FAVS, lista);
             try { Conquistas.avaliar(); } catch (e) {}
             try { Conquistas.pintarFaixa(); } catch (e) {}
-            
+
             const ativo = pos === -1;
 
             // Atualiza todas as estrelas desse jogo sem redesenhar a tela.
@@ -1507,7 +1479,7 @@
                 } else if (estado.filtro === 'favoritos') {
                     vazioMsg = 'NENHUM FAVORITO AINDA. TOQUE NA ESTRELA DE UM CARTUCHO PARA FAVORITAR!';
                 } else {
-                    vazioMsg = 'ESTANTE VAZIA. ENCOSTE UM CARTUCHO RETRO NFC!';
+                    vazioMsg = 'ESTANTE VAZIA. ENCOSTE UM CARTUCHO RETRÔ NFC!';
                 }
 
                 const titulo = estado.filtro === 'favoritos' ? 'FAVORITOS' : 'SUA ESTANTE';
@@ -1708,10 +1680,10 @@
             }
         }
 
-        /* ---------- Item 14: card compartilhavel da estante ---------- */
+        /* ---------- Card compartilhável da estante ---------- */
         const CARD_LARGURA = 1080;
         const CARD_ALTURA  = 1350;
-        const CARD_FONTE   = '"Pixelify Sans", monospace';
+        const CARD_FONTE   = '"VT323", monospace';
 
         let cardBlobAtual = null;
         let cardUrlAtual  = null;
@@ -1741,8 +1713,8 @@
             ctx.closePath();
         }
 
-        // Desenha o texto no card reduzindo a fonte e, se ainda faltar espaco,
-        // comprimindo na horizontal. Assim nada estoura a area do card.
+        // Desenha o texto no card reduzindo a fonte e, se ainda faltar espaço,
+        // comprimindo na horizontal. Assim nada estoura a área do card.
         function textoCard(ctx, texto, x, y, maxLargura, tamanho, cor, peso) {
             let t = tamanho;
 
@@ -1781,7 +1753,7 @@
         async function gerarCardEstante() {
             if (document.fonts) {
                 try {
-                    await document.fonts.load('40px "Pixelify Sans"');
+                    await document.fonts.load('40px "VT323"');
                     await document.fonts.ready;
                 } catch (e) {}
             }
@@ -1839,7 +1811,7 @@
 
             textoCard(ctx, 'MINHA ESTANTE', 540, 268, 900, 74, '#ffffff');
 
-            textoCard(ctx, tenho + ' DE ' + total + ' CARTUCHOS  \u00b7  ' + pct + '%', 540, 320, 900, 30, '#9a90b5');
+            textoCard(ctx, tenho + ' DE ' + total + ' CARTUCHOS  ·  ' + pct + '%', 540, 320, 900, 30, '#a99fc4');
 
             const barraX = 72;
             const barraY = 352;
@@ -1940,7 +1912,7 @@
 
                 const sobra = tenho - mostrar;
                 textoCard(ctx, '+' + sobra, x + cw / 2, y + ch / 2 + 4, cw - 24, 54, '#ffffff');
-                textoCard(ctx, 'MAIS', x + cw / 2, y + ch / 2 + 40, cw - 24, 18, '#9a90b5');
+                textoCard(ctx, 'MAIS', x + cw / 2, y + ch / 2 + 40, cw - 24, 18, '#a99fc4');
             }
 
             const linhaY = 1156;
@@ -1952,7 +1924,7 @@
             ctx.fillRect(margem, linhaY, CARD_LARGURA - margem * 2, 3);
 
             textoCard(ctx, 'RETRO-NFC.PAGES.DEV', 540, 1226, 900, 34, '#ffffff');
-            textoCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 540, 1276, 900, 24, '#9a90b5');
+            textoCard(ctx, 'ENCOSTE A TAG PARA JOGAR', 540, 1276, 900, 24, '#a99fc4');
 
             return canvas;
         }

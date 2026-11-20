@@ -139,7 +139,7 @@ export class SalaNetplay {
     if (!meta) { ws.send(JSON.stringify({ t: 'erro', erro: 'sala-fechada' })); return; }
 
     // Convite vale 60s a partir da criação (só vale para quem ainda não entrou)
-    if (!meta.convidadoEm && Date.now() - meta.criadaEm > 60 * 1000) {
+    if (!meta.convidadoEm && Date.now() - meta.criadaEm > 120 * 1000) {
       ws.send(JSON.stringify({ t: 'erro', erro: 'link-expirado' }));
       return;
     }

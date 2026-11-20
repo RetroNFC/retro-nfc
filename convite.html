@@ -11,14 +11,14 @@
     <meta property="og:site_name" content="Retrô NFC">
     <meta property="og:title" content="Retrô NFC — Jogue comigo!">
     <meta property="og:description" content="Você foi convidado para jogar cooperativo online. Toque no link e entre na partida.">
-    <meta property="og:image" content="https://retro-nfc.pages.dev/og-convite.png">
+    <meta property="og:image" content="https://retro-nfc.pages.dev/assets/img/og-convite.png">
     <meta property="og:image:width" content="2048">
     <meta property="og:image:height" content="1152">
     <meta property="og:url" content="https://retro-nfc.pages.dev/convite.html">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Retrô NFC — Jogue comigo!">
     <meta name="twitter:description" content="Você foi convidado para jogar cooperativo online.">
-    <meta name="twitter:image" content="https://retro-nfc.pages.dev/og-convite.png">
+    <meta name="twitter:image" content="https://retro-nfc.pages.dev/assets/img/og-convite.png">
 
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
@@ -33,8 +33,8 @@
             --marca: linear-gradient(90deg, #00CFFF, #A020F0, #FF8C00, #FFD700);
             --cinza: rgba(128,128,128,.55);
             --cinza-borda: rgba(255,255,255,.28);
-            --d: 156px;   /* tamanho da cruz */
-            --f: 60px;    /* diametro dos botoes de face */
+            --d: 156px;
+            --f: 60px;
         }
 
         * { box-sizing: border-box; }
@@ -157,7 +157,10 @@
 
         #fs:active, #padToggle:active { transform: scale(.94); }
 
-        #padToggle.desligado { color: var(--dim); border-color: rgba(255,255,255,.12); }
+        #padToggle.desligado {
+            color: var(--dim);
+            border-color: rgba(255,255,255,.12);
+        }
 
         /* ---------- Palco ---------- */
         #stage {
@@ -177,7 +180,7 @@
             display: block;
         }
 
-        /* ---------- Controles (layout igual ao EmulatorJS) ---------- */
+        /* ---------- Controles ---------- */
         #pad {
             position: fixed;
             inset: 0;
@@ -241,16 +244,49 @@
             pointer-events: none;
         }
 
-        .cruz::before { left: calc(var(--d) / 3); top: 0; width: calc(var(--d) / 3); height: var(--d); }
-        .cruz::after  { left: 0; top: calc(var(--d) / 3); width: var(--d); height: calc(var(--d) / 3); }
+        .cruz::before {
+            left: calc(var(--d) / 3);
+            top: 0;
+            width: calc(var(--d) / 3);
+            height: var(--d);
+        }
 
-        .cruz .botao { background: transparent; border-color: transparent; z-index: 2; }
-        .cruz .botao.pressionado { background: rgba(255,255,255,.5); }
+        .cruz::after {
+            left: 0;
+            top: calc(var(--d) / 3);
+            width: var(--d);
+            height: calc(var(--d) / 3);
+        }
 
-        .cruz [data-idx="4"] { left: calc(var(--d) / 3); top: 0; }
-        .cruz [data-idx="6"] { left: 0; top: calc(var(--d) / 3); }
-        .cruz [data-idx="7"] { left: calc(var(--d) * 2 / 3); top: calc(var(--d) / 3); }
-        .cruz [data-idx="5"] { left: calc(var(--d) / 3); top: calc(var(--d) * 2 / 3); }
+        .cruz .botao {
+            background: transparent;
+            border-color: transparent;
+            z-index: 2;
+        }
+
+        .cruz .botao.pressionado {
+            background: rgba(255,255,255,.5);
+        }
+
+        .cruz [data-idx="4"] {
+            left: calc(var(--d) / 3);
+            top: 0;
+        }
+
+        .cruz [data-idx="6"] {
+            left: 0;
+            top: calc(var(--d) / 3);
+        }
+
+        .cruz [data-idx="7"] {
+            left: calc(var(--d) * 2 / 3);
+            top: calc(var(--d) / 3);
+        }
+
+        .cruz [data-idx="5"] {
+            left: calc(var(--d) / 3);
+            top: calc(var(--d) * 2 / 3);
+        }
 
         /* Faces em losango: X cima, Y esquerda, A direita, B baixo */
         .faces {
@@ -270,12 +306,27 @@
             border-radius: 50%;
         }
 
-        .faces [data-idx="9"] { left: calc(var(--f) * 0.75); top: 0; }
-        .faces [data-idx="1"] { left: 0; top: calc(var(--f) * 0.75); }
-        .faces [data-idx="8"] { right: 0; top: calc(var(--f) * 0.75); }
-        .faces [data-idx="0"] { left: calc(var(--f) * 0.75); bottom: 0; }
+        .faces [data-idx="9"] {
+            left: calc(var(--f) * 0.75);
+            top: 0;
+        }
 
-        /* Select e Start lado a lado, embaixo no centro */
+        .faces [data-idx="1"] {
+            left: 0;
+            top: calc(var(--f) * 0.75);
+        }
+
+        .faces [data-idx="8"] {
+            right: 0;
+            top: calc(var(--f) * 0.75);
+        }
+
+        .faces [data-idx="0"] {
+            left: calc(var(--f) * 0.75);
+            bottom: 0;
+        }
+
+        /* Select e Start lado a lado */
         .centro {
             position: absolute;
             left: 50%;
@@ -293,9 +344,13 @@
             font-size: 24px;
         }
 
-        /* ---------- Celular em pé: controles descem ---------- */
+        /* ---------- Celular em pé ---------- */
         @media (orientation: portrait) {
-            .cruz, .faces { top: auto; bottom: calc(90px + env(safe-area-inset-bottom)); transform: none; }
+            .cruz, .faces {
+                top: auto;
+                bottom: calc(90px + env(safe-area-inset-bottom));
+                transform: none;
+            }
         }
 
         /* ---------- Celular deitado e baixo ---------- */
@@ -306,7 +361,11 @@
             #fs { right: 8px; }
             #padToggle { right: 58px; }
 
-            .centro .botao { width: 88px; height: 38px; font-size: 22px; }
+            .centro .botao {
+                width: 88px;
+                height: 38px;
+                font-size: 22px;
+            }
 
             .caixa { padding: 18px 18px; max-width: 460px; }
             .titulo { font-size: 36px; margin-bottom: 8px; }
@@ -314,6 +373,93 @@
             .status { font-size: 22px; }
             .cta { margin-top: 10px; font-size: 24px; padding: 8px 16px; }
             .dica { font-size: 18px; margin-top: 8px; }
+        }
+
+        /* Geometria e desenho baseados no controle da imagem de referência. */
+        .cruz, .faces {
+            top: 57%;
+            transform: translateY(-50%);
+        }
+
+        .cruz {
+            --d: clamp(108px, 15vw, 144px);
+            left: calc(3% + env(safe-area-inset-left));
+            width: var(--d);
+            height: var(--d);
+        }
+
+        .cruz::before {
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            background: rgba(160,160,160,.55);
+            clip-path: polygon(
+                36% 0,
+                64% 0,
+                64% 36%,
+                100% 36%,
+                100% 64%,
+                64% 64%,
+                64% 100%,
+                36% 100%,
+                36% 64%,
+                0 64%,
+                0 36%,
+                36% 36%
+            );
+        }
+
+        .cruz::after {
+            display: none;
+        }
+
+        .cruz .botao {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            border-radius: 0;
+            color: rgba(30,30,30,.8);
+        }
+
+        .faces {
+            --f: clamp(42px, 6vw, 58px);
+            right: calc(2% + env(safe-area-inset-right));
+            width: calc(var(--f) * 2.5);
+            height: calc(var(--f) * 2.5);
+        }
+
+        .faces .botao {
+            font-family: Arial, sans-serif;
+            font-size: clamp(25px, 3.5vw, 34px);
+            border: 2px solid rgba(220,220,220,.45);
+            background: rgba(115,115,115,.4);
+        }
+
+        .centro {
+            bottom: calc(17% + env(safe-area-inset-bottom));
+            gap: 6px;
+        }
+
+        .centro .botao {
+            width: 60px;
+            height: 34px;
+            border-radius: 4px;
+            font-family: Arial, sans-serif;
+            font-size: 17px;
+            background: rgba(115,115,115,.5);
+            border: 2px solid rgba(220,220,220,.45);
+        }
+
+        @media (orientation: portrait) {
+            .cruz, .faces {
+                top: auto;
+                bottom: calc(90px + env(safe-area-inset-bottom));
+                transform: none;
+            }
+
+            .centro {
+                bottom: calc(24px + env(safe-area-inset-bottom));
+            }
         }
     </style>
 </head>

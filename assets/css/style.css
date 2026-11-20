@@ -1,5 +1,5 @@
 /* Importa a fonte retrô */
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
 @font-face {
     font-family: 'Pretendo';
@@ -27,7 +27,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Pixelify Sans', monospace;
+    font-family: 'VT323', monospace;
 }
 
 body {
@@ -171,7 +171,7 @@ body {
     border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    font-family: 'Pixelify Sans', monospace;
+    font-family: 'VT323', monospace;
     transition: transform 0.2s ease, box-shadow 0.3s ease, filter 0.2s ease;
     display: flex;
     align-items: center;
@@ -265,7 +265,7 @@ body {
     width: 100vw;
     height: 100dvh;
     padding: 20px;
-    background-color: #050505;
+    background-color: #000;
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -406,17 +406,25 @@ body {
 
 #splashScreen {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100dvh;
-    background-color: black;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
     z-index: 9000;
-    display: flex; justify-content: center; align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 #splashScreen img {
     content: url('../img/retronfc.webp');
-    width: 100vw; height: 100dvh;
-    object-fit: cover; opacity: 0;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
     animation: fadeLogo 15s ease-in-out forwards;
 }
 
